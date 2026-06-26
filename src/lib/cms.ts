@@ -1,4 +1,4 @@
-export const CLIENT_ID = import.meta.env.WIX_CLIENT_ID as string;
+export const CLIENT_ID = import.meta.env.WIX_CLIENT_ID || "6b9c7399-c871-4eec-9007-49ccfbf59b01";
 export const SITE_ID   = "ce3c6696-e20c-4ed7-934e-04017b645c53"; // From wix.config.json
 
 export function resolveWixImage(url?: string): string {
@@ -12,11 +12,22 @@ export function resolveWixImage(url?: string): string {
 }
 
 export async function getToken(): Promise<string> {
+  const clientSecret = import.meta.env.WIX_CLIENT_SECRET || "ec4fc311-378b-4350-9d5e-f6988e011d1d";
+  
   const r = await fetch('https://www.wixapis.com/oauth2/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ clientId: CLIENT_ID, grantType: 'anonymous' })
+    body: JSON.stringify({ 
+      grantType: 'client_credentials', 
+      clientId: CLIENT_ID,
+      clientSecret: clientSecret
+    })
   });
+  
+  if (!r.ok) {
+    console.error('Failed to get Wix token:', await r.text());
+  }
+  
   const d = await r.json() as { access_token: string };
   return d.access_token;
 }
@@ -44,6 +55,12 @@ export async function query(
     },
     body: JSON.stringify(body)
   });
+  
+  if (!r.ok) {
+    console.error(`Wix API Error (Collection: ${collectionId}):`, await r.text());
+    return [];
+  }
+  
   const d = await r.json() as { dataItems?: { data?: any }[] };
   return (d.dataItems || []).map(i => i.data || i);
 }
