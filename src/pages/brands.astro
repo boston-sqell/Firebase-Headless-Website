@@ -1,15 +1,19 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getCmsData } from '../lib/cms';
+
+const { brands } = await getCmsData();
+const sortedBrands = brands.sort((a: any, b: any) => a.name.localeCompare(b.name));
 ---
 
 <Layout title="BRANDS | Sosun Fihaara">
 <main>
 
 <section class="page-hero">
-  <img class="page-hero__img" src="/placeholder.jpg" alt="A spread of branded grocery products in a kitchen" loading="eager">
+  <img class="page-hero__img" src="/logo.png" alt="A spread of branded grocery products in a kitchen" loading="eager">
   <div class="container page-hero__inner">
     <h1>Brands</h1>
-    <p class="crumbs"><a href="index.html">Home</a> &nbsp;/&nbsp; <span>Brands</span></p>
+    <p class="crumbs"><a href="/">Home</a> &nbsp;/&nbsp; <span>Brands</span></p>
   </div>
 </section>
 
@@ -27,27 +31,11 @@ import Layout from '../layouts/Layout.astro';
 <section class="section bg-cream" style="padding-top:0">
   <div class="container">
     <div class="brand-grid" id="brand-grid-dynamic">
-      <a class="brand-tile" href="brand-azime.html"><img class="bl" src="/placeholder.jpg" alt="Azime logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-bruggeman.html"><img class="bl" src="/placeholder.jpg" alt="Bruggeman logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-bumble.html"><img class="bl" src="/placeholder.jpg" alt="Bumble logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-delibreads.html"><span>Delibreads</span></a>
-      <a class="brand-tile" href="brand-huxol.html"><img class="bl" src="/placeholder.jpg" alt="Huxol logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-maxfly.html"><img class="bl" src="/placeholder.jpg" alt="Max Fly logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-nawon.html"><img class="bl" src="/placeholder.jpg" alt="Nawon logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-nutberry.html"><span>Nutberry</span></a>
-      <a class="brand-tile" href="brand-ondoliva.html"><img class="bl" src="/placeholder.jpg" alt="Ondoliva logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-palmtop.html"><span>Palmtop</span></a>
-      <a class="brand-tile" href="brand-pascual.html"><img class="bl" src="/placeholder.jpg" alt="Pascual logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-picnic.html"><img class="bl" src="/placeholder.jpg" alt="Picnic logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-pillsbury.html"><img class="bl" src="/placeholder.jpg" alt="Pillsbury logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-promina.html"><img class="bl" src="/placeholder.jpg" alt="Promina logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-real-thai.html"><img class="bl" src="/placeholder.jpg" alt="Real Thai logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-remia.html"><img class="bl" src="/placeholder.jpg" alt="Remia logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-sotudex.html"><img class="bl" src="/placeholder.jpg" alt="Sotudex logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-tai-sun.html"><img class="bl" src="/placeholder.jpg" alt="Tai Sun logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-wardat-al-mashreq.html"><span>Wardat Al Mashreq</span></a>
-      <a class="brand-tile" href="brand-youngs.html"><img class="bl" src="/placeholder.jpg" alt="Young's logo" loading="lazy"></a>
-      <a class="brand-tile" href="brand-zaara.html"><span>Zaara</span></a>
+      {sortedBrands.map((b: any) => (
+        <a class="brand-tile" href={`/brands/${b.slug}`}>
+          <span>{b.name}</span>
+        </a>
+      ))}
     </div>
   </div>
 </section>
@@ -85,7 +73,7 @@ import Layout from '../layouts/Layout.astro';
   <div class="container"><div class="cta-band">
     <h2>Want to carry these brands in your store?</h2>
     <p>Become a Sosun Fihaara stockist and give your customers the names they trust.</p>
-    <div class="btns"><a href="contact.html" class="btn btn--gold btn--lg">Become a Stockist</a><a href="products.html" class="btn btn--on-dark btn--lg">View Products</a></div>
+    <div class="btns"><a href="/contact" class="btn btn--gold btn--lg">Become a Stockist</a><a href="/products" class="btn btn--on-dark btn--lg">View Products</a></div>
   </div></div>
 </section>
 

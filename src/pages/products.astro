@@ -2,23 +2,19 @@
 import Layout from '../layouts/Layout.astro';
 import { getCmsData } from '../lib/cms';
 
-const { products } = await getCmsData();
+const { products, brands } = await getCmsData();
+const sortedBrands = brands.map((b: any) => b.name).sort();
 ---
 
 <Layout title="PRODUCTS | Sosun Fihaara">
 <main>
-<script is:inline define:vars={{ products }}>
-window.SF_PRODUCTS = products;
-// Brand images populated by Wix CMS loader
-window.SF_BIMG = window.SF_BIMG || {};
-</script>
 
 
 <section class="page-hero" style="background:#0b3d2e">
   <img id="products-hero-img" class="page-hero__img" src="" alt="" style="display:none">
   <div class="container page-hero__inner">
     <h1>Products</h1>
-    <p class="crumbs"><a href="index.html">Home</a> &nbsp;/&nbsp; <span>Products</span></p>
+    <p class="crumbs"><a href="/">Home</a> &nbsp;/&nbsp; <span>Products</span></p>
   </div>
 </section>
 
@@ -41,27 +37,7 @@ window.SF_BIMG = window.SF_BIMG || {};
           <label for="brandFilter">Filter by brand</label>
           <select id="brandFilter" name="brand" aria-label="Filter by brand">
             <option>All Brands</option>
-            <option>Azime</option>
-            <option>Bruggeman</option>
-            <option>Bumble</option>
-            <option>Delibreads</option>
-            <option>Huxol</option>
-            <option>Max Fly</option>
-            <option>Nawon</option>
-            <option>Nutberry</option>
-            <option>Ondoliva</option>
-            <option>Palmtop</option>
-            <option>Pascual</option>
-            <option>Picnic</option>
-            <option>Pillsbury</option>
-            <option>Promina</option>
-            <option>Real Thai</option>
-            <option>Remia</option>
-            <option>Sotudex</option>
-            <option>Tai Sun</option>
-            <option>Wardat Al Mashreq</option>
-            <option>Young's</option>
-            <option>Zaara</option>
+            {sortedBrands.map((b: string) => <option>{b}</option>)}
           </select>
         </div>
         <div class="cat-filter">
@@ -99,7 +75,25 @@ window.SF_BIMG = window.SF_BIMG || {};
       </aside>
 
       <div>
-        <div class="cat-grid" id="catGrid"></div>
+        <div class="cat-grid" id="catGrid">
+          {products.map((p: any) => (
+            <article class="pcard pcard--brand" data-brand={p.b} data-cat={p.cat} data-sub={p.sub} data-price={p.pr ? p.pr.replace(/,/g, '') : '0'} data-name={p.n}>
+              <div class="pcard__img">
+                <img src={p.img} alt={p.n} loading="lazy">
+              </div>
+              <span class="pcard__cat">{p.b} &middot; {p.cat}</span>
+              <h3>{p.n}</h3>
+              <div style="flex:1 0 auto;margin-bottom:14px">
+                {p.p && <p style="color:var(--muted);font-size:12px;margin:0 0 8px">Pack: {p.p}</p>}
+                {p.pr ? 
+                  <p style="font-family:var(--font-display);font-weight:800;color:var(--green);font-size:17px;margin:0">MVR {p.pr}</p> 
+                  : <p style="font-family:var(--font-display);font-weight:700;color:var(--muted);font-size:13px;margin:0">Request price</p>
+                }
+              </div>
+              <a href={`/products/${p.c}`} class="textlink">Explore More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            </article>
+          ))}
+        </div>
         <div class="center" style="margin-top:40px">
           <button type="button" id="loadMore" class="btn btn--ghost btn--lg">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
@@ -109,11 +103,10 @@ window.SF_BIMG = window.SF_BIMG || {};
       </div>
     </div>
   </div>
-  <div id="cms-loading" style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)">Loading products…</div>
   <script is:inline>
 // @ts-nocheck
 (function(){
-  var DATA = window.SF_PRODUCTS || [];
+  var cards = Array.from(document.querySelectorAll('.pcard'));
   var grid = document.getElementById("catGrid");
   var countEl = document.getElementById("resultCount");
   var moreBtn = document.getElementById("loadMore");
@@ -121,43 +114,46 @@ window.SF_BIMG = window.SF_BIMG || {};
   var sortSel = document.getElementById("sortFilter");
   var clearBtn = document.getElementById("clearFilters");
   var activeCat = "", activeSub = "", PAGE = 24, shown = PAGE;
-  function esc(s){return (""+s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;");}
-  function card(p){
-    var price = p.pr ? "<p style=\"font-family:var(--font-display);font-weight:800;color:var(--green);font-size:17px;margin:0\">MVR "+esc(p.pr)+"</p>" : "<p style=\"font-family:var(--font-display);font-weight:700;color:var(--muted);font-size:13px;margin:0\">Request price</p>";
-    var pack = p.p ? "<p style=\"color:var(--muted);font-size:12px;margin:0 0 8px\">Pack: "+esc(p.p)+"</p>" : "";
-    var wixImg = window.SF_WIX_IMG || function(u) { return u; };
-    var imgUrl = p.img 
-      ? wixImg(p.img, 400, 400)
-      : (window.SF_BIMG[p.bs] || ("https://loremflickr.com/400/400/"+p.kw));
-    return "<article class=\"pcard pcard--brand\">"
-      + "<div class=\"pcard__img\"><img src=\""+imgUrl+"\" alt=\""+esc(p.n)+"\" loading=\"lazy\"></div>"
-      + "<span class=\"pcard__cat\">"+esc(p.b)+" &middot; "+esc(p.cat)+"</span>"
-      + "<h3>"+esc(p.n)+"</h3>"
-      + "<div style=\"flex:1 0 auto;margin-bottom:14px\">"+pack+price+"</div>"
-      + "<a href=\"product-"+p.c+".html\" class=\"textlink\">Explore More <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M5 12h14M13 6l6 6-6 6\"/></svg></a>"
-      + "</article>";
-  }
-  function filtered(){
+
+  function render(){
     var b = brandSel.value;
-    var list = DATA.filter(function(p){
-      if(activeCat && p.cat !== activeCat) return false;
-      if(activeSub && p.sub !== activeSub) return false;
-      if(b && b !== "All Brands" && p.b !== b) return false;
+    var s = sortSel.value;
+    var list = cards.filter(function(card){
+      var cBrand = card.getAttribute('data-brand');
+      var cCat = card.getAttribute('data-cat');
+      var cSub = card.getAttribute('data-sub');
+      if(activeCat && cCat !== activeCat) return false;
+      if(activeSub && cSub !== activeSub) return false;
+      if(b && b !== "All Brands" && cBrand !== b) return false;
       return true;
     });
-    var s = sortSel.value;
-    if(s === "Name (A\u2013Z)") list.sort(function(a,c){return a.n.localeCompare(c.n);});
-    else if(s === "Name (Z\u2013A)") list.sort(function(a,c){return c.n.localeCompare(a.n);});
-    else if(s === "Price (low\u2013high)") list.sort(function(a,c){return (parseFloat((a.pr||"0").replace(/,/g,""))||0)-(parseFloat((c.pr||"0").replace(/,/g,""))||0);});
-    return list;
-  }
-  function render(){
-    var list = filtered();
+
+    if(s === "Name (A\u2013Z)") list.sort((a,c) => a.getAttribute('data-name').localeCompare(c.getAttribute('data-name')));
+    else if(s === "Name (Z\u2013A)") list.sort((a,c) => c.getAttribute('data-name').localeCompare(a.getAttribute('data-name')));
+    else if(s === "Price (low\u2013high)") list.sort((a,c) => (parseFloat(a.getAttribute('data-price'))||0) - (parseFloat(c.getAttribute('data-price'))||0));
+
+    cards.forEach(card => card.style.display = 'none');
     var slice = list.slice(0, shown);
-    grid.innerHTML = slice.length ? slice.map(card).join("") : "<p class=\"lead\" style=\"grid-column:1/-1;text-align:center;padding:40px 0\">No products match these filters. <a class=\"textlink\" href=\"contact.html\">Ask us &rarr;</a></p>";
+    slice.forEach(card => {
+      grid.appendChild(card); // reorder
+      card.style.display = '';
+    });
+    
+    var emptyMsg = document.getElementById('emptyMsg');
+    if (!emptyMsg) {
+      emptyMsg = document.createElement('p');
+      emptyMsg.id = 'emptyMsg';
+      emptyMsg.className = 'lead';
+      emptyMsg.style.cssText = 'grid-column:1/-1;text-align:center;padding:40px 0';
+      emptyMsg.innerHTML = 'No products match these filters. <a class="textlink" href="/contact">Ask us &rarr;</a>';
+      grid.appendChild(emptyMsg);
+    }
+    emptyMsg.style.display = slice.length ? 'none' : '';
+
     countEl.innerHTML = "Showing <strong>"+Math.min(shown,list.length)+"</strong> of "+list.length+" products";
     moreBtn.style.display = shown < list.length ? "" : "none";
   }
+
   function setActive(link){
     var all = document.querySelectorAll(".cat-link");
     for(var i=0;i<all.length;i++) all[i].classList.remove("is-active");
@@ -178,15 +174,8 @@ window.SF_BIMG = window.SF_BIMG || {};
   sortSel.addEventListener("change", function(){ shown=PAGE; render(); });
   moreBtn.addEventListener("click", function(){ shown += PAGE; render(); });
   clearBtn.addEventListener("click", function(e){ e.preventDefault(); activeCat=""; activeSub=""; brandSel.value="All Brands"; sortSel.selectedIndex=0; shown=PAGE; setActive(allLink); render(); });
-  // Expose render so CMS loader can call it after data arrives
-  window.SF_RENDER_PRODUCTS = function() { DATA = window.SF_PRODUCTS || []; shown = PAGE; render(); };
-  if (DATA.length) {
-    render();
-  } else {
-    document.addEventListener('sf:cms-ready', function() {
-      window.SF_RENDER_PRODUCTS();
-    }, { once: true });
-  }
+
+  render();
 })();
 </script>
 </section>
@@ -222,7 +211,7 @@ window.SF_BIMG = window.SF_BIMG || {};
   <div class="container"><div class="cta-band">
     <h2>Need a tailored wholesale quote?</h2>
     <p>Send us your product list and order volumes — our trade team will get back to you fast.</p>
-    <div class="btns"><a href="contact.html" class="btn btn--gold btn--lg">Get a Quote</a><a href="brands.html" class="btn btn--on-dark btn--lg">View Brands</a></div>
+    <div class="btns"><a href="/contact" class="btn btn--gold btn--lg">Get a Quote</a><a href="/brands" class="btn btn--on-dark btn--lg">View Brands</a></div>
   </div></div>
 </section>
 

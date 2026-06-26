@@ -1,5 +1,15 @@
 export const CLIENT_ID = import.meta.env.WIX_CLIENT_ID as string;
-export const SITE_ID   = import.meta.env.WIX_CLIENT_INSTANCE_ID as string;
+export const SITE_ID   = "ce3c6696-e20c-4ed7-934e-04017b645c53"; // From wix.config.json
+
+export function resolveWixImage(url?: string): string {
+  if (!url) return '/logo.png';
+  if (!url.startsWith('wix:image://v1/')) return url;
+  const parts = url.split('/');
+  if (parts.length > 3) {
+    return `https://static.wixstatic.com/media/${parts[3]}`;
+  }
+  return '/logo.png';
+}
 
 export async function getToken(): Promise<string> {
   const r = await fetch('https://www.wixapis.com/oauth2/token', {
@@ -56,7 +66,7 @@ export async function getCmsData() {
     p: p.packSize,
     bs: p.brandSlug,
     kw: p.keywords,
-    img: p.image
+    img: resolveWixImage(p.image)
   }));
 
   return { products: mappedProducts, brands, site: siteArr[0] || {} };

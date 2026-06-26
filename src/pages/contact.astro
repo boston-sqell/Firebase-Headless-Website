@@ -1,15 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro';
+const isSuccess = Astro.url.searchParams.get('success') === 'true';
 ---
 
 <Layout title="CONTACT | Sosun Fihaara">
 <main>
 
 <section class="page-hero">
-  <img class="page-hero__img" src="/placeholder.jpg" alt="Business team ready to help with enquiries" loading="eager">
   <div class="container page-hero__inner">
     <h1>Contact Us</h1>
-    <p class="crumbs"><a href="index.html">Home</a> &nbsp;/&nbsp; <span>Contact Us</span></p>
+    <p class="crumbs"><a href="/">Home</a> &nbsp;/&nbsp; <span>Contact Us</span></p>
   </div>
 </section>
 
@@ -48,9 +48,18 @@ import Layout from '../layouts/Layout.astro';
 
       <!-- form -->
       <div class="card" style="padding:clamp(24px,3vw,40px)">
-        <h3 style="font-size:24px;margin-bottom:6px">Request a quote</h3>
-        <p style="color:var(--muted);margin-bottom:24px;font-size:15.5px">Fill in the details below and our team will respond within one business day.</p>
-        <form class="form" action="#" method="post" novalidate="">
+        {isSuccess ? (
+          <div style="text-align: center; padding: 40px 0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 48px; height: 48px; margin-bottom: 16px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <h3 style="font-size:24px;margin-bottom:6px">Thank you!</h3>
+            <p style="color:var(--muted);font-size:15.5px">Your enquiry has been received. Our team will get back to you shortly.</p>
+            <a href="//contact" class="btn btn--outline mt-4">Send another message</a>
+          </div>
+        ) : (
+          <>
+            <h3 style="font-size:24px;margin-bottom:6px">Request a quote</h3>
+            <p style="color:var(--muted);margin-bottom:24px;font-size:15.5px">Fill in the details below and our team will respond within one business day.</p>
+            <form class="form" action="/api/contact" method="post" novalidate="">
           <div class="form__row">
             <div class="field">
               <label for="name">Full name <span class="req" aria-hidden="true">*</span></label>
@@ -89,6 +98,8 @@ import Layout from '../layouts/Layout.astro';
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
           </button>
         </form>
+        </>
+        )}
       </div>
     </div>
   </div>

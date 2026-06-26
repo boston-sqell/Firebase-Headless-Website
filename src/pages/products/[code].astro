@@ -21,7 +21,7 @@ const { product } = Astro.props;
       <div class="container">
         <div style="display: flex; gap: 40px; align-items: flex-start; max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
           <div style="flex: 1;">
-            <img src="/placeholder.jpg" alt={product.n} style="width: 100%; border-radius: 8px;">
+            <img src="/logo.png" alt={product.n} style="width: 100%; border-radius: 8px;">
           </div>
           <div style="flex: 1;">
             <span class="eyebrow">{product.b} &middot; {product.cat}</span>
@@ -34,7 +34,7 @@ const { product } = Astro.props;
               {product.p && <p style="color: var(--muted); margin-top: 5px;">Pack size: {product.p}</p>}
             </div>
             
-            <a href="/contact.html" class="btn btn--gold">Get a Wholesale Quote</a>
+            <a href="//contact" class="btn btn--gold">Get a Wholesale Quote</a>
           </div>
         </div>
       </div>

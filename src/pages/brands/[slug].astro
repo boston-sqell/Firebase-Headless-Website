@@ -3,16 +3,16 @@ import Layout from '../../layouts/Layout.astro';
 import { getCmsData } from '../../lib/cms';
 
 export async function getStaticPaths() {
-  const { brands } = await getCmsData();
-  return brands.map((brand) => {
+  const { brands, products } = await getCmsData();
+  return brands.map((brand: any) => {
     return {
       params: { slug: brand.slug },
-      props: { brand },
+      props: { brand, products: products.filter((p: any) => p.b === brand.name) },
     };
   });
 }
 
-const { brand } = Astro.props;
+const { brand, products } = Astro.props;
 ---
 
 <Layout title={`${brand.name} | Sosun Fihaara`}>
@@ -21,7 +21,33 @@ const { brand } = Astro.props;
       <div class="container center">
         <h1 style="margin-bottom: 20px;">{brand.name}</h1>
         <p style="max-width: 600px; margin: 0 auto; color: var(--muted);">Explore all products from {brand.name}. Sosun Fihaara is an authorized distributor of {brand.name} products in the Maldives.</p>
-        <a href="/products.html" class="btn btn--gold mt-4">View All Products</a>
+        <a href="//products" class="btn btn--outline mt-4">View All Brands</a>
+      </div>
+    </section>
+
+    <section class="section bg-cream" style="padding-top: 0;">
+      <div class="container">
+        <div class="cat-grid">
+          {products.length > 0 ? products.map((p: any) => (
+            <article class="pcard pcard--brand">
+              <div class="pcard__img">
+                <img src={p.img} alt={p.n} loading="lazy">
+              </div>
+              <span class="pcard__cat">{p.b} &middot; {p.cat}</span>
+              <h3>{p.n}</h3>
+              <div style="flex:1 0 auto;margin-bottom:14px">
+                {p.p && <p style="color:var(--muted);font-size:12px;margin:0 0 8px">Pack: {p.p}</p>}
+                {p.pr ? 
+                  <p style="font-family:var(--font-display);font-weight:800;color:var(--green);font-size:17px;margin:0">MVR {p.pr}</p> 
+                  : <p style="font-family:var(--font-display);font-weight:700;color:var(--muted);font-size:13px;margin:0">Request price</p>
+                }
+              </div>
+              <a href={`/products/${p.c}`} class="textlink">Explore More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            </article>
+          )) : (
+            <p class="lead" style="grid-column:1/-1;text-align:center;">No products available for {brand.name}.</p>
+          )}
+        </div>
       </div>
     </section>
   </main>
