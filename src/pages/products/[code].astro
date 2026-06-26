@@ -16,8 +16,8 @@ if (!product) {
     <section class="section bg-cream" style="padding-top: 120px;">
       <div class="container">
         <div style="display: flex; gap: 40px; align-items: flex-start; max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-          <div style="flex: 1;">
-            <img src="/logo.png" alt={product.n} style="width: 100%; border-radius: 8px;">
+          <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 8px; padding: 20px;">
+            <img src={product.img} alt={product.n} style="max-width: 100%; max-height: 400px; object-fit: contain;">
           </div>
           <div style="flex: 1;">
             <span class="eyebrow">{product.b} &middot; {product.cat}</span>
