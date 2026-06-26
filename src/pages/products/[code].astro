@@ -1,0 +1,43 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCmsData } from '../../lib/cms';
+
+export async function getStaticPaths() {
+  const { products } = await getCmsData();
+  return products.map((product) => {
+    return {
+      params: { code: product.c || 'unknown' },
+      props: { product },
+    };
+  });
+}
+
+const { product } = Astro.props;
+---
+
+<Layout title={`${product.n} | Sosun Fihaara`}>
+  <main>
+    <section class="section bg-cream" style="padding-top: 120px;">
+      <div class="container">
+        <div style="display: flex; gap: 40px; align-items: flex-start; max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+          <div style="flex: 1;">
+            <img src="/placeholder.jpg" alt={product.n} style="width: 100%; border-radius: 8px;">
+          </div>
+          <div style="flex: 1;">
+            <span class="eyebrow">{product.b} &middot; {product.cat}</span>
+            <h1 style="margin-top: 10px; margin-bottom: 20px;">{product.n}</h1>
+            
+            <div style="margin-bottom: 24px;">
+              <p style="font-family: var(--font-display); font-weight: 800; color: var(--green); font-size: 24px; margin: 0;">
+                {product.pr ? `MVR ${product.pr}` : 'Request price'}
+              </p>
+              {product.p && <p style="color: var(--muted); margin-top: 5px;">Pack size: {product.p}</p>}
+            </div>
+            
+            <a href="/contact.html" class="btn btn--gold">Get a Wholesale Quote</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

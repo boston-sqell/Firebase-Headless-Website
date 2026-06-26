@@ -1,0 +1,230 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCmsData } from '../lib/cms';
+
+const { products } = await getCmsData();
+---
+
+<Layout title="PRODUCTS | Sosun Fihaara">
+<main>
+<script is:inline define:vars={{ products }}>
+window.SF_PRODUCTS = products;
+// Brand images populated by Wix CMS loader
+window.SF_BIMG = window.SF_BIMG || {};
+</script>
+
+
+<section class="page-hero" style="background:#0b3d2e">
+  <img id="products-hero-img" class="page-hero__img" src="" alt="" style="display:none">
+  <div class="container page-hero__inner">
+    <h1>Products</h1>
+    <p class="crumbs"><a href="index.html">Home</a> &nbsp;/&nbsp; <span>Products</span></p>
+  </div>
+</section>
+
+<section class="section--tight bg-cream">
+  <div class="container">
+    <div class="section-head center">
+      <h2 style="font-size:clamp(26px,4vw,40px)">Crafted for freshness, sourced for trust</h2>
+      <p>From bakery staples to sauces and spices, every product in our range is selected for quality, consistency and flavour — ready for shelves, cafés and kitchens across the Maldives.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCT CATALOG -->
+<section class="section bg-cream" id="product-range" style="padding-top:0">
+  <div class="container">
+
+    <div class="cat-toolbar">
+      <div class="cat-filters">
+        <div class="cat-filter">
+          <label for="brandFilter">Filter by brand</label>
+          <select id="brandFilter" name="brand" aria-label="Filter by brand">
+            <option>All Brands</option>
+            <option>Azime</option>
+            <option>Bruggeman</option>
+            <option>Bumble</option>
+            <option>Delibreads</option>
+            <option>Huxol</option>
+            <option>Max Fly</option>
+            <option>Nawon</option>
+            <option>Nutberry</option>
+            <option>Ondoliva</option>
+            <option>Palmtop</option>
+            <option>Pascual</option>
+            <option>Picnic</option>
+            <option>Pillsbury</option>
+            <option>Promina</option>
+            <option>Real Thai</option>
+            <option>Remia</option>
+            <option>Sotudex</option>
+            <option>Tai Sun</option>
+            <option>Wardat Al Mashreq</option>
+            <option>Young's</option>
+            <option>Zaara</option>
+          </select>
+        </div>
+        <div class="cat-filter">
+          <label for="sortFilter">Sort by</label>
+          <select id="sortFilter" name="sort" aria-label="Sort products">
+            <option>Featured</option>
+            <option>Name (A–Z)</option>
+            <option>Name (Z–A)</option>
+            <option>Price (low–high)</option>
+          </select>
+        </div>
+      </div>
+      <p class="cat-results"><span id="resultCount">Showing <strong>548 products</strong></span> &nbsp;<a href="#product-range" class="clear" id="clearFilters">Clear filters</a></p>
+    </div>
+
+    <div class="catalog">
+      <aside class="cat-aside" aria-label="Product categories">
+        <h3>Categories</h3>
+        <nav class="cat-list">
+          <a href="#product-range" class="cat-link is-active" id="allProducts" data-cat="" data-sub="">All Products <span class="plus" aria-hidden="true">+</span></a>
+          <details class="cat-acc"><summary>Baby Care <span class="plus" aria-hidden="true">+</span></summary><div class="cat-sub"><a class="cat-link" href="#product-range" data-cat="Baby Care" data-sub="" style="font-weight:600;color:var(--green)">All Baby Care</a><a class="cat-link" href="#product-range" data-cat="Baby Care" data-sub="Baby Foods">Baby Foods</a><a class="cat-link" href="#product-range" data-cat="Baby Care" data-sub="Wipes">Wipes</a></div></details>
+          <details class="cat-acc"><summary>Baking <span class="plus" aria-hidden="true">+</span></summary><div class="cat-sub"><a class="cat-link" href="#product-range" data-cat="Baking" data-sub="" style="font-weight:600;color:var(--green)">All Baking</a><a class="cat-link" href="#product-range" data-cat="Baking" data-sub="Cake Mix">Cake Mix</a><a class="cat-link" href="#product-range" data-cat="Baking" data-sub="Cooking Chocolate">Cooking Chocolate</a></div></details>
+          <details class="cat-acc"><summary>Beverages <span class="plus" aria-hidden="true">+</span></summary><div class="cat-sub"><a class="cat-link" href="#product-range" data-cat="Beverages" data-sub="" style="font-weight:600;color:var(--green)">All Beverages</a><a class="cat-link" href="#product-range" data-cat="Beverages" data-sub="Basil Seed Drinks">Basil Seed Drinks</a><a class="cat-link" href="#product-range" data-cat="Beverages" data-sub="Energy Drink">Energy Drink</a><a class="cat-link" href="#product-range" data-cat="Beverages" data-sub="Iced Coffee">Iced Coffee</a><a class="cat-link" href="#product-range" data-cat="Beverages" data-sub="Juice Drink">Juice Drink</a><a class="cat-link" href="#product-range" data-cat="Beverages" data-sub="Smoothies">Smoothies</a><a class="cat-link" href="#product-range" data-cat="Beverages" data-sub="Yogurt Drink">Yogurt Drink</a></div></details>
+          <details class="cat-acc"><summary>Chocolate <span class="plus" aria-hidden="true">+</span></summary><div class="cat-sub"><a class="cat-link" href="#product-range" data-cat="Chocolate" data-sub="" style="font-weight:600;color:var(--green)">All Chocolate</a><a class="cat-link" href="#product-range" data-cat="Chocolate" data-sub="Toppings">Toppings</a></div></details>
+          <details class="cat-acc"><summary>Confectionery <span class="plus" aria-hidden="true">+</span></summary><div class="cat-sub"><a class="cat-link" href="#product-range" data-cat="Confectionery" data-sub="" style="font-weight:600;color:var(--green)">All Confectionery</a><a class="cat-link" href="#product-range" data-cat="Confectionery" data-sub="Dates">Dates</a><a class="cat-link" href="#product-range" data-cat="Confectionery" data-sub="Dessert Mix">Dessert Mix</a><a class="cat-link" href="#product-range" data-cat="Confectionery" data-sub="Sweeteners">Sweeteners</a></div></details>
+          <details class="cat-acc"><summary>Cooking Ingredients <span class="plus" aria-hidden="true">+</span></summary><div class="cat-sub"><a class="cat-link" href="#product-range" data-cat="Cooking Ingredients" data-sub="" style="font-weight:600;color:var(--green)">All Cooking Ingredients</a><a class="cat-link" href="#product-range" data-cat="Cooking Ingredients" data-sub="Coconut Milk">Coconut Milk</a><a class="cat-link" href="#product-range" data-cat="Cooking Ingredients" data-sub="Pastes &amp; Preserves">Pastes &amp; Preserves</a></div></details>
+          <details class="cat-acc"><summary>Dairy <span class="plus" aria-hidden="true">+</span></summary><div class="cat-sub"><a class="cat-link" href="#product-range" data-cat="Dairy" data-sub="" style="font-weight:600;color:var(--green)">All Dairy</a><a class="cat-link" href="#product-range" data-cat="Dairy" data-sub="Butter &amp; Margarine">Butter &amp; Margarine</a><a class="cat-link" href="#product-range" data-cat="Dairy" data-sub="Cheese">Cheese</a><a class="cat-link" href="#product-range" data-cat="Dairy" data-sub="Milk">Milk</a><a class="cat-link" href="#product-range" data-cat="Dairy" data-sub="Yogurt">Yogurt</a></div></details>
+          <details class="cat-acc"><summary><a class="cat-link" href="#product-range" data-cat="Mosquito Repellent" data-sub="" style="all:unset;cursor:pointer;flex:1">Mosquito Repellent</a> <span class="plus" aria-hidden="true">+</span></summary><div class="cat-sub"><a class="cat-link" href="#product-range" data-cat="Mosquito Repellent" data-sub="">All Mosquito Repellent</a></div></details>
+          <details class="cat-acc"><summary>Recipe's &amp; Spices <span class="plus" aria-hidden="true">+</span></summary><div class="cat-sub"><a class="cat-link" href="#product-range" data-cat="Recipe's &amp; Spices" data-sub="" style="font-weight:600;color:var(--green)">All Recipe's &amp; Spices</a><a class="cat-link" href="#product-range" data-cat="Recipe's &amp; Spices" data-sub="Recipe's">Recipe's</a><a class="cat-link" href="#product-range" data-cat="Recipe's &amp; Spices" data-sub="Spices">Spices</a></div></details>
+          <details class="cat-acc"><summary>Sauces &amp; Dressings <span class="plus" aria-hidden="true">+</span></summary><div class="cat-sub"><a class="cat-link" href="#product-range" data-cat="Sauces &amp; Dressings" data-sub="" style="font-weight:600;color:var(--green)">All Sauces &amp; Dressings</a><a class="cat-link" href="#product-range" data-cat="Sauces &amp; Dressings" data-sub="Dressings">Dressings</a><a class="cat-link" href="#product-range" data-cat="Sauces &amp; Dressings" data-sub="Mustard">Mustard</a><a class="cat-link" href="#product-range" data-cat="Sauces &amp; Dressings" data-sub="Sauces">Sauces</a></div></details>
+          <details class="cat-acc"><summary>Snacks <span class="plus" aria-hidden="true">+</span></summary><div class="cat-sub"><a class="cat-link" href="#product-range" data-cat="Snacks" data-sub="" style="font-weight:600;color:var(--green)">All Snacks</a><a class="cat-link" href="#product-range" data-cat="Snacks" data-sub="Biscuits">Biscuits</a><a class="cat-link" href="#product-range" data-cat="Snacks" data-sub="Nuts">Nuts</a></div></details>
+          <details class="cat-acc"><summary>Spreads &amp; Mayo <span class="plus" aria-hidden="true">+</span></summary><div class="cat-sub"><a class="cat-link" href="#product-range" data-cat="Spreads &amp; Mayo" data-sub="" style="font-weight:600;color:var(--green)">All Spreads &amp; Mayo</a><a class="cat-link" href="#product-range" data-cat="Spreads &amp; Mayo" data-sub="Chocolate Spreads">Chocolate Spreads</a><a class="cat-link" href="#product-range" data-cat="Spreads &amp; Mayo" data-sub="Cream">Cream</a><a class="cat-link" href="#product-range" data-cat="Spreads &amp; Mayo" data-sub="Mayonnaise">Mayonnaise</a><a class="cat-link" href="#product-range" data-cat="Spreads &amp; Mayo" data-sub="Peanut Butter">Peanut Butter</a><a class="cat-link" href="#product-range" data-cat="Spreads &amp; Mayo" data-sub="Sandwich Spreads">Sandwich Spreads</a></div></details>
+          <details class="cat-acc"><summary>Staple Foods <span class="plus" aria-hidden="true">+</span></summary><div class="cat-sub"><a class="cat-link" href="#product-range" data-cat="Staple Foods" data-sub="" style="font-weight:600;color:var(--green)">All Staple Foods</a><a class="cat-link" href="#product-range" data-cat="Staple Foods" data-sub="Atta">Atta</a><a class="cat-link" href="#product-range" data-cat="Staple Foods" data-sub="Wraps">Wraps</a><a class="cat-link" href="#product-range" data-cat="Staple Foods" data-sub="Yeast">Yeast</a></div></details>
+        </nav>
+      </aside>
+
+      <div>
+        <div class="cat-grid" id="catGrid"></div>
+        <div class="center" style="margin-top:40px">
+          <button type="button" id="loadMore" class="btn btn--ghost btn--lg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+            Load More
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="cms-loading" style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)">Loading products…</div>
+  <script is:inline>
+// @ts-nocheck
+(function(){
+  var DATA = window.SF_PRODUCTS || [];
+  var grid = document.getElementById("catGrid");
+  var countEl = document.getElementById("resultCount");
+  var moreBtn = document.getElementById("loadMore");
+  var brandSel = document.getElementById("brandFilter");
+  var sortSel = document.getElementById("sortFilter");
+  var clearBtn = document.getElementById("clearFilters");
+  var activeCat = "", activeSub = "", PAGE = 24, shown = PAGE;
+  function esc(s){return (""+s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;");}
+  function card(p){
+    var price = p.pr ? "<p style=\"font-family:var(--font-display);font-weight:800;color:var(--green);font-size:17px;margin:0\">MVR "+esc(p.pr)+"</p>" : "<p style=\"font-family:var(--font-display);font-weight:700;color:var(--muted);font-size:13px;margin:0\">Request price</p>";
+    var pack = p.p ? "<p style=\"color:var(--muted);font-size:12px;margin:0 0 8px\">Pack: "+esc(p.p)+"</p>" : "";
+    var wixImg = window.SF_WIX_IMG || function(u) { return u; };
+    var imgUrl = p.img 
+      ? wixImg(p.img, 400, 400)
+      : (window.SF_BIMG[p.bs] || ("https://loremflickr.com/400/400/"+p.kw));
+    return "<article class=\"pcard pcard--brand\">"
+      + "<div class=\"pcard__img\"><img src=\""+imgUrl+"\" alt=\""+esc(p.n)+"\" loading=\"lazy\"></div>"
+      + "<span class=\"pcard__cat\">"+esc(p.b)+" &middot; "+esc(p.cat)+"</span>"
+      + "<h3>"+esc(p.n)+"</h3>"
+      + "<div style=\"flex:1 0 auto;margin-bottom:14px\">"+pack+price+"</div>"
+      + "<a href=\"product-"+p.c+".html\" class=\"textlink\">Explore More <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M5 12h14M13 6l6 6-6 6\"/></svg></a>"
+      + "</article>";
+  }
+  function filtered(){
+    var b = brandSel.value;
+    var list = DATA.filter(function(p){
+      if(activeCat && p.cat !== activeCat) return false;
+      if(activeSub && p.sub !== activeSub) return false;
+      if(b && b !== "All Brands" && p.b !== b) return false;
+      return true;
+    });
+    var s = sortSel.value;
+    if(s === "Name (A\u2013Z)") list.sort(function(a,c){return a.n.localeCompare(c.n);});
+    else if(s === "Name (Z\u2013A)") list.sort(function(a,c){return c.n.localeCompare(a.n);});
+    else if(s === "Price (low\u2013high)") list.sort(function(a,c){return (parseFloat((a.pr||"0").replace(/,/g,""))||0)-(parseFloat((c.pr||"0").replace(/,/g,""))||0);});
+    return list;
+  }
+  function render(){
+    var list = filtered();
+    var slice = list.slice(0, shown);
+    grid.innerHTML = slice.length ? slice.map(card).join("") : "<p class=\"lead\" style=\"grid-column:1/-1;text-align:center;padding:40px 0\">No products match these filters. <a class=\"textlink\" href=\"contact.html\">Ask us &rarr;</a></p>";
+    countEl.innerHTML = "Showing <strong>"+Math.min(shown,list.length)+"</strong> of "+list.length+" products";
+    moreBtn.style.display = shown < list.length ? "" : "none";
+  }
+  function setActive(link){
+    var all = document.querySelectorAll(".cat-link");
+    for(var i=0;i<all.length;i++) all[i].classList.remove("is-active");
+    if(link) link.classList.add("is-active");
+  }
+  document.querySelectorAll(".cat-link").forEach(function(a){
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      activeCat = a.getAttribute("data-cat") || "";
+      activeSub = a.getAttribute("data-sub") || "";
+      shown = PAGE; setActive(a); render();
+      document.getElementById("product-range").scrollIntoView({behavior:"smooth",block:"start"});
+    });
+  });
+  var allLink = document.getElementById("allProducts");
+  allLink.addEventListener("click", function(e){ e.preventDefault(); activeCat=""; activeSub=""; shown=PAGE; setActive(allLink); render(); });
+  brandSel.addEventListener("change", function(){ shown=PAGE; render(); });
+  sortSel.addEventListener("change", function(){ shown=PAGE; render(); });
+  moreBtn.addEventListener("click", function(){ shown += PAGE; render(); });
+  clearBtn.addEventListener("click", function(e){ e.preventDefault(); activeCat=""; activeSub=""; brandSel.value="All Brands"; sortSel.selectedIndex=0; shown=PAGE; setActive(allLink); render(); });
+  // Expose render so CMS loader can call it after data arrives
+  window.SF_RENDER_PRODUCTS = function() { DATA = window.SF_PRODUCTS || []; shown = PAGE; render(); };
+  if (DATA.length) {
+    render();
+  } else {
+    document.addEventListener('sf:cms-ready', function() {
+      window.SF_RENDER_PRODUCTS();
+    }, { once: true });
+  }
+})();
+</script>
+</section>
+
+<!-- COMPARISON TABLE (unique) -->
+<section class="section bg-cream">
+  <div class="container">
+    <div class="section-head center">
+      <span class="eyebrow">Two ways to buy</span>
+      <h2>Wholesale or retail — <span class="accent">we supply both</span></h2>
+      <p>Whether you're stocking a store or buying for your household, here's how each route works.</p>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="compare">
+        <caption>Wholesale terms are tailored per account — request a quote for current pricing.</caption>
+        <thead>
+          <tr><th scope="col">What you get</th><th scope="col">Wholesale</th><th scope="col" class="hl">Retail</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Ideal for</th><td>Retailers, cafés, institutions</td><td class="hl">Households &amp; end customers</td></tr>
+          <tr><th scope="row">Order volume</th><td>Cases &amp; bulk pallets</td><td class="hl">Single &amp; small packs</td></tr>
+          <tr><th scope="row">Pricing</th><td>Volume &amp; trade terms</td><td class="hl">Standard shelf pricing</td></tr>
+          <tr><th scope="row">Island-wide delivery</th><td class="yes">✓ Included</td><td class="hl yes">✓ Available</td></tr>
+          <tr><th scope="row">Dedicated trade support</th><td class="yes">✓ Yes</td><td class="hl">On request</td></tr>
+          <tr><th scope="row">Authentic, quality-assured stock</th><td class="yes">✓ Always</td><td class="hl yes">✓ Always</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section bg-cream" style="padding-top:0">
+  <div class="container"><div class="cta-band">
+    <h2>Need a tailored wholesale quote?</h2>
+    <p>Send us your product list and order volumes — our trade team will get back to you fast.</p>
+    <div class="btns"><a href="contact.html" class="btn btn--gold btn--lg">Get a Quote</a><a href="brands.html" class="btn btn--on-dark btn--lg">View Brands</a></div>
+  </div></div>
+</section>
+
+</main>
+</Layout>

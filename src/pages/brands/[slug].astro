@@ -1,0 +1,28 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCmsData } from '../../lib/cms';
+
+export async function getStaticPaths() {
+  const { brands } = await getCmsData();
+  return brands.map((brand) => {
+    return {
+      params: { slug: brand.slug },
+      props: { brand },
+    };
+  });
+}
+
+const { brand } = Astro.props;
+---
+
+<Layout title={`${brand.name} | Sosun Fihaara`}>
+  <main>
+    <section class="section bg-cream" style="padding-top: 120px;">
+      <div class="container center">
+        <h1 style="margin-bottom: 20px;">{brand.name}</h1>
+        <p style="max-width: 600px; margin: 0 auto; color: var(--muted);">Explore all products from {brand.name}. Sosun Fihaara is an authorized distributor of {brand.name} products in the Maldives.</p>
+        <a href="/products.html" class="btn btn--gold mt-4">View All Products</a>
+      </div>
+    </section>
+  </main>
+</Layout>

@@ -1,0 +1,121 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="RECIPES | Sosun Fihaara">
+<main>
+
+<section class="page-hero">
+  <img class="page-hero__img" src="/placeholder.jpg" alt="Home cook preparing a meal with fresh ingredients" loading="eager">
+  <div class="container page-hero__inner">
+    <h1>Recipes</h1>
+    <p class="crumbs"><a href="index.html">Home</a> &nbsp;/&nbsp; <span>Recipes</span></p>
+  </div>
+</section>
+
+<section class="section--tight bg-cream">
+  <div class="container">
+    <div class="section-head center">
+      <span class="eyebrow">Recipes made simple</span>
+      <h2>Flavour journeys for <span class="accent">food lovers everywhere</span></h2>
+      <p>Recipes come alive when made with Sosun Fihaara products. Whether it's a weeknight meal or a festive feast, our trusted ingredients make every dish easier, tastier and more memorable.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED RECIPE -->
+<section class="section bg-cream" style="padding-top:0">
+  <div class="container">
+    <div class="split" style="background:var(--white);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow);gap:0">
+      <div class="split__media" style="border-radius:0;box-shadow:none"><img src="/placeholder.jpg" alt="Chocolate cake pops decorated with toppings" loading="lazy" style="height:100%"></div>
+      <div style="padding:clamp(28px,4vw,52px);display:flex;flex-direction:column;justify-content:center">
+        <span class="pill">Featured of the week</span>
+        <h2 style="font-size:clamp(28px,3.6vw,42px);margin:16px 0 8px">Cake Pops with Crave Chocolate Topping</h2>
+        <p>Bite-sized, party-ready and irresistibly rich. Made simple with Crave chocolate topping — the crowd-pleaser your customers will keep coming back for.</p>
+        <ul class="recipe-facts mt-4">
+          <li><strong>30</strong><span>Min Prep</span></li>
+          <li><strong>10</strong><span>Min Cook</span></li>
+          <li><strong>12</strong><span>Servings</span></li>
+        </ul>
+        <a href="recipes.html" class="btn btn--primary mt-4" style="align-self:flex-start">View Recipe</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECIPE GRID -->
+<section class="section bg-white" style="padding-top:0">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">More to cook</span>
+      <h2>Dishes built on <span class="accent">brands you trust</span></h2>
+    </div>
+    <div class="grid grid-3">
+      <article class="card">
+        <div class="card__media"><img src="/placeholder.jpg" alt="Aromatic chicken biryani" loading="lazy"></div>
+        <div class="card__body">
+          <div class="meta" style="margin-bottom:10px"><span class="pill">Main</span><span class="dot"></span><span>With Shan mix</span></div>
+          <h3>Authentic Chicken Biryani</h3>
+          <p>Layered, fragrant and foolproof with a Shan biryani mix — a feast that fills the whole kitchen with aroma.</p>
+          <ul class="recipe-facts mt-3"><li><strong>20</strong><span>Prep</span></li><li><strong>45</strong><span>Cook</span></li></ul>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card__media"><img src="/placeholder.jpg" alt="Real Thai rice vermicelli stir fry" loading="lazy"></div>
+        <div class="card__body">
+          <div class="meta" style="margin-bottom:10px"><span class="pill">Quick</span><span class="dot"></span><span>With Real Thai</span></div>
+          <h3>Rice Vermicelli Stir-Fry</h3>
+          <p>Light, springy noodles tossed with sweet plum sauce — a 20-minute dinner that never disappoints.</p>
+          <ul class="recipe-facts mt-3"><li><strong>10</strong><span>Prep</span></li><li><strong>15</strong><span>Cook</span></li></ul>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card__media"><img src="/placeholder.jpg" alt="Vanilla pudding parfait dessert" loading="lazy"></div>
+        <div class="card__body">
+          <div class="meta" style="margin-bottom:10px"><span class="pill">Dessert</span><span class="dot"></span><span>With Pascual</span></div>
+          <h3>No-Bake Vanilla Parfait</h3>
+          <p>Layer Pascual vanilla pudding with biscuit and fruit for an effortless dessert that looks like a showstopper.</p>
+          <ul class="recipe-facts mt-3"><li><strong>15</strong><span>Prep</span></li><li><strong>0</strong><span>Cook</span></li></ul>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card__media"><img src="/placeholder.jpg" alt="Coconut milk fish curry" loading="lazy"></div>
+        <div class="card__body">
+          <div class="meta" style="margin-bottom:10px"><span class="pill">Main</span><span class="dot"></span><span>With coconut milk</span></div>
+          <h3>Maldivian Coconut Fish Curry</h3>
+          <p>Creamy, spiced and comforting — a local classic made rich with quality coconut milk and fresh spices.</p>
+          <ul class="recipe-facts mt-3"><li><strong>15</strong><span>Prep</span></li><li><strong>30</strong><span>Cook</span></li></ul>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card__media"><img src="/placeholder.jpg" alt="Creamy chicken mayo sandwich" loading="lazy"></div>
+        <div class="card__body">
+          <div class="meta" style="margin-bottom:10px"><span class="pill">Snack</span><span class="dot"></span><span>With Young's mayo</span></div>
+          <h3>Creamy Chicken Mayo Sandwich</h3>
+          <p>Café-style and ready in minutes — rich mayonnaise binds tender chicken for the perfect lunchtime bite.</p>
+          <ul class="recipe-facts mt-3"><li><strong>10</strong><span>Prep</span></li><li><strong>0</strong><span>Cook</span></li></ul>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card__media"><img src="/placeholder.jpg" alt="Freshly baked butter cookies" loading="lazy"></div>
+        <div class="card__body">
+          <div class="meta" style="margin-bottom:10px"><span class="pill">Bake</span><span class="dot"></span><span>With Pillsbury atta</span></div>
+          <h3>Wholemeal Butter Cookies</h3>
+          <p>Crisp, golden and wholesome — baked with quality wholemeal flour for a treat the whole family loves.</p>
+          <ul class="recipe-facts mt-3"><li><strong>20</strong><span>Prep</span></li><li><strong>12</strong><span>Cook</span></li></ul>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section bg-cream">
+  <div class="container"><div class="cta-band">
+    <h2>Cooking for a café or kitchen?</h2>
+    <p>Source the ingredients behind every recipe — at wholesale prices, delivered island-wide.</p>
+    <div class="btns"><a href="products.html" class="btn btn--gold btn--lg">View Products</a><a href="contact.html" class="btn btn--on-dark btn--lg">Get a Quote</a></div>
+  </div></div>
+</section>
+
+</main>
+</Layout>
