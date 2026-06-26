@@ -4,7 +4,7 @@ import { getCmsData } from '../../lib/cms';
 
 const { code } = Astro.params;
 const { products } = await getCmsData();
-const product = products.find((p: any) => p.c === code);
+const product = products.find((p: any) => String(p.c) === code);
 
 if (!product) {
   return Astro.redirect('/products');
