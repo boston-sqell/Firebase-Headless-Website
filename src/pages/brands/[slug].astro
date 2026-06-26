@@ -2,19 +2,15 @@
 import Layout from '../../layouts/Layout.astro';
 import { getCmsData } from '../../lib/cms';
 
-export const prerender = true;
+const { slug } = Astro.params;
+const { brands, products: allProducts } = await getCmsData();
+const brand = brands.find((b: any) => b.slug === slug);
 
-export async function getStaticPaths() {
-  const { brands, products } = await getCmsData();
-  return brands.map((brand: any) => {
-    return {
-      params: { slug: brand.slug },
-      props: { brand, products: products.filter((p: any) => p.b === brand.name) },
-    };
-  });
+if (!brand) {
+  return Astro.redirect('/brands');
 }
 
-const { brand, products } = Astro.props;
+const products = allProducts.filter((p: any) => p.b === brand.name);
 ---
 
 <Layout title={`${brand.name} | Sosun Fihaara`}>

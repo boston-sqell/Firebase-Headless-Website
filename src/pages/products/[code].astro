@@ -2,19 +2,13 @@
 import Layout from '../../layouts/Layout.astro';
 import { getCmsData } from '../../lib/cms';
 
-export const prerender = true;
+const { code } = Astro.params;
+const { products } = await getCmsData();
+const product = products.find((p: any) => p.c === code);
 
-export async function getStaticPaths() {
-  const { products } = await getCmsData();
-  return products.map((product) => {
-    return {
-      params: { code: product.c || 'unknown' },
-      props: { product },
-    };
-  });
+if (!product) {
+  return Astro.redirect('/products');
 }
-
-const { product } = Astro.props;
 ---
 
 <Layout title={`${product.n} | Sosun Fihaara`}>
