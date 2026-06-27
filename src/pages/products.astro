@@ -1,9 +1,45 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getCmsData } from '../lib/cms';
+import { getProducts, getBrands, getSiteContent, resolveWixImage } from '../lib/cms';
 
-const { products, brands } = await getCmsData();
+const [allProducts, brands, site] = await Promise.all([
+  getProducts(),
+  getBrands(),
+  getSiteContent()
+]);
+
 const sortedBrands = brands.map((b: any) => b.name).sort();
+
+const brandFilter = Astro.url.searchParams.get('brand') || '';
+const catFilter = Astro.url.searchParams.get('cat') || '';
+const subFilter = Astro.url.searchParams.get('sub') || '';
+const sortFilter = Astro.url.searchParams.get('sort') || '';
+const pageStr = Astro.url.searchParams.get('page') || '1';
+const page = parseInt(pageStr, 10) || 1;
+const pageSize = 24;
+
+let filteredProducts = allProducts.filter((p: any) => {
+  if (brandFilter && p.b !== brandFilter) return false;
+  if (catFilter && p.cat !== catFilter) return false;
+  if (subFilter && p.sub !== subFilter) return false;
+  return true;
+});
+
+if (sortFilter === 'Name (A–Z)') {
+  filteredProducts.sort((a: any, b: any) => a.n.localeCompare(b.n));
+} else if (sortFilter === 'Name (Z–A)') {
+  filteredProducts.sort((a: any, b: any) => b.n.localeCompare(a.n));
+} else if (sortFilter === 'Price (low–high)') {
+  filteredProducts.sort((a: any, b: any) => {
+    const pa = parseFloat(a.pr?.replace(/,/g, '') || '0');
+    const pb = parseFloat(b.pr?.replace(/,/g, '') || '0');
+    return pa - pb;
+  });
+}
+
+const totalProducts = filteredProducts.length;
+const products = filteredProducts.slice(0, page * pageSize);
+const hasMore = products.length < totalProducts;
 ---
 
 <Layout title="PRODUCTS | Sosun Fihaara">
@@ -36,21 +72,21 @@ const sortedBrands = brands.map((b: any) => b.name).sort();
         <div class="cat-filter">
           <label for="brandFilter">Filter by brand</label>
           <select id="brandFilter" name="brand" aria-label="Filter by brand">
-            <option>All Brands</option>
-            {sortedBrands.map((b: string) => <option>{b}</option>)}
+            <option value="">All Brands</option>
+            {sortedBrands.map((b: string) => <option value={b} selected={brandFilter === b}>{b}</option>)}
           </select>
         </div>
         <div class="cat-filter">
           <label for="sortFilter">Sort by</label>
           <select id="sortFilter" name="sort" aria-label="Sort products">
-            <option>Featured</option>
-            <option>Name (A–Z)</option>
-            <option>Name (Z–A)</option>
-            <option>Price (low–high)</option>
+            <option value="" selected={!sortFilter || sortFilter === 'Featured'}>Featured</option>
+            <option value="Name (A–Z)" selected={sortFilter === 'Name (A–Z)'}>Name (A–Z)</option>
+            <option value="Name (Z–A)" selected={sortFilter === 'Name (Z–A)'}>Name (Z–A)</option>
+            <option value="Price (low–high)" selected={sortFilter === 'Price (low–high)'}>Price (low–high)</option>
           </select>
         </div>
       </div>
-      <p class="cat-results"><span id="resultCount">Showing <strong>548 products</strong></span> &nbsp;<a href="#product-range" class="clear" id="clearFilters">Clear filters</a></p>
+      <p class="cat-results"><span id="resultCount">Showing <strong>{Math.min(products.length, totalProducts)}</strong> of {totalProducts} products</span> &nbsp;<a href="/products#product-range" class="clear" id="clearFilters">Clear filters</a></p>
     </div>
 
     <div class="catalog">
@@ -94,90 +130,48 @@ const sortedBrands = brands.map((b: any) => b.name).sort();
             </article>
           ))}
         </div>
+        {products.length === 0 && (
+          <p class="lead" style="grid-column:1/-1;text-align:center;padding:40px 0">
+            No products match these filters. <a class="textlink" href="/contact">Ask us &rarr;</a>
+          </p>
+        )}
         <div class="center" style="margin-top:40px">
-          <button type="button" id="loadMore" class="btn btn--ghost btn--lg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
-            Load More
-          </button>
+          {hasMore && (
+            <a href={`/products?page=${page + 1}&brand=${encodeURIComponent(brandFilter)}&cat=${encodeURIComponent(catFilter)}&sub=${encodeURIComponent(subFilter)}&sort=${encodeURIComponent(sortFilter)}#product-range`} id="loadMore" class="btn btn--ghost btn--lg">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+              Load More
+            </a>
+          )}
         </div>
       </div>
     </div>
   </div>
-  <script is:inline>
-// @ts-nocheck
-(function(){
-  var cards = Array.from(document.querySelectorAll('.pcard'));
-  var grid = document.getElementById("catGrid");
-  var countEl = document.getElementById("resultCount");
-  var moreBtn = document.getElementById("loadMore");
-  var brandSel = document.getElementById("brandFilter");
-  var sortSel = document.getElementById("sortFilter");
-  var clearBtn = document.getElementById("clearFilters");
-  var activeCat = "", activeSub = "", PAGE = 24, shown = PAGE;
+  <script>
+    function updateUrl(params) {
+      const url = new URL(window.location.href);
+      for (const [k, v] of Object.entries(params)) {
+        if (v) url.searchParams.set(k, v);
+        else url.searchParams.delete(k);
+      }
+      url.hash = 'product-range';
+      window.location.href = url.toString();
+    }
 
-  function render(){
-    var b = brandSel.value;
-    var s = sortSel.value;
-    var list = cards.filter(function(card){
-      var cBrand = card.getAttribute('data-brand');
-      var cCat = card.getAttribute('data-cat');
-      var cSub = card.getAttribute('data-sub');
-      if(activeCat && cCat !== activeCat) return false;
-      if(activeSub && cSub !== activeSub) return false;
-      if(b && b !== "All Brands" && cBrand !== b) return false;
-      return true;
-    });
-
-    if(s === "Name (A\u2013Z)") list.sort((a,c) => a.getAttribute('data-name').localeCompare(c.getAttribute('data-name')));
-    else if(s === "Name (Z\u2013A)") list.sort((a,c) => c.getAttribute('data-name').localeCompare(a.getAttribute('data-name')));
-    else if(s === "Price (low\u2013high)") list.sort((a,c) => (parseFloat(a.getAttribute('data-price'))||0) - (parseFloat(c.getAttribute('data-price'))||0));
-
-    cards.forEach(card => card.style.display = 'none');
-    var slice = list.slice(0, shown);
-    slice.forEach(card => {
-      grid.appendChild(card); // reorder
-      card.style.display = '';
+    document.getElementById('brandFilter')?.addEventListener('change', (e) => {
+      updateUrl({ brand: e.target.value, page: '1' });
     });
     
-    var emptyMsg = document.getElementById('emptyMsg');
-    if (!emptyMsg) {
-      emptyMsg = document.createElement('p');
-      emptyMsg.id = 'emptyMsg';
-      emptyMsg.className = 'lead';
-      emptyMsg.style.cssText = 'grid-column:1/-1;text-align:center;padding:40px 0';
-      emptyMsg.innerHTML = 'No products match these filters. <a class="textlink" href="/contact">Ask us &rarr;</a>';
-      grid.appendChild(emptyMsg);
-    }
-    emptyMsg.style.display = slice.length ? 'none' : '';
-
-    countEl.innerHTML = "Showing <strong>"+Math.min(shown,list.length)+"</strong> of "+list.length+" products";
-    moreBtn.style.display = shown < list.length ? "" : "none";
-  }
-
-  function setActive(link){
-    var all = document.querySelectorAll(".cat-link");
-    for(var i=0;i<all.length;i++) all[i].classList.remove("is-active");
-    if(link) link.classList.add("is-active");
-  }
-  document.querySelectorAll(".cat-link").forEach(function(a){
-    a.addEventListener("click", function(e){
-      e.preventDefault();
-      activeCat = a.getAttribute("data-cat") || "";
-      activeSub = a.getAttribute("data-sub") || "";
-      shown = PAGE; setActive(a); render();
-      document.getElementById("product-range").scrollIntoView({behavior:"smooth",block:"start"});
+    document.getElementById('sortFilter')?.addEventListener('change', (e) => {
+      updateUrl({ sort: e.target.value, page: '1' });
     });
-  });
-  var allLink = document.getElementById("allProducts");
-  allLink.addEventListener("click", function(e){ e.preventDefault(); activeCat=""; activeSub=""; shown=PAGE; setActive(allLink); render(); });
-  brandSel.addEventListener("change", function(){ shown=PAGE; render(); });
-  sortSel.addEventListener("change", function(){ shown=PAGE; render(); });
-  moreBtn.addEventListener("click", function(){ shown += PAGE; render(); });
-  clearBtn.addEventListener("click", function(e){ e.preventDefault(); activeCat=""; activeSub=""; brandSel.value="All Brands"; sortSel.selectedIndex=0; shown=PAGE; setActive(allLink); render(); });
-
-  render();
-})();
-</script>
+    
+    document.querySelectorAll('.cat-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        updateUrl({ cat: link.dataset.cat || '', sub: link.dataset.sub || '', page: '1' });
+      });
+    });
+  </script>
 </section>
 
 <!-- COMPARISON TABLE (unique) -->

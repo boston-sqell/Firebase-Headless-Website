@@ -1,0 +1,56 @@
+/* 
+  Animations Styles
+  These classes define the initial SSR-safe state of elements before they animate in.
+  By placing them under `.js-ready`, we ensure that if JS is disabled or fails to load,
+  the default state is fully visible (opacity 1, transform none). 
+*/
+
+/* Apply this via an inline script in the <head> to prevent FOUC */
+html.js-ready [data-reveal],
+html.js-ready [data-reveal-left],
+html.js-ready [data-reveal-right],
+html.js-ready .card,
+html.js-ready .stat,
+html.js-ready .quote,
+html.js-ready .section-head {
+  opacity: 0;
+}
+
+html.js-ready [data-reveal="fade-up"],
+html.js-ready .card,
+html.js-ready .stat,
+html.js-ready .quote,
+html.js-ready .section-head {
+  transform: translateY(30px);
+}
+
+html.js-ready [data-reveal-left] {
+  transform: translateX(-40px);
+}
+
+html.js-ready [data-reveal-right] {
+  transform: translateX(40px);
+}
+
+/* BULLETPROOF REVEAL STATE */
+html.js-ready .is-revealed {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Card hover effect (CSS only, as requested) */
+.card {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, box-shadow;
+}
+
+/* 
+  Using a more specific selector or overriding transform is tricky because 
+  Motion One sets inline styles for transform. To avoid conflicts, we wrap card content or 
+  ensure the initial animation finishes, but since the hover uses `!important` or 
+  is applied on hover, it's usually fine. However, relying on !important is okay here.
+*/
+.card:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}

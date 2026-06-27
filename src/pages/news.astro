@@ -18,50 +18,111 @@ import Layout from '../layouts/Layout.astro';
 <!-- ================= NEWS GRID ================= -->
 <section class="section">
   <div class="container">
-    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:2rem; margin-top:2rem;">
-      <article style="background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-        <div style="background:#0b3d2e; height:180px; display:flex; align-items:center; justify-content:center;">
-          <span style="color:#c8a96e; font-size:3rem;">🆕</span>
+    <!-- TODO: Replace placeholder articles with Wix CMS integration once the News collection is set up -->
+    <div class="news-grid">
+      <article class="news-card">
+        <div class="news-card-img" style="background:#0b3d2e;">
+          <span class="news-emoji">🆕</span>
         </div>
-        <div style="padding:1.5rem;">
-          <span class="eyebrow" style="font-size:0.7rem;">June 2025 · Products</span>
-          <h3 style="margin:0.5rem 0 0.75rem; font-size:1.2rem;">New Product Range Launch</h3>
-          <p style="color:#555; font-size:0.9rem; line-height:1.6;">Sosun Fihaara expands its portfolio with an exciting new selection of international FMCG brands, now available for wholesale and retail distribution across the Maldives.</p>
-          <a href="/contact" class="btn btn--outline" style="margin-top:1rem; display:inline-block;">Get in Touch</a>
-        </div>
-      </article>
-
-      <article style="background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-        <div style="background:#1a5c44; height:180px; display:flex; align-items:center; justify-content:center;">
-          <span style="color:#c8a96e; font-size:3rem;">🤝</span>
-        </div>
-        <div style="padding:1.5rem;">
-          <span class="eyebrow" style="font-size:0.7rem;">May 2025 · Partnerships</span>
-          <h3 style="margin:0.5rem 0 0.75rem; font-size:1.2rem;">Distribution Partnership Expansion</h3>
-          <p style="color:#555; font-size:0.9rem; line-height:1.6;">We are proud to announce extended distribution agreements with several of our key international brand partners, strengthening supply across all 20 atolls.</p>
-          <a href="/contact" class="btn btn--outline" style="margin-top:1rem; display:inline-block;">Get in Touch</a>
+        <div class="news-card-content">
+          <span class="eyebrow news-eyebrow">June 2025 · Products</span>
+          <h3 class="news-title">New Product Range Launch</h3>
+          <p class="news-desc">Sosun Fihaara expands its portfolio with an exciting new selection of international FMCG brands, now available for wholesale and retail distribution across the Maldives.</p>
+          <a href="/contact" class="btn btn--outline news-btn">Get in Touch</a>
         </div>
       </article>
 
-      <article style="background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-        <div style="background:#0b3d2e; height:180px; display:flex; align-items:center; justify-content:center;">
-          <span style="color:#c8a96e; font-size:3rem;">🏪</span>
+      <article class="news-card">
+        <div class="news-card-img" style="background:#1a5c44;">
+          <span class="news-emoji">🤝</span>
         </div>
-        <div style="padding:1.5rem;">
-          <span class="eyebrow" style="font-size:0.7rem;">April 2025 · Company</span>
-          <h3 style="margin:0.5rem 0 0.75rem; font-size:1.2rem;">Four Decades of Service</h3>
-          <p style="color:#555; font-size:0.9rem; line-height:1.6;">Sosun Fihaara celebrates over 40 years of dedicated FMCG distribution in the Maldives. Thank you to all our retail partners, customers, and the communities we serve.</p>
-          <a href="/about" class="btn btn--outline" style="margin-top:1rem; display:inline-block;">Our Story</a>
+        <div class="news-card-content">
+          <span class="eyebrow news-eyebrow">May 2025 · Partnerships</span>
+          <h3 class="news-title">Distribution Partnership Expansion</h3>
+          <p class="news-desc">We are proud to announce extended distribution agreements with several of our key international brand partners, strengthening supply across all 20 atolls.</p>
+          <a href="/contact" class="btn btn--outline news-btn">Get in Touch</a>
+        </div>
+      </article>
+
+      <article class="news-card">
+        <div class="news-card-img" style="background:#0b3d2e;">
+          <span class="news-emoji">🏪</span>
+        </div>
+        <div class="news-card-content">
+          <span class="eyebrow news-eyebrow">April 2025 · Company</span>
+          <h3 class="news-title">Four Decades of Service</h3>
+          <p class="news-desc">Sosun Fihaara celebrates over 40 years of dedicated FMCG distribution in the Maldives. Thank you to all our retail partners, customers, and the communities we serve.</p>
+          <a href="/about" class="btn btn--outline news-btn">Our Story</a>
         </div>
       </article>
     </div>
 
-    <div style="text-align:center; margin-top:4rem; padding:3rem; background:#faf9f5; border-radius:12px;">
+    <div class="news-cta">
       <h3>Stay Connected</h3>
-      <p style="color:#555; max-width:500px; margin:1rem auto;">Want to be the first to know about new products and promotions? Get in touch with our team.</p>
-      <a href="/contact" class="btn btn--gold btn--lg" style="margin-top:1rem; display:inline-block;">Contact Us</a>
+      <p class="news-cta-desc">Want to be the first to know about new products and promotions? Get in touch with our team.</p>
+      <a href="/contact" class="btn btn--gold btn--lg news-btn-cta">Contact Us</a>
     </div>
   </div>
 </section>
+
+<style>
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  .news-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .news-card-img {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .news-emoji {
+    color: #c8a96e;
+    font-size: 3rem;
+  }
+  .news-card-content {
+    padding: 1.5rem;
+  }
+  .news-eyebrow {
+    font-size: 0.7rem;
+  }
+  .news-title {
+    margin: 0.5rem 0 0.75rem;
+    font-size: 1.2rem;
+  }
+  .news-desc {
+    color: #555;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .news-btn {
+    margin-top: 1rem;
+    display: inline-block;
+  }
+  .news-cta {
+    text-align: center;
+    margin-top: 4rem;
+    padding: 3rem;
+    background: #faf9f5;
+    border-radius: 12px;
+  }
+  .news-cta-desc {
+    color: #555;
+    max-width: 500px;
+    margin: 1rem auto;
+  }
+  .news-btn-cta {
+    margin-top: 1rem;
+    display: inline-block;
+  }
+</style>
 </main>
 </Layout>

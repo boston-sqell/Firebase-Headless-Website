@@ -1,6 +1,34 @@
 export const CLIENT_ID = import.meta.env.WIX_CLIENT_ID || "6b9c7399-c871-4eec-9007-49ccfbf59b01";
 export const SITE_ID   = "ce3c6696-e20c-4ed7-934e-04017b645c53"; // From wix.config.json
 
+export interface Product {
+  name: string;
+  brandName: string;
+  category: string;
+  code: string;
+  subcategory?: string;
+  price?: string;
+  packSize?: string;
+  brandSlug: string;
+  keywords?: string;
+  image?: string;
+}
+
+export interface Brand {
+  name: string;
+  slug: string;
+  logo?: string;
+  active: boolean;
+}
+
+export interface Category {
+  name: string;
+  description?: string;
+  tag?: string;
+  order: number;
+  image?: string;
+}
+
 export function resolveWixImage(url?: string): string {
   if (!url) return '/logo.png';
   if (!url.startsWith('wix:image://v1/')) return url;
@@ -11,9 +39,22 @@ export function resolveWixImage(url?: string): string {
   return '/logo.png';
 }
 
+const _cache = new Map<string, { value: any; expiry: number }>();
+const CACHE_TTL_MS = 60 * 5 * 1000; // 5 minutes
+
 export async function getToken(): Promise<string> {
-  const clientSecret = import.meta.env.WIX_CLIENT_SECRET || "ec4fc311-378b-4350-9d5e-f6988e011d1d";
-  
+  const cacheKey = 'wix_token';
+  const cached = _cache.get(cacheKey);
+  if (cached && cached.expiry > Date.now()) {
+    return cached.value;
+  }
+
+  // WIX_CLIENT_SECRET removed for security
+  const clientSecret = import.meta.env.WIX_CLIENT_SECRET;
+  if (!clientSecret) {
+    console.error('WIX_CLIENT_SECRET is missing. API calls will fail.');
+  }
+
   const r = await fetch('https://www.wixapis.com/oauth2/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -26,9 +67,11 @@ export async function getToken(): Promise<string> {
   
   if (!r.ok) {
     console.error('Failed to get Wix token:', await r.text());
+    return "";
   }
   
   const d = await r.json() as { access_token: string };
+  _cache.set(cacheKey, { value: d.access_token, expiry: Date.now() + CACHE_TTL_MS });
   return d.access_token;
 }
 
@@ -39,6 +82,14 @@ export async function query(
   limit = 1000,
   sort?: object[]
 ): Promise<any[]> {
+  if (!token) return [];
+
+  const cacheKey = `query_${collectionId}_${JSON.stringify(filter)}_${limit}_${JSON.stringify(sort)}`;
+  const cached = _cache.get(cacheKey);
+  if (cached && cached.expiry > Date.now()) {
+    return cached.value;
+  }
+
   const body: Record<string, unknown> = {
     dataCollectionId: collectionId,
     query: { paging: { limit } }
@@ -62,18 +113,15 @@ export async function query(
   }
   
   const d = await r.json() as { dataItems?: { data?: any }[] };
-  return (d.dataItems || []).map(i => i.data || i);
+  const res = (d.dataItems || []).map(i => i.data || i);
+  _cache.set(cacheKey, { value: res, expiry: Date.now() + CACHE_TTL_MS });
+  return res;
 }
 
-export async function getCmsData() {
+export async function getProducts() {
   const token = await getToken();
-  const [products, brands, siteArr] = await Promise.all([
-    query(token, 'Products', { active: { $eq: true } }, 1000, [{ fieldName: 'name', order: 'ASC' }]),
-    query(token, 'Brands',   { active: { $eq: true } }, 100,  [{ fieldName: 'name', order: 'ASC' }]),
-    query(token, 'SiteContent', undefined, 1)
-  ]);
-
-  const mappedProducts = products.map((p: any) => ({
+  const products = await query(token, 'Products', { active: { $eq: true } }, 1000, [{ fieldName: 'name', order: 'ASC' }]);
+  return products.map((p: Product) => ({
     n: p.name,
     b: p.brandName,
     cat: p.category,
@@ -85,6 +133,36 @@ export async function getCmsData() {
     kw: p.keywords,
     img: resolveWixImage(p.image)
   }));
+}
 
-  return { products: mappedProducts, brands, site: siteArr[0] || {} };
+export async function getBrands() {
+  const token = await getToken();
+  return query(token, 'Brands', { active: { $eq: true } }, 100, [{ fieldName: 'name', order: 'ASC' }]);
+}
+
+export async function getSiteContent() {
+  const token = await getToken();
+  const siteArr = await query(token, 'SiteContent', undefined, 1);
+  return siteArr[0] || {};
+}
+
+export async function getCategories() {
+  const token = await getToken();
+  const categories = await query(token, 'Categories', undefined, 50, [{ fieldName: 'order', order: 'ASC' }]);
+  return categories.map((c: Category) => ({
+    name: c.name,
+    description: c.description,
+    tag: c.tag,
+    order: c.order,
+    image: resolveWixImage(c.image)
+  }));
+}
+
+export async function getCmsData() {
+  const [products, brands, site] = await Promise.all([
+    getProducts(),
+    getBrands(),
+    getSiteContent()
+  ]);
+  return { products, brands, site };
 }
