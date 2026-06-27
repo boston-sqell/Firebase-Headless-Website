@@ -982,7 +982,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.08; font-weigh
 /* ============================================================
    RESPONSIVE
    ============================================================ */
-@media (max-width: 768px) {
+@media (max-width: 980px) {
   .nav__phone { display: none; }
   .nav__burger { display: flex; }
   .nav__links {
