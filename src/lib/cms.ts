@@ -137,13 +137,24 @@ export async function getProducts() {
 
 export async function getBrands() {
   const token = await getToken();
-  return query(token, 'Brands', { active: { $eq: true } }, 100, [{ fieldName: 'name', order: 'ASC' }]);
+  const brands = await query(token, 'Brands', { active: { $eq: true } }, 100, [{ fieldName: 'name', order: 'ASC' }]);
+  return brands.map((b: Brand) => ({
+    ...b,
+    logo: resolveWixImage(b.logo)
+  }));
 }
 
 export async function getSiteContent() {
   const token = await getToken();
   const siteArr = await query(token, 'SiteContent', undefined, 1);
-  return siteArr[0] || {};
+  const site = siteArr[0] || {};
+  return {
+    ...site,
+    homeHeroImage: resolveWixImage(site.homeHeroImage),
+    partnerImage: resolveWixImage(site.partnerImage),
+    homeIntroImage: resolveWixImage(site.homeIntroImage),
+    newsPageHero: resolveWixImage(site.newsPageHero),
+  };
 }
 
 export async function getCategories() {

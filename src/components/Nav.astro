@@ -6,20 +6,19 @@
       </a>
       <input type="checkbox" id="navtoggle" class="nav__check">
       <ul class="nav__links">
-        <li><a href="/" aria-current="page">Home</a></li>
-        <li><a href="/about">About Us</a></li>
-        <li><a href="/products">Products</a></li>
-        <li><a href="/brands">Brands</a></li>
-        <li><a href="/news">News</a></li>
-        <li><a href="/recipes">Recipes</a></li>
-        <li><a href="/contact">Contact Us</a></li>
+        <li><a href="/" aria-current={Astro.url.pathname === "/" ? "page" : undefined}>Home</a></li>
+        <li><a href="/about" aria-current={Astro.url.pathname.startsWith("/about") ? "page" : undefined}>About Us</a></li>
+        <li><a href="/products" aria-current={Astro.url.pathname.startsWith("/products") ? "page" : undefined}>Products</a></li>
+        <li><a href="/brands" aria-current={Astro.url.pathname.startsWith("/brands") ? "page" : undefined}>Brands</a></li>
+        <li><a href="/news" aria-current={Astro.url.pathname.startsWith("/news") ? "page" : undefined}>News</a></li>
+        <li><a href="/recipes" aria-current={Astro.url.pathname.startsWith("/recipes") ? "page" : undefined}>Recipes</a></li>
+        <li><a href="/contact" aria-current={Astro.url.pathname.startsWith("/contact") ? "page" : undefined}>Contact Us</a></li>
       </ul>
       <div class="nav__cta">
         <div class="nav__phone">
           <span>Call us now</span>
           <strong>+960 331 3020</strong>
         </div>
-        <a href="/contact" class="btn btn--gold">Get a Quote</a>
         <label class="nav__burger" for="navtoggle" aria-label="Toggle menu">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="17" x2="21" y2="17"></line></svg>
         </label>

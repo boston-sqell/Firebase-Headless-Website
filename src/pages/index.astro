@@ -1,5 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getCmsData, getCategories } from '../lib/cms';
+
+const { site } = await getCmsData();
+const categories = await getCategories();
 ---
 
 <Layout title="HOME | Sosun Fihaara">
@@ -7,7 +11,8 @@ import Layout from '../layouts/Layout.astro';
 
 <!-- ================= HERO ================= -->
 <section class="hero">
-  <img id="home-hero-img" class="hero__img" src="/logo.png" alt="Stocked grocery shelves at a Maldivian retail store" loading="eager">
+  <img id="home-hero-img" class="hero__img" src={site.homeHeroImage} alt="Stocked grocery shelves at a Maldivian retail store" loading="eager">
+
   <div class="container">
     <div class="hero__inner">
       <span class="eyebrow">Rooted in Trust · Maldives FMCG</span>
@@ -39,7 +44,7 @@ import Layout from '../layouts/Layout.astro';
   <div class="container">
     <div class="split">
       <div class="split__media">
-        <img src="/logo.png" alt="Sosun Fihaara distribution warehouse stocked with FMCG goods" loading="lazy">
+        <img src={site.homeIntroImage} alt="Sosun Fihaara distribution warehouse stocked with FMCG goods" loading="lazy">
       </div>
       <div>
         <span class="kicker">Who we are</span>
@@ -63,30 +68,16 @@ import Layout from '../layouts/Layout.astro';
       <p>A complete FMCG range sourced for quality, consistency and taste — supplied at wholesale scale and stocked for retail shelves.</p>
     </div>
     <div class="grid grid-3">
-      <article class="card">
-        <div class="card__media"><img src="/logo.png" alt="Bags of rice, flour and staple grocery foods" loading="lazy"></div>
-        <div class="card__body"><span class="card__tag">Staple Foods</span><h3>Rice, flour &amp; grains</h3><p>The pantry foundations — wholegrain atta, vermicelli, pulses and everyday staples in retail and bulk packs.</p></div>
-      </article>
-      <article class="card">
-        <div class="card__media"><img src="/logo.png" alt="Range of sauces, dressings and mayonnaise" loading="lazy"></div>
-        <div class="card__body"><span class="card__tag">Sauces &amp; Dressings</span><h3>Sauces &amp; spreads</h3><p>Mayonnaise, plum and chilli sauces, dressings and spreads from leading international labels.</p></div>
-      </article>
-      <article class="card">
-        <div class="card__media"><img src="/logo.png" alt="Dairy products including yoghurt, pudding and milk" loading="lazy"></div>
-        <div class="card__body"><span class="card__tag">Dairy &amp; Chilled</span><h3>Dairy &amp; desserts</h3><p>Puddings, yoghurts, milk and chilled treats — cold-chain managed from port to shelf.</p></div>
-      </article>
-      <article class="card">
-        <div class="card__media"><img src="/logo.png" alt="Recipe mixes and spice seasonings" loading="lazy"></div>
-        <div class="card__body"><span class="card__tag">Recipe's &amp; Spices</span><h3>Spice &amp; recipe mixes</h3><p>Biryani mixes, masalas and seasonings that bring authentic flavour to every kitchen.</p></div>
-      </article>
-      <article class="card">
-        <div class="card__media"><img src="/logo.png" alt="Snacks, chocolate and confectionery" loading="lazy"></div>
-        <div class="card__body"><span class="card__tag">Snacks &amp; Confectionery</span><h3>Snacks &amp; chocolate</h3><p>Biscuits, chocolate, sugar-free treats and everyday snacking favourites.</p></div>
-      </article>
-      <article class="card">
-        <div class="card__media"><img src="/logo.png" alt="Baking ingredients including flour and yeast" loading="lazy"></div>
-        <div class="card__body"><span class="card__tag">Baking &amp; Ingredients</span><h3>Baking essentials</h3><p>Flours, yeast, cooking ingredients and the building blocks every bakery and café needs.</p></div>
-      </article>
+      {categories.map((c: any) => (
+        <article class="card">
+          <div class="card__media"><img src={c.image} alt={c.name} loading="lazy"></div>
+          <div class="card__body">
+            <span class="card__tag">{c.tag}</span>
+            <h3>{c.name}</h3>
+            <p>{c.description}</p>
+          </div>
+        </article>
+      ))}
     </div>
     <div class="center mt-5"><a href="/products" class="btn btn--primary btn--lg">Explore All Products</a></div>
   </div>
@@ -97,7 +88,7 @@ import Layout from '../layouts/Layout.astro';
   <div class="container">
     <div class="split split--reverse">
       <div class="split__media">
-        <img src="/logo.png" alt="Delivery truck distributing FMCG goods across the Maldives" loading="lazy">
+        <img src={site.partnerImage} alt="Delivery truck distributing FMCG goods across the Maldives" loading="lazy">
       </div>
       <div>
         <span class="eyebrow">Why partner with us</span>

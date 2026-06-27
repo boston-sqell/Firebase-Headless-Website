@@ -33,6 +33,7 @@ const sortedBrands = brands.sort((a: any, b: any) => a.name.localeCompare(b.name
     <div class="brand-grid" id="brand-grid-dynamic">
       {sortedBrands.map((b: any) => (
         <a class="brand-tile" href={`/brands/${b.slug}`}>
+          {b.logo && b.logo !== '/logo.png' && <img src={b.logo} alt={b.name} style="max-height: 80px; object-fit: contain; margin-bottom: 10px;" />}
           <span>{b.name}</span>
         </a>
       ))}
