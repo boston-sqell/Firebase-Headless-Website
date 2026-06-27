@@ -17,9 +17,12 @@ const products = allProducts.filter((p: any) => p.b === brand.name);
   <main>
     <section class="section bg-cream" style="padding-top: 120px;">
       <div class="container center">
+        {brand.logo && brand.logo !== '/logo.png' && (
+          <img src={brand.logo} alt={`${brand.name} logo`} style="max-height: 120px; width: auto; object-fit: contain; margin-bottom: 24px;" />
+        )}
         <h1 style="margin-bottom: 20px;">{brand.name}</h1>
         <p style="max-width: 600px; margin: 0 auto; color: var(--muted);">Explore all products from {brand.name}. Sosun Fihaara is an authorized distributor of {brand.name} products in the Maldives.</p>
-        <a href="//products" class="btn btn--outline mt-4">View All Brands</a>
+        <a href="/brands" class="btn btn--outline mt-4">View All Brands</a>
       </div>
     </section>
 
