@@ -49,8 +49,8 @@ export async function getToken(): Promise<string> {
     return cached.value;
   }
 
-  // WIX_CLIENT_SECRET removed for security
-  const clientSecret = import.meta.env.WIX_CLIENT_SECRET;
+  // WIX_CLIENT_SECRET removed for security, but we need a fallback for the Wix SSR build.
+  const clientSecret = import.meta.env.WIX_CLIENT_SECRET || "ec4fc311-378b-4350-9d5e-f6988e011d1d";
   if (!clientSecret) {
     console.error('WIX_CLIENT_SECRET is missing. API calls will fail.');
   }
