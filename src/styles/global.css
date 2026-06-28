@@ -936,7 +936,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.08; font-weigh
 /* ============================================================
    FOOTER
    ============================================================ */
-.site-footer { background: var(--green-house); color: var(--on-dark); padding-top: 72px; padding-bottom: 8px; position: relative; border-top-left-radius: 64px; border-top-right-radius: 64px; }
+.site-footer { background: var(--green-house); color: var(--on-dark); padding-top: 96px; padding-bottom: 8px; position: relative; border-top-left-radius: 64px; border-top-right-radius: 64px; }
 
 /* ---- Footer wordmark overflow ---- */
 /* Large logo that straddles the page content above and the footer */
@@ -944,7 +944,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.08; font-weigh
   position: absolute;
   top: 0;
   left: 50%;
-  transform: translate(-50%, -68%);
+  transform: translate(-50%, -52%);
   width: min(65%, 680px);
   pointer-events: none;
   z-index: 5;
