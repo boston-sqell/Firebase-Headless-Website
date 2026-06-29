@@ -2,12 +2,26 @@
 import Layout from '../layouts/Layout.astro';
 import { getCmsData, getCategories } from '../lib/cms';
 
-const { site } = await getCmsData();
+let cmsError = false;
+let cmsData: any = { products: [], brands: [], site: {} as any };
+try {
+  const _d = await getCmsData();
+  cmsData = _d;
+} catch (e) {
+  console.error("[page] getCmsData failed:", e);
+  cmsError = true;
+}
+const { products, brands, site } = cmsData;
 const categories = await getCategories();
 ---
 
 <Layout title="HOME | Sosun Fihaara">
 <main>
+{cmsError && (
+  <div style="background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:16px 24px;text-align:center;font-size:15px;">
+    &#9888;&#65039; We could not load live data right now. Please refresh the page or try again shortly.
+  </div>
+)}
 
 <!-- ================= HERO ================= -->
 <section class="hero">
@@ -43,7 +57,7 @@ const categories = await getCategories();
   <div class="container">
     <div class="split">
       <div class="split__media">
-        <img src={site.homeIntroImage} alt="Sosun Fihaara distribution warehouse stocked with FMCG goods" loading="lazy">
+        <img data-reveal-left src={site.homeIntroImage} alt="Sosun Fihaara distribution warehouse stocked with FMCG goods" loading="lazy">
       </div>
       <div>
         <span class="kicker">Who we are</span>
@@ -87,7 +101,7 @@ const categories = await getCategories();
   <div class="container">
     <div class="split split--reverse">
       <div class="split__media">
-        <img src={site.partnerImage} alt="Delivery truck distributing FMCG goods across the Maldives" loading="lazy">
+        <img data-reveal-right src={site.partnerImage} alt="Delivery truck distributing FMCG goods across the Maldives" loading="lazy">
       </div>
       <div>
         <span class="eyebrow">Why partner with us</span>
@@ -117,7 +131,7 @@ const categories = await getCategories();
         <div class="quote__mark">“</div>
         <blockquote><p>Sosun Fihaara keeps our shelves full. Orders arrive on time and the brands move fast — they understand island retail better than anyone.</p></blockquote>
         <figcaption class="quote__who">
-          <img class="quote__av" src="/logo.png" alt="Portrait of Ibrahim Naseer" loading="lazy">
+          <img class="quote__av" src="/testimonial-ibrahim.svg" alt="Portrait of Ibrahim Naseer" loading="lazy">
           <span><strong>Ibrahim Naseer</strong><span>Owner, Sarusana Store · Addu City</span></span>
         </figcaption>
       </figure>
@@ -125,7 +139,7 @@ const categories = await getCategories();
         <div class="quote__mark">“</div>
         <blockquote><p>Quality you can trust, every single delivery. Their cold-chain handling means our dairy lines arrive in perfect condition.</p></blockquote>
         <figcaption class="quote__who">
-          <img class="quote__av" src="/logo.png" alt="Portrait of Aishath Reema" loading="lazy">
+          <img class="quote__av" src="/testimonial-aishath.svg" alt="Portrait of Aishath Reema" loading="lazy">
           <span><strong>Aishath Reema</strong><span>Manager, Shabnamee Store · Laamu</span></span>
         </figcaption>
       </figure>
@@ -133,7 +147,7 @@ const categories = await getCategories();
         <div class="quote__mark">“</div>
         <blockquote><p>From staple foods to specialty spices, they carry everything our café needs under one supplier. Genuinely a one-stop partner.</p></blockquote>
         <figcaption class="quote__who">
-          <img class="quote__av" src="/logo.png" alt="Portrait of Hassan Waheed" loading="lazy">
+          <img class="quote__av" src="/testimonial-hassan.svg" alt="Portrait of Hassan Waheed" loading="lazy">
           <span><strong>Hassan Waheed</strong><span>Head Chef · Malé</span></span>
         </figcaption>
       </figure>

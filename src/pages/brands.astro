@@ -1,16 +1,31 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { getCmsData } from '../lib/cms';
+import type { Brand } from '../lib/cms';
 
-const { brands } = await getCmsData();
-const sortedBrands = brands.sort((a: any, b: any) => a.name.localeCompare(b.name));
+let cmsError = false;
+let cmsData: any = { products: [], brands: [], site: {} as any };
+try {
+  const _d = await getCmsData();
+  cmsData = _d;
+} catch (e) {
+  console.error("[page] getCmsData failed:", e);
+  cmsError = true;
+}
+const { products, brands, site } = cmsData;
+const sortedBrands = [...brands].sort((a: Brand, b: Brand) => a.name.localeCompare(b.name));
 ---
 
 <Layout title="BRANDS | Sosun Fihaara">
 <main>
+{cmsError && (
+  <div style="background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:16px 24px;text-align:center;font-size:15px;">
+    &#9888;&#65039; We could not load live data right now. Please refresh the page or try again shortly.
+  </div>
+)}
 
 <section class="page-hero">
-  <img class="page-hero__img" src="/logo.png" alt="A spread of branded grocery products in a kitchen" loading="eager">
+  <img class="page-hero__img" src={site.brandsPageHero || "/brands-hero.jpg"} alt="A spread of branded grocery products in a kitchen" loading="eager">
   <div class="container page-hero__inner">
     <h1>Brands</h1>
     <p class="crumbs"><a href="/">Home</a> &nbsp;/&nbsp; <span>Brands</span></p>
@@ -31,7 +46,7 @@ const sortedBrands = brands.sort((a: any, b: any) => a.name.localeCompare(b.name
 <section class="section bg-cream" style="padding-top:0">
   <div class="container">
     <div class="brand-grid" id="brand-grid-dynamic">
-      {sortedBrands.map((b: any) => (
+      {sortedBrands.map((b: Brand) => (
         <a class="brand-tile" href={`/brands/${b.slug}`}>
           {b.logo && b.logo !== '/logo.png' && <img src={b.logo} alt={b.name} style="max-height: 80px; object-fit: contain; margin-bottom: 10px;" />}
           <span>{b.name}</span>
