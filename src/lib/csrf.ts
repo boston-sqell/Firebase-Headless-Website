@@ -54,10 +54,12 @@ function tokensMatch(a: string, b: string): boolean {
 
 /**
  * Extracts the submitted CSRF token from a request without consuming its
- * body for the downstream handler -- clones the request first, since
- * Request bodies can only be read once. Supports both the plain HTML
- * form-post shape (`csrf_token` field, used by every admin form) and a
- * JSON-body shape (`csrfToken` field, used by the login page's fetch call).
+ * body for the downstream handler. Always clones the request before reading
+ * the body, so every content-type path leaves the original body stream intact.
+ * Supports three submission shapes:
+ *  - JSON body with a `csrfToken` field (login page fetch call)
+ *  - multipart/form-data or URL-encoded with a `csrf_token` field (all admin forms)
+ *  - `x-csrf-token` header (fallback for future JS-driven calls)
  */
 export async function extractSubmittedCsrfToken(request: Request): Promise<string | null> {
   const contentType = request.headers.get("content-type") || "";

@@ -42,8 +42,19 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const isAdminApiPath = pathname.startsWith('/api/admin');
 
   if (isAdminApiPath && MUTATING_METHODS.has(context.request.method)) {
+    // extractSubmittedCsrfToken always clones the request before reading the
+    // body, so the original stream is never consumed here -- the downstream
+    // API route handler can still call request.formData() / request.json().
     const ok = await verifyCsrf(context.request, context.cookies);
     if (!ok) {
+      // Structured log so Cloud Run / GCP Logging can surface the exact failure.
+      console.warn(JSON.stringify({
+        severity: 'WARNING',
+        message: 'csrf_check_failed',
+        method: context.request.method,
+        path: context.url.pathname,
+        cookiePresent: !!context.cookies.get('csrf_token')?.value,
+      }));
       return new Response(JSON.stringify({ error: 'Invalid or missing CSRF token. Please refresh the page and try again.' }), {
         status: 403,
         headers: { 'Content-Type': 'application/json' },

@@ -12,7 +12,7 @@ try {
   console.error("[page] getCmsData failed:", e);
   cmsError = true;
 }
-const { products, brands, site } = cmsData;
+const { brands, site } = cmsData;
 const sortedBrands = [...brands].sort((a: Brand, b: Brand) => a.name.localeCompare(b.name));
 ---
 

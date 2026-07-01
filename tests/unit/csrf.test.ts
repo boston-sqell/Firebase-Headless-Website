@@ -61,7 +61,7 @@ describe('extractSubmittedCsrfToken', () => {
     expect(await extractSubmittedCsrfToken(request)).toBe('json-token-value');
   });
 
-  it('does not consume the body for the caller', async () => {
+  it('does not consume the body for the caller (JSON)', async () => {
     const request = new Request('http://example.com/api/admin/session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -72,6 +72,24 @@ describe('extractSubmittedCsrfToken', () => {
     // instead of a clone, this second read would throw/fail.
     const body = await request.json();
     expect(body.idToken).toBe('x');
+  });
+
+  it('does not consume the body for the caller (multipart)', async () => {
+    const { cookies } = makeFakeCookies();
+    const token = ensureCsrfToken(cookies, false);
+    const fd = new FormData();
+    fd.set('csrf_token', token);
+    fd.set('heroTagline', 'Est. 1980');
+    const request = new Request('http://example.com/api/admin/site-content/update', {
+      method: 'POST',
+      body: fd,
+    });
+    // CSRF token should be extracted without consuming the original stream.
+    const extracted = await extractSubmittedCsrfToken(request);
+    expect(extracted).toBe(token);
+    // The API route handler should still be able to read the original body.
+    const formData = await request.formData();
+    expect(formData.get('heroTagline')).toBe('Est. 1980');
   });
 
   it('returns null when no token is present', async () => {
