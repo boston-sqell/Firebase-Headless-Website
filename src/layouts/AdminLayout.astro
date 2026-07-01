@@ -53,9 +53,73 @@ const navItems: Array<{ key: Props['active']; href: string; label: string }> = [
   </div>
 
   <script>
+    /**
+     * Global POST form interceptor for the admin panel.
+     *
+     * Every admin form already embeds a `csrf_token` hidden input rendered
+     * server-side from Astro.locals.csrfToken. This script intercepts the
+     * native form submit, reads that value, and re-submits via fetch() with
+     * an `x-csrf-token` header. The server reads the header first (before
+     * attempting multipart body parsing), making CSRF verification reliable
+     * regardless of the Node.js stream-handling environment.
+     *
+     * Works for all form types including multipart file uploads: the browser
+     * builds the correct FormData / multipart body from the <form>, and fetch()
+     * sends it with the right Content-Type boundary automatically.
+     */
+    document.addEventListener('submit', async (e: SubmitEvent) => {
+      const form = e.target as HTMLFormElement | null;
+      if (!form || form.method?.toLowerCase() !== 'post') return;
+      // Respect onsubmit="return confirm(...)" cancellations on delete forms.
+      if (e.defaultPrevented) return;
+
+      e.preventDefault();
+
+      const fd = new FormData(form);
+      const csrfToken = (fd.get('csrf_token') as string) || '';
+
+      // Disable the submit button to prevent double-submits.
+      const btn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      const originalText = btn?.textContent || '';
+      if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+
+      try {
+        const res = await fetch(form.action || window.location.href, {
+          method: 'POST',
+          headers: { 'x-csrf-token': csrfToken },
+          body: fd,
+          redirect: 'follow',
+        });
+
+        if (res.redirected) {
+          window.location.href = res.url;
+          return;
+        }
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          const msg = data.error || `Server error (${res.status}). Please try again.`;
+          // Prepend an error banner inside .admin-content.
+          const banner = document.createElement('div');
+          banner.className = 'admin-alert admin-alert--error';
+          banner.textContent = msg;
+          const content = document.querySelector('.admin-content');
+          if (content) content.prepend(banner);
+          else alert(msg);
+          setTimeout(() => banner.remove(), 10000);
+          if (btn) { btn.disabled = false; btn.textContent = originalText; }
+        }
+      } catch (err) {
+        console.error('[admin] form submission failed:', err);
+        if (btn) { btn.disabled = false; btn.textContent = originalText; }
+        alert('Network error. Please check your connection and try again.');
+      }
+    });
+
+    // Logout handler.
     document.getElementById('logoutLink')?.addEventListener('click', async (e) => {
       e.preventDefault();
-      await fetch('/api/admin/session', { method: 'DELETE' });
+      await fetch('/api/admin/session', { method: 'DELETE' }).catch(() => {});
       window.location.href = '/admin/login';
     });
   </script>

@@ -11,10 +11,16 @@
  * Pattern: double-submit cookie. A random token is stored in an httpOnly
  * cookie (readable server-side for rendering into pages, not by page JS)
  * and must be echoed back by the client on every mutating request, either
- * as a `csrf_token` form field (plain HTML forms) or a `csrfToken` JSON
- * body field / `x-csrf-token` header (fetch-based calls). Since an
- * attacker's page can't read our cookie (browsers enforce same-origin for
- * cookie access) it can't produce a request carrying a matching token.
+ * as a `csrf_token` form field (plain HTML forms), a `csrfToken` JSON
+ * body field, or an `x-csrf-token` header (fetch-based calls from
+ * AdminLayout's form-intercept script).
+ *
+ * NOTE on body parsing: request.clone().formData() can throw in the
+ * Astro 7 + @astrojs/node environment due to Node.js stream handling
+ * differences. The catch block therefore falls through to the header
+ * check instead of returning null -- the AdminLayout script ensures
+ * every admin form submission also sends x-csrf-token as a header,
+ * making that path the reliable primary route for HTML forms.
  */
 
 import type { AstroCookies } from "astro";
@@ -54,16 +60,25 @@ function tokensMatch(a: string, b: string): boolean {
 
 /**
  * Extracts the submitted CSRF token from a request without consuming its
- * body for the downstream handler. Always clones the request before reading
- * the body, so every content-type path leaves the original body stream intact.
- * Supports three submission shapes:
- *  - JSON body with a `csrfToken` field (login page fetch call)
- *  - multipart/form-data or URL-encoded with a `csrf_token` field (all admin forms)
- *  - `x-csrf-token` header (fallback for future JS-driven calls)
+ * body for the downstream handler. Checks sources in priority order:
+ *
+ *  1. `x-csrf-token` request header  ← most reliable; AdminLayout's JS always
+ *     sends this for every form submission, so body parsing is a fallback only.
+ *  2. JSON body `csrfToken` field     ← login page fetch call
+ *  3. multipart / URL-encoded body `csrf_token` field ← HTML form fallback
+ *
+ * The body paths use request.clone() so the original body stream is intact
+ * for the downstream API route. If cloning/parsing throws, we log the error
+ * and return null (the header path will have already succeeded for normal
+ * admin-panel use).
  */
 export async function extractSubmittedCsrfToken(request: Request): Promise<string | null> {
-  const contentType = request.headers.get("content-type") || "";
+  // ── 1. Header (most reliable -- sent by AdminLayout's JS form interceptor) ──
+  const headerToken = request.headers.get("x-csrf-token");
+  if (headerToken) return headerToken;
 
+  // ── 2. Body (fallback for environments where JS is unavailable) ──────────────
+  const contentType = request.headers.get("content-type") || "";
   try {
     if (contentType.includes("application/json")) {
       const body = await request.clone().json();
@@ -77,13 +92,18 @@ export async function extractSubmittedCsrfToken(request: Request): Promise<strin
       const value = formData.get("csrf_token");
       return typeof value === "string" ? value : null;
     }
-  } catch {
-    return null;
+  } catch (err) {
+    // Log so Cloud Run surfaces the underlying parse error -- this is the
+    // diagnostic path, not the happy path (header above should have fired).
+    console.warn(JSON.stringify({
+      severity: "WARNING",
+      message: "csrf_body_parse_failed",
+      contentType,
+      error: String(err),
+    }));
   }
 
-  // Fall back to a header, for any future JS-driven call that doesn't fit
-  // the two shapes above.
-  return request.headers.get("x-csrf-token");
+  return null;
 }
 
 /** True if the request's submitted token matches the cookie's token. */

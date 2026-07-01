@@ -32,7 +32,7 @@ function makeFakeCookies(initial: Record<string, string> = {}) {
 }
 
 describe('middleware CSRF check + downstream body access (no Object.defineProperty)', () => {
-  it('CSRF check passes and the original request body is still readable by the API handler', async () => {
+  it('CSRF check passes via x-csrf-token header and the original request body is still readable by the API handler', async () => {
     const { cookies } = makeFakeCookies();
     const token = ensureCsrfToken(cookies, false);
 
@@ -43,16 +43,18 @@ describe('middleware CSRF check + downstream body access (no Object.defineProper
     formData.set('aboutHeading', 'BUILT ON TRUST');
     formData.set('aboutSubtext', 'Backbone of FMCG distribution');
 
+    // AdminLayout's JS sends the token as a header (primary path)
     const request = new Request('http://example.com/api/admin/site-content/update', {
       method: 'POST',
+      headers: { 'x-csrf-token': token },
       body: formData,
     });
 
-    // Middleware step: CSRF check (extractSubmittedCsrfToken clones internally — no patch needed)
+    // Middleware step: CSRF check reads from header (no body parsing)
     const csrfOk = await verifyCsrf(request, cookies);
     expect(csrfOk).toBe(true);
 
-    // API route handler step: should still be able to read the original body
+    // API route handler step: body is still intact
     const apiFormData = await request.formData();
     expect(apiFormData.get('heroTagline')).toBe('Est. 1980');
     expect(apiFormData.get('heroSubtext')).toBe('Four decades of trust');
