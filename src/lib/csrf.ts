@@ -24,42 +24,33 @@
  */
 
 import type { AstroCookies } from "astro";
-import { randomBytes, timingSafeEqual } from "node:crypto";
-
-export const CSRF_COOKIE_NAME = "csrf_token";
+import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
+import { SESSION_COOKIE_NAME } from "./admin-auth";
 
 /**
- * Returns the current CSRF token, creating and setting the cookie on first
- * visit if none exists yet. Call this on every request (see middleware.ts)
- * so every rendered page has a token available to embed in its forms.
+ * Returns the current CSRF token.
+ * 
+ * Firebase Hosting strips all cookies except `__session` to maximize CDN
+ * cache hit rates. Therefore, we cannot use a standard double-submit cookie
+ * approach with a separate `csrf_token` cookie.
+ * 
+ * Instead, we derive the CSRF token deterministically from the HttpOnly 
+ * `__session` cookie itself via a SHA256 hash. Since the session cookie is
+ * inaccessible to client-side JS (HttpOnly) and possesses high entropy,
+ * an attacker cannot compute the expected CSRF token to forge a request.
+ * The server computes it and embeds it into the HTML, which the legitimate
+ * JS reads and submits.
  */
 export function ensureCsrfToken(cookies: AstroCookies, secure: boolean): string {
-  const existing = cookies.get(CSRF_COOKIE_NAME)?.value;
-  if (existing) {
-    console.info(JSON.stringify({
-      severity: "INFO",
-      message: "csrf_cookie_found",
-      tokenPrefix: existing.slice(0, 6),
-      tokenLength: existing.length,
-    }));
-    return existing;
+  const session = cookies.get(SESSION_COOKIE_NAME)?.value;
+  if (!session) {
+    // If there's no session yet (e.g. on the login page), we just generate a random
+    // token. The login endpoint itself doesn't check CSRF, so this is fine.
+    return randomBytes(32).toString("hex");
   }
 
-  const token = randomBytes(32).toString("hex");
-  console.info(JSON.stringify({
-    severity: "INFO",
-    message: "csrf_cookie_generated",
-    tokenPrefix: token.slice(0, 6),
-    tokenLength: token.length,
-    secure,
-  }));
-  cookies.set(CSRF_COOKIE_NAME, token, {
-    path: "/",
-    httpOnly: true,
-    secure,
-    sameSite: "lax",
-  });
-  return token;
+  // Derive the CSRF token from the session cookie
+  return createHash("sha256").update(session).digest("hex");
 }
 
 /** Constant-time comparison so this check isn't itself a timing oracle. */
@@ -118,18 +109,20 @@ export async function extractSubmittedCsrfToken(request: Request): Promise<strin
   return null;
 }
 
-/** True if the request's submitted token matches the cookie's token. */
+/** True if the request's submitted token matches the expected token derived from the session. */
 export async function verifyCsrf(request: Request, cookies: AstroCookies): Promise<boolean> {
-  const cookieToken = cookies.get(CSRF_COOKIE_NAME)?.value;
-  if (!cookieToken) {
+  const session = cookies.get(SESSION_COOKIE_NAME)?.value;
+  if (!session) {
     console.warn(JSON.stringify({
       severity: "WARNING",
-      message: "csrf_cookie_missing",
+      message: "csrf_session_missing",
     }));
     return false;
   }
 
+  const expectedToken = createHash("sha256").update(session).digest("hex");
   const submitted = await extractSubmittedCsrfToken(request);
+
   if (!submitted) {
     console.warn(JSON.stringify({
       severity: "WARNING",
@@ -138,15 +131,15 @@ export async function verifyCsrf(request: Request, cookies: AstroCookies): Promi
     return false;
   }
 
-  const matches = tokensMatch(cookieToken, submitted);
+  const matches = tokensMatch(expectedToken, submitted);
   if (!matches) {
     console.warn(JSON.stringify({
       severity: "WARNING",
       message: "csrf_token_mismatch",
-      cookieTokenPrefix: cookieToken.slice(0, 6),
-      submittedTokenPrefix: submitted.slice(0, 6),
-      cookieTokenLength: cookieToken.length,
-      submittedTokenLength: submitted.length,
+      expectedPrefix: expectedToken.slice(0, 6),
+      submittedPrefix: submitted.slice(0, 6),
+      expectedLength: expectedToken.length,
+      submittedLength: submitted.length,
     }));
   }
   return matches;

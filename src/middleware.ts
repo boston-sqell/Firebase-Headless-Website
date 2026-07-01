@@ -53,7 +53,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
         message: 'csrf_check_failed',
         method: context.request.method,
         path: context.url.pathname,
-        cookiePresent: !!context.cookies.get('csrf_token')?.value,
+        sessionPresent: !!context.cookies.get(SESSION_COOKIE_NAME)?.value,
       }));
       return new Response(JSON.stringify({ error: 'Invalid or missing CSRF token. Please refresh the page and try again.' }), {
         status: 403,
