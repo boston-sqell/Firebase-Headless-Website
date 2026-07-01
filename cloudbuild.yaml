@@ -13,5 +13,4 @@ steps:
       - '.'
 images:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/sosun-fihaara:${_IMAGE_TAG}'
-options:
-  substitutionOption: FAIL_ON_MISSING
+
