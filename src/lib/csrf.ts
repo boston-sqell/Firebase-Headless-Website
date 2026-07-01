@@ -35,17 +35,29 @@ export const CSRF_COOKIE_NAME = "csrf_token";
  */
 export function ensureCsrfToken(cookies: AstroCookies, secure: boolean): string {
   const existing = cookies.get(CSRF_COOKIE_NAME)?.value;
-  if (existing) return existing;
+  if (existing) {
+    console.info(JSON.stringify({
+      severity: "INFO",
+      message: "csrf_cookie_found",
+      tokenPrefix: existing.slice(0, 6),
+      tokenLength: existing.length,
+    }));
+    return existing;
+  }
 
   const token = randomBytes(32).toString("hex");
+  console.info(JSON.stringify({
+    severity: "INFO",
+    message: "csrf_cookie_generated",
+    tokenPrefix: token.slice(0, 6),
+    tokenLength: token.length,
+    secure,
+  }));
   cookies.set(CSRF_COOKIE_NAME, token, {
     path: "/",
     httpOnly: true,
     secure,
     sameSite: "lax",
-    // No maxAge -- session cookie, regenerated per browser session. Keeping
-    // it short-lived like this means a stolen/logged token is only useful
-    // for as long as that browser session lasts.
   });
   return token;
 }
