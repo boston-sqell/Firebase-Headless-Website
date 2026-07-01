@@ -109,10 +109,33 @@ export async function extractSubmittedCsrfToken(request: Request): Promise<strin
 /** True if the request's submitted token matches the cookie's token. */
 export async function verifyCsrf(request: Request, cookies: AstroCookies): Promise<boolean> {
   const cookieToken = cookies.get(CSRF_COOKIE_NAME)?.value;
-  if (!cookieToken) return false;
+  if (!cookieToken) {
+    console.warn(JSON.stringify({
+      severity: "WARNING",
+      message: "csrf_cookie_missing",
+    }));
+    return false;
+  }
 
   const submitted = await extractSubmittedCsrfToken(request);
-  if (!submitted) return false;
+  if (!submitted) {
+    console.warn(JSON.stringify({
+      severity: "WARNING",
+      message: "csrf_submitted_token_missing",
+    }));
+    return false;
+  }
 
-  return tokensMatch(cookieToken, submitted);
+  const matches = tokensMatch(cookieToken, submitted);
+  if (!matches) {
+    console.warn(JSON.stringify({
+      severity: "WARNING",
+      message: "csrf_token_mismatch",
+      cookieTokenPrefix: cookieToken.slice(0, 6),
+      submittedTokenPrefix: submitted.slice(0, 6),
+      cookieTokenLength: cookieToken.length,
+      submittedTokenLength: submitted.length,
+    }));
+  }
+  return matches;
 }

@@ -93,7 +93,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   }
 
-  if (isAdminPage || isAdminApi) {
+  if (isAdminPage || isAdminApi || pathname === '/admin/login') {
     response.headers.set('Cache-Control', 'private, no-store');
   }
 
