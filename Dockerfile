@@ -39,6 +39,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 COPY --from=builder --chown=app:app /app/dist ./dist
 COPY --chown=app:app server.mjs ./
+RUN chown -R app:app /app
 
 USER app
 
