@@ -22,7 +22,7 @@
   "dependencies": {
     "@astrojs/node": "^11.0.0",
     "astro": "^7.0.4",
-    "cookie": "^2.0.1",
+    "cookie": "^1.0.0",
     "es-module-lexer": "^2.2.0",
     "firebase": "^11.0.0",
     "firebase-admin": "^14.1.0",
