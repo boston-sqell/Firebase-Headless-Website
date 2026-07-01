@@ -1,19 +1,21 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCmsData } from '../../lib/cms';
+import type { Product, Brand } from '../../lib/cms';
 
 const { slug } = Astro.params;
 const { brands, products: allProducts } = await getCmsData();
-const brand = brands.find((b: any) => String(b.slug) === slug);
+const brand = brands.find((b: Brand) => String(b.slug) === slug);
 
 if (!brand) {
   return Astro.redirect('/brands');
 }
 
-const products = allProducts.filter((p: any) => p.b === brand.name);
+const products = allProducts.filter((p: Product) => p.brandName === brand.name);
+const description = brand.description || `Explore all ${brand.name} products, authorized and distributed in the Maldives by Sosun Fihaara.`;
 ---
 
-<Layout title={`${brand.name} | Sosun Fihaara`}>
+<Layout title={`${brand.name} | Sosun Fihaara`} description={description} image={brand.logo}>
   <main>
     <section class="section bg-cream" style="padding-top: 120px;">
       <div class="container center">
@@ -26,24 +28,24 @@ const products = allProducts.filter((p: any) => p.b === brand.name);
       </div>
     </section>
 
-    <section class="section bg-cream" style="padding-top: 0;">
+    <section class="section bg-cream" style="padding-top: 0">
       <div class="container">
         <div class="cat-grid">
-          {products.length > 0 ? products.map((p: any) => (
+          {products.length > 0 ? products.map((p: Product) => (
             <article class="pcard pcard--brand">
               <div class="pcard__img">
-                <img src={p.img} alt={p.n} loading="lazy">
+                <img src={p.image} alt={p.name} loading="lazy">
               </div>
-              <span class="pcard__cat">{p.b} &middot; {p.cat}</span>
-              <h3>{p.n}</h3>
+              <span class="pcard__cat">{p.brandName} &middot; {p.category}</span>
+              <h3>{p.name}</h3>
               <div style="flex:1 0 auto;margin-bottom:14px">
-                {p.p && <p style="color:var(--muted);font-size:12px;margin:0 0 8px">Pack: {p.p}</p>}
-                {p.pr ? 
-                  <p style="font-family:var(--font-display);font-weight:800;color:var(--green);font-size:17px;margin:0">MVR {p.pr}</p> 
+                {p.packSize && <p style="color:var(--muted);font-size:12px;margin:0 0 8px">Pack: {p.packSize}</p>}
+                {p.price ?
+                  <p style="font-family:var(--font-display);font-weight:800;color:var(--green);font-size:17px;margin:0">MVR {p.price}</p>
                   : <p style="font-family:var(--font-display);font-weight:700;color:var(--muted);font-size:13px;margin:0">Request price</p>
                 }
               </div>
-              <a href={`/products/${p.c}`} class="textlink">Explore More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              <a href={`/products/${p.code}`} class="textlink">Explore More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
             </article>
           )) : (
             <p class="lead" style="grid-column:1/-1;text-align:center;">No products available for {brand.name}.</p>

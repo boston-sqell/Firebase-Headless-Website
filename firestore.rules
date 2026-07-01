@@ -1,0 +1,15 @@
+rules_version = '2';
+
+// All reads/writes from this app go through the server-side Admin SDK
+// (src/lib/cms.ts for public reads, src/lib/admin-data.ts for admin
+// writes, both gated by src/middleware.ts + src/lib/admin-auth.ts before
+// they ever run). The Admin SDK bypasses Security Rules entirely, so
+// these rules exist purely to make sure NO client-side SDK usage -- now
+// or accidentally added later -- can read or write Firestore directly.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

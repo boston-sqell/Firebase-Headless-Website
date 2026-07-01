@@ -1,0 +1,90 @@
+---
+import '../../styles/admin.css';
+
+const nextPath = Astro.url.searchParams.get('next') || '/admin';
+const safeNext = nextPath.startsWith('/admin') ? nextPath : '/admin';
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin Sign In | Sosun Fihaara</title>
+</head>
+<body class="admin-body">
+  <div class="admin-login-wrap">
+    <div class="admin-login-card">
+      <h1>Sosun Fihaara</h1>
+      <p class="sub">Staff admin panel</p>
+      <div id="error" class="admin-alert admin-alert--error" style="display:none"></div>
+      <form id="loginForm" data-next={safeNext} data-csrf={Astro.locals.csrfToken}>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required autocomplete="username" />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn-admin" id="submitBtn" style="justify-content:center">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    import { auth } from '../../lib/firebase-client';
+    import { signInWithEmailAndPassword } from 'firebase/auth';
+
+    const form = document.getElementById('loginForm') as HTMLFormElement | null;
+    const safeNext = form?.dataset.next || '/admin';
+    const csrfToken = form?.dataset.csrf || '';
+    const errorBox = document.getElementById('error') as HTMLElement | null;
+    const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement | null;
+    const emailInput = document.getElementById('email') as HTMLInputElement | null;
+    const passwordInput = document.getElementById('password') as HTMLInputElement | null;
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (errorBox) errorBox.style.display = 'none';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing in...';
+      }
+
+      const email = emailInput?.value || '';
+      const password = passwordInput?.value || '';
+
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const idToken = await cred.user.getIdToken();
+
+        const res = await fetch('/api/admin/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken, csrfToken }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || 'Sign-in failed.');
+        }
+
+        window.location.href = safeNext;
+      } catch (err) {
+        if (errorBox) {
+          errorBox.textContent = err instanceof Error
+            ? err.message.replace('Firebase: ', '').replace(/\(auth\/.*?\)\.?/, '').trim() || 'Sign-in failed. Check your email and password.'
+            : 'Sign-in failed. Check your email and password.';
+          errorBox.style.display = 'block';
+        }
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign In';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+rules_version = '2';
+
+// Uploads happen server-side only (src/lib/admin-upload.ts, called from
+// /api/admin/* routes that middleware.ts gates behind a verified admin
+// session cookie) using the Admin SDK, which bypasses these rules.
+// Public read access is required because product/brand images uploaded
+// here are displayed directly on the public site via their public URL.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

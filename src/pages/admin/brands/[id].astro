@@ -1,0 +1,20 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import BrandForm from '../../../components/admin/BrandForm.astro';
+import { adminGetBrand } from '../../../lib/admin-data';
+
+const { id } = Astro.params;
+const brand = await adminGetBrand(id!);
+
+if (!brand) {
+  return Astro.redirect('/admin/brands?error=' + encodeURIComponent('Brand not found.'));
+}
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+
+<AdminLayout title={`Edit - ${brand.name}`} active="brands">
+  <div class="admin-card">
+    <BrandForm brand={brand} action={`/api/admin/brands/${id}/update`} error={error} />
+  </div>
+</AdminLayout>

@@ -1,0 +1,38 @@
+---
+import '../styles/homepage.css';
+
+import '../styles/homepage-custom.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "HOME | Sosun Fihaara",
+  description = "A trusted wholesale and retail grocery supplier in the Maldives, specializing in authentic global brands, food service supply, and consumer goods.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site || "https://sosunfihaara.com").toString()} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="/logo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="/logo.png" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

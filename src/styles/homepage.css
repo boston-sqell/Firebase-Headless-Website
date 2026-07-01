@@ -1,0 +1,13 @@
+/*
+ * Tailwind source for the homepage. Compiled at build/dev time by the
+ * @tailwindcss/vite plugin (see astro.config.mjs) -- this file is no
+ * longer a hand-frozen, one-time-generated blob (see engineering audit:
+ * "homepage.css is frozen Tailwind with no build pipeline"). Tailwind v4
+ * scans the project automatically for classes in use; no separate
+ * tailwind.config.* content list is needed. Component/animation CSS that
+ * isn't a Tailwind utility lives in homepage-custom.css instead, imported
+ * separately by HomeLayout.astro.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Alumni+Sans+SC:wght@100;200;300;400;500;600;700;800;900&family=Lato:wght@300;400;500;600;700;800;900&display=swap');
+
+@import "tailwindcss";

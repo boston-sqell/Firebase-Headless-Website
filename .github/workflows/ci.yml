@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npm run check
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        # Dummy values -- the build only needs *some* string present to
+        # satisfy the client-config inlining step (see Dockerfile comments);
+        # it doesn't need to reach real Firebase. This just proves the
+        # build itself still succeeds, the same as it will in Cloud Build.
+        env:
+          PUBLIC_FIREBASE_API_KEY: ci-placeholder
+          PUBLIC_FIREBASE_AUTH_DOMAIN: ci-placeholder.firebaseapp.com
+          PUBLIC_FIREBASE_PROJECT_ID: ci-placeholder
+        run: npm run build

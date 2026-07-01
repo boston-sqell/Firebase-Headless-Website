@@ -53,13 +53,18 @@ const isSuccess = Astro.url.searchParams.get('success') === 'true';
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 48px; height: 48px; margin-bottom: 16px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
             <h3 style="font-size:24px;margin-bottom:6px">Thank you!</h3>
             <p style="color:var(--muted);font-size:15.5px">Your enquiry has been received. Our team will get back to you shortly.</p>
-            <a href="//contact" class="btn btn--outline mt-4">Send another message</a>
+            <a href="/contact" class="btn btn--outline mt-4">Send another message</a>
           </div>
         ) : (
           <>
             <h3 style="font-size:24px;margin-bottom:6px">Request a quote</h3>
             <p style="color:var(--muted);margin-bottom:24px;font-size:15.5px">Fill in the details below and our team will respond within one business day.</p>
             <form class="form" action="/api/contact" method="post" novalidate="">
+          <!-- Honeypot: hidden from real users via CSS, bots that auto-fill every field will trip it -->
+          <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+            <label for="website">Leave this field empty</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+          </div>
           <div class="form__row">
             <div class="field">
               <label for="name">Full name <span class="req" aria-hidden="true">*</span></label>
@@ -130,8 +135,8 @@ const isSuccess = Astro.url.searchParams.get('success') === 'true';
         <div class="faq__body">Temperature-sensitive lines move through a managed cold chain — from storage to delivery — so dairy, puddings and chilled goods reach your shelves in perfect condition.</div>
       </details>
       <details>
-        <summary>What's the minimum order for wholesale? <span class="ic" aria-hidden="true"></span></summary>
-        <div class="faq__body">Minimums vary by product category and location. Send us your list and we'll confirm order quantities and the best available trade pricing in your quote.</div>
+        <summary>Is there a minimum order quantity for wholesale? <span class="ic" aria-hidden="true"></span></summary>
+        <div class="faq__body">Minimums vary by product line and account type. Tell us your expected volumes on the quote form and our trade team will confirm the best terms for your business.</div>
       </details>
     </div>
   </div>

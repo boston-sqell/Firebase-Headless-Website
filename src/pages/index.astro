@@ -1,173 +1,458 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { getCmsData, getCategories } from '../lib/cms';
+import HomeLayout from '../layouts/HomeLayout.astro';
+import { getCmsData, resolveWixImage } from '../lib/cms';
+import Footer from '../components/Footer.astro';
 
 let cmsError = false;
 let cmsData: any = { products: [], brands: [], site: {} as any };
 try {
-  const _d = await getCmsData();
-  cmsData = _d;
+  cmsData = await getCmsData();
 } catch (e) {
-  console.error("[page] getCmsData failed:", e);
+  console.error("[homepage] getCmsData failed:", e);
   cmsError = true;
 }
 const { products, brands, site } = cmsData;
-const categories = await getCategories();
+
+const heroImage: string = resolveWixImage(site.homeHeroImage) || '';
+const featuredProducts = products.slice(0, 9);
+const activeBrands = brands.filter((b: any) => b.active !== false);
 ---
 
-<Layout title="HOME | Sosun Fihaara">
-<main>
+<HomeLayout title="HOME | Sosun Fihaara">
+
 {cmsError && (
-  <div style="background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:16px 24px;text-align:center;font-size:15px;">
-    &#9888;&#65039; We could not load live data right now. Please refresh the page or try again shortly.
+  <div style="background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:12px 24px;text-align:center;font-size:14px;position:relative;z-index:100;">
+    ⚠️ Could not load live data — please refresh the page.
   </div>
 )}
 
-<!-- ================= HERO ================= -->
-<section class="hero">
-  <img id="home-hero-img" class="hero__img" src={site.homeHeroImage} alt="Stocked grocery shelves at a Maldivian retail store" loading="eager">
+<a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[999] focus:bg-[#0ea44b] focus:text-white focus:px-4 focus:py-2 focus:rounded font-lato font-bold">Skip to main content</a>
 
-  <div class="container">
-    <div class="hero__inner">
-      <span class="eyebrow">Rooted in Trust · Maldives FMCG</span>
-      <h1>Stocking the Maldives with <em>everyday essentials</em></h1>
-      <p>Four decades of dependable FMCG wholesale and retail distribution — delivering trusted food and grocery brands to retailers and households across every atoll.</p>
-      <div class="btns">
-        <a href="/products" class="btn btn--gold btn--lg">View Products</a>
+<!-- ===== HEADER ===== -->
+<header id="header" class="fixed top-0 left-0 w-full z-50 transition-transform duration-500 translate-y-0">
+  <div class="header-gradient">
+    <!-- Desktop nav -->
+    <div class="hidden lg:flex items-stretch h-[6vw] min-h-[72px] px-[5.2vw]">
+      <div class="flex items-end pb-[2vw] w-[20%]">
+        <a href="/" class="flex items-center gap-2" aria-label="Sosun Fihaara – go to homepage">
+          <img src="/logo.png" alt="Sosun Fihaara" class="h-10 w-auto object-contain" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div style="display:none" class="w-10 h-10 bg-[#917151] rounded-lg items-center justify-center flex-shrink-0">
+            <span class="text-white font-bold text-lg font-alumni">SF</span>
+          </div>
+        </a>
       </div>
-      <a href="#explore" class="scroll-cue" aria-label="Scroll down to explore" style="margin-top:40px"><span class="mouse" aria-hidden="true"></span>Scroll to explore</a>
-    </div>
-  </div>
-</section>
-
-<!-- ================= STATS ================= -->
-<section class="section--tight bg-cream" id="explore">
-  <div class="container">
-    <div class="stats">
-      <div class="stat"><div class="stat__num">40+</div><div class="stat__label">Years of distribution</div></div>
-      <div class="stat"><div class="stat__num">25+</div><div class="stat__label">International brands</div></div>
-      <div class="stat"><div class="stat__num">300+</div><div class="stat__label">Products in range</div></div>
-      <div class="stat"><div class="stat__num">20</div><div class="stat__label">Atolls served</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= INTRO SPLIT ================= -->
-<section class="section bg-cream">
-  <div class="container">
-    <div class="split">
-      <div class="split__media">
-        <img data-reveal-left src={site.homeIntroImage} alt="Sosun Fihaara distribution warehouse stocked with FMCG goods" loading="lazy">
-      </div>
-      <div>
-        <span class="kicker">Who we are</span>
-        <h2>The supply partner Maldivian retailers rely on</h2>
-        <p>Sosun Fihaara moves the food and grocery products that keep shops, cafés and kitchens running. From staple foods and dairy to sauces, snacks and baking essentials, we hold the stock, manage the cold chain and deliver on schedule — so you never run dry.</p>
-        <p>Wholesale buyers get volume pricing and consistent availability. End customers get authentic, quality brands they recognise and trust. One supplier, the whole shelf.</p>
-        <a href="/about" class="textlink mt-3">Our Story
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      <nav aria-label="Main navigation" class="flex items-start pt-[2vw] w-[43.5%] border-b border-white/20 pr-[3vw]">
+        <ul class="flex w-full justify-between" role="list">
+          <li><a href="/" class="font-lato text-[0.83vw] font-normal text-white uppercase tracking-tight hover:font-bold transition-all leading-[3.6vw] whitespace-nowrap">Home</a></li>
+          <li><a href="/about" class="font-lato text-[0.83vw] font-normal text-white uppercase tracking-tight hover:font-bold transition-all leading-[3.6vw] whitespace-nowrap">About Us</a></li>
+          <li><a href="/products" class="font-lato text-[0.83vw] font-normal text-white uppercase tracking-tight hover:font-bold transition-all leading-[3.6vw] whitespace-nowrap">Products</a></li>
+          <li><a href="/brands" class="font-lato text-[0.83vw] font-normal text-white uppercase tracking-tight hover:font-bold transition-all leading-[3.6vw] whitespace-nowrap">Brands</a></li>
+          <li><a href="/news" class="font-lato text-[0.83vw] font-normal text-white uppercase tracking-tight hover:font-bold transition-all leading-[3.6vw] whitespace-nowrap">News</a></li>
+          <li><a href="/recipes" class="font-lato text-[0.83vw] font-normal text-white uppercase tracking-tight hover:font-bold transition-all leading-[3.6vw] whitespace-nowrap">Recipes</a></li>
+        </ul>
+      </nav>
+      <div class="flex items-stretch ml-auto border-b border-white/20 w-[36.5%]">
+        <a href="tel:+9603313020" aria-label="Call us at +960 331 3020" class="flex flex-col items-center justify-center gap-[0.5vw] bg-gradient-to-b from-[#0ea44b00] to-[#0ea44b] px-[0.94vw] text-white border-0 cursor-pointer hover:to-[#0b8a3d] transition-all no-underline ml-auto">
+          <span class="font-lato text-[0.83vw] font-normal uppercase tracking-[2px]">Call Us Now</span>
+          <span class="font-alumni text-[1.5vw] font-bold tracking-wide">+960 331 3020</span>
         </a>
       </div>
     </div>
+    <!-- Mobile nav -->
+    <div class="flex lg:hidden items-center justify-between px-5 h-[72px]">
+      <a href="/" aria-label="Sosun Fihaara homepage" class="flex items-center gap-2">
+        <img src="/logo.png" alt="Sosun Fihaara" class="h-9 w-auto object-contain" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+        <div style="display:none" class="w-9 h-9 bg-[#917151] rounded-lg items-center justify-center">
+          <span class="text-white font-bold font-alumni">SF</span>
+        </div>
+        <span class="text-white font-alumni font-bold text-lg tracking-wider">SOSUN FIHAARA</span>
+      </a>
+      <button id="mobile-menu-btn" aria-label="Open menu" aria-expanded="false" class="text-white p-1 bg-transparent border-0 cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Menu -->
+<div id="mobile-menu" class="fixed inset-0 z-[60] bg-[#0d2c22] hidden flex-col px-6 pt-6 pb-10">
+  <div class="flex items-center justify-between mb-10">
+    <span class="text-white font-alumni font-bold text-xl tracking-wider">SOSUN FIHAARA</span>
+    <button id="mobile-menu-close" aria-label="Close menu" class="text-white p-1 bg-transparent border-0 cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <nav>
+    <ul class="flex flex-col gap-5">
+      {['Home,/', 'About Us,/about', 'Products,/products', 'Brands,/brands', 'News,/news', 'Recipes,/recipes', 'Contact,/contact'].map(item => {
+        const [label, href] = item.split(',');
+        return (
+          <li><a href={href} class="font-alumni text-white text-[48px] leading-none uppercase tracking-tight hover:text-[#917151] transition-colors no-underline">{label}</a></li>
+        );
+      })}
+    </ul>
+  </nav>
+  <div class="mt-auto pt-8 border-t border-white/10">
+    <a href="tel:+9603313020" class="font-alumni text-[#917151] text-2xl tracking-wide no-underline">+960 331 3020</a>
+  </div>
+</div>
+
+<div id="main-content">
+
+<!-- ===== HERO ===== -->
+<section id="home" class="relative overflow-hidden">
+  <div class="relative w-full h-screen min-h-[600px]" style="background: linear-gradient(135deg, #0d2c22 0%, #2a3535 50%, #1a2e1a 100%);">
+    {heroImage && (
+      <img
+        src={heroImage}
+        alt="Sosun Fihaara product range"
+        class="w-full h-full object-cover object-bottom absolute inset-0"
+        fetchpriority="high"
+        onerror="this.style.display='none'"
+      />
+    )}
+    <!-- gradient overlays -->
+    <div class="absolute inset-x-0 top-0 h-[45%] bg-gradient-to-b from-black via-black/60 to-transparent" aria-hidden="true"></div>
+    <div class="absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-t from-black/90 via-black/50 to-transparent" aria-hidden="true"></div>
+    <!-- Hero content -->
+    <div class="absolute bottom-6 left-[2.6vw] right-[8.3vw] pb-[2vw]">
+      <div class="fade-up">
+        <p class="tagline-text text-[#c9a96e] mb-2 tracking-[4px]">{site.heroTagline || 'Est. 1980 · Maldives FMCG'}</p>
+        <h1 class="font-alumni text-white font-light leading-[.92] tracking-[-2px] mb-5" style="font-size: clamp(64px, 11vw, 160px);">SOSUN<br />FIHAARA</h1>
+        <p class="font-lato text-white/80 text-[15px] lg:text-[18px] font-light leading-[1.65] mb-6 max-w-xl">{site.heroSubtext || 'Four decades of trusted FMCG wholesale and retail distribution — delivering quality food and grocery brands across every atoll of the Maldives.'}</p>
+        <div class="flex flex-wrap gap-4 items-center">
+          <a href="/products" class="btn-explore">Explore Products</a>
+          <a href="/contact" class="font-lato text-white text-[14px] font-bold uppercase tracking-[2px] border-b-2 border-[#917151] pb-0.5 no-underline hover:text-[#917151] transition-colors">Contact Us</a>
+        </div>
+      </div>
+    </div>
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-4 right-4 lg:bottom-6 lg:right-6 flex flex-col items-center gap-1 text-white/50">
+      <div class="w-[2px] h-9 border border-white/40 rounded-full flex items-start justify-center pt-1">
+        <div class="w-[2px] h-2 bg-white/60 rounded-full scroll-indicator"></div>
+      </div>
+      <span class="font-lato text-[10px] tracking-[3px] uppercase mt-1">Scroll</span>
+    </div>
   </div>
 </section>
 
-<!-- ================= CATEGORIES ================= -->
-<section class="section bg-white">
-  <div class="container">
-    <div class="section-head center">
-      <span class="eyebrow">What's on the shelf</span>
-      <h2>Categories that <span class="accent">cover every aisle</span></h2>
-      <p>A complete FMCG range sourced for quality, consistency and taste — supplied at wholesale scale and stocked for retail shelves.</p>
+<!-- ===== PROMOTIONS ===== -->
+<section class="mb-28 lg:mb-36" aria-label="Exclusive promotions">
+  <div class="fade-up px-5 lg:px-[8.3vw] pb-10 lg:pb-[4.2vw]">
+    <div class="text-center">
+      <p class="tagline-text mb-1">Offers Worth Grabbing</p>
+      <h2 class="main-title text-[42px] sm:text-[56px] lg:text-[88px] leading-[.9] tracking-[-2px] mb-2">EXCLUSIVE <span class="font-alumni">PROMOTIONS</span></h2>
+      <h3 class="sub-title text-[24px] lg:text-[38px] font-light leading-[1.05] tracking-[-0.84px]">You Shouldn't Miss</h3>
     </div>
-    <div class="grid grid-3">
-      {categories.map((c: any) => (
-        <article class="card">
-          <div class="card__media"><img src={c.image} alt={c.name} loading="lazy"></div>
-          <div class="card__body">
-            <span class="card__tag">{c.tag}</span>
-            <h3>{c.name}</h3>
-            <p>{c.description}</p>
+  </div>
+  <div class="fade-up px-5 sm:px-8 lg:px-[5.2vw]">
+    <div class="flex gap-4 overflow-hidden">
+      {[
+        { label: "Weekly Special", title: "Fresh Dairy Range", sub: "Quality dairy delivered island-wide", bg: "linear-gradient(135deg, #2d5a27, #4a8c40)" },
+        { label: "Bundle Deal", title: "Pantry Essentials", sub: "Stock up on everyday staples", bg: "linear-gradient(135deg, #5a4520, #8c6b30)" },
+        { label: "New Arrival", title: "International Sauces", sub: "Authentic flavours from around the world", bg: "linear-gradient(135deg, #1e3a5a, #2a5a8c)" },
+      ].map((p) => (
+        <div class="flex-shrink-0 w-full sm:w-[48%] lg:w-[31%] relative rounded-[20px] overflow-hidden group cursor-pointer" style={`min-height:340px; background: ${p.bg};`}>
+          <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+          <div class="absolute bottom-6 left-6 right-6">
+            <span class="recipe-featured-tag px-2 py-1 text-[11px] tracking-[3px] mb-3 inline-block">{p.label}</span>
+            <h3 class="font-alumni text-white text-[32px] leading-tight tracking-tight mb-1">{p.title}</h3>
+            <p class="font-lato text-white/80 text-sm">{p.sub}</p>
           </div>
-        </article>
+        </div>
       ))}
     </div>
-    <div class="center mt-5"><a href="/products" class="btn btn--primary btn--lg">Explore All Products</a></div>
   </div>
 </section>
 
-<!-- ================= WHY US / TWO-COLUMN VALUE ================= -->
-<section class="section bg-dark">
-  <div class="container">
-    <div class="split split--reverse">
-      <div class="split__media">
-        <img data-reveal-right src={site.partnerImage} alt="Delivery truck distributing FMCG goods across the Maldives" loading="lazy">
+<!-- ===== BEST SELLING PRODUCTS ===== -->
+<section id="products" class="overflow-hidden pb-20 lg:pb-[8.3vw]" aria-label="Best selling products">
+  <div class="px-5 sm:px-8 lg:px-[10.8vw]">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between pb-8 lg:pb-[4.2vw] gap-6">
+      <div class="fade-left">
+        <p class="tagline-text mb-1">Most Popular Products</p>
+        <h2 class="main-title text-[42px] sm:text-[56px] lg:text-[88px] leading-[.9] tracking-[-2px] mb-2">BEST SELLING <span class="font-alumni">PRODUCTS</span></h2>
       </div>
-      <div>
-        <span class="eyebrow">Why partner with us</span>
-        <h2 style="color:#fff">Reliability you can build a business on</h2>
-        <p>Stockouts cost sales. Our distribution network, warehousing and island logistics are built to keep your shelves full — with the brands your customers ask for, delivered when you need them.</p>
-        <ul class="flow" style="margin-top:20px">
-          <li style="display:flex;gap:12px;color:var(--on-dark)"><span style="color:var(--gold);font-weight:800">✓</span> Consistent island-wide availability and fast replenishment</li>
-          <li style="display:flex;gap:12px;color:var(--on-dark)"><span style="color:var(--gold);font-weight:800">✓</span> Genuine, quality-assured international brands</li>
-          <li style="display:flex;gap:12px;color:var(--on-dark)"><span style="color:var(--gold);font-weight:800">✓</span> Competitive wholesale pricing and trade terms</li>
-          <li style="display:flex;gap:12px;color:var(--on-dark)"><span style="color:var(--gold);font-weight:800">✓</span> Cold-chain handling for dairy and chilled lines</li>
-        </ul>
-        <a href="/contact" class="btn btn--gold mt-4">Become a Stockist</a>
+      <div class="fade-right">
+        <a href="/products" class="btn-explore">Explore Products</a>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- ================= TESTIMONIALS ================= -->
-<section class="section bg-cream">
-  <div class="container">
-    <div class="section-head center">
-      <span class="eyebrow">Trusted by the trade</span>
-      <h2>What our <span class="accent">partners say</span></h2>
-    </div>
-    <div class="quotes">
-      <figure class="quote">
-        <div class="quote__mark">“</div>
-        <blockquote><p>Sosun Fihaara keeps our shelves full. Orders arrive on time and the brands move fast — they understand island retail better than anyone.</p></blockquote>
-        <figcaption class="quote__who">
-          <img class="quote__av" src="/testimonial-ibrahim.svg" alt="Portrait of Ibrahim Naseer" loading="lazy">
-          <span><strong>Ibrahim Naseer</strong><span>Owner, Sarusana Store · Addu City</span></span>
-        </figcaption>
-      </figure>
-      <figure class="quote">
-        <div class="quote__mark">“</div>
-        <blockquote><p>Quality you can trust, every single delivery. Their cold-chain handling means our dairy lines arrive in perfect condition.</p></blockquote>
-        <figcaption class="quote__who">
-          <img class="quote__av" src="/testimonial-aishath.svg" alt="Portrait of Aishath Reema" loading="lazy">
-          <span><strong>Aishath Reema</strong><span>Manager, Shabnamee Store · Laamu</span></span>
-        </figcaption>
-      </figure>
-      <figure class="quote">
-        <div class="quote__mark">“</div>
-        <blockquote><p>From staple foods to specialty spices, they carry everything our café needs under one supplier. Genuinely a one-stop partner.</p></blockquote>
-        <figcaption class="quote__who">
-          <img class="quote__av" src="/testimonial-hassan.svg" alt="Portrait of Hassan Waheed" loading="lazy">
-          <span><strong>Hassan Waheed</strong><span>Head Chef · Malé</span></span>
-        </figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
-
-<!-- ================= CTA BAND ================= -->
-<section class="section bg-cream">
-  <div class="container">
-    <div class="cta-band">
-      <h2>Ready to stock the brands your customers want?</h2>
-      <p>Tell us what you need and our trade team will put together a tailored wholesale quote — fast.</p>
-      <div class="btns">
-        <a href="/contact" class="btn btn--gold btn--lg">Get a Quote</a>
-        <a href="/brands" class="btn btn--on-dark btn--lg">View Brands</a>
+    <div class="fade-up">
+      <div class="relative">
+        <div class="overflow-hidden">
+          <div class="flex ease-in-out" id="products-track" role="region" aria-label="Products" style="gap: 8px; transition: transform 0.5s ease;">
+            {featuredProducts.length > 0 ? featuredProducts.map((p: any) => (
+              <div class="flex-shrink-0" style="width: calc(33.3333% - 5.33333px);">
+                <article class="product-card relative flex flex-col items-center rounded-[20px] border border-[#d3d3d3] bg-[#fefdfb] h-full overflow-hidden">
+                  <div class="product-img-inner w-full overflow-hidden rounded-t-[20px]" style="height: clamp(160px, 18.85vw, 340px);">
+                    {p.image ? (
+                      <img src={resolveWixImage(p.image)} alt={p.name} class="w-full h-full object-cover transition-transform duration-500" loading="lazy" />
+                    ) : (
+                      <div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9);">
+                        <span class="font-alumni text-[#0ea44b] text-[24px] text-center px-4 leading-tight">{p.name.split(' ').slice(0,2).join(' ')}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div class="flex flex-col items-center flex-1 px-5 pt-4 pb-10 gap-2 text-center">
+                    {p.brandName && <p class="font-lato text-[11px] font-semibold uppercase tracking-widest text-[#917151]">{p.brandName}</p>}
+                    <h3 class="font-lato font-bold text-[#0d2c22] text-[16px] lg:text-[20px] leading-tight">{p.name}</h3>
+                    <div class="mt-auto">
+                      <a href="/products" class="btn-underline" aria-label={`Explore more about ${p.name}`}>Explore More</a>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            )) : (
+              [
+                { title: "Featured Product", color: "#e8f5e9" },
+                { title: "Featured Product", color: "#fff3e0" },
+                { title: "Featured Product", color: "#e3f2fd" },
+              ].map((ph) => (
+                <div class="flex-shrink-0" style="width: calc(33.3333% - 5.33333px);">
+                  <article class="product-card relative flex flex-col items-center rounded-[20px] border border-[#d3d3d3] bg-[#fefdfb] h-full overflow-hidden">
+                    <div class="product-img-inner w-full rounded-t-[20px] flex items-center justify-center" style={`height: clamp(160px, 18.85vw, 340px); background: ${ph.color};`}>
+                      <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#0ea44b" stroke-width="1" opacity="0.4"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                    </div>
+                    <div class="flex flex-col items-center flex-1 px-5 pt-4 pb-10 gap-4 text-center">
+                      <h3 class="font-lato font-bold text-gray-400 text-[16px]">Loading...</h3>
+                    </div>
+                  </article>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+        <button aria-label="Previous products" id="products-prev" class="slick-arrow absolute -left-5 lg:-left-14 top-1/3 items-center justify-center" style="display:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button aria-label="Next products" id="products-next" class="slick-arrow absolute -right-5 lg:-right-14 top-1/3 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
       </div>
     </div>
   </div>
 </section>
 
-</main>
-</Layout>
+<!-- ===== ABOUT / STATS ===== -->
+<section class="relative pb-20 lg:pb-[8.3vw]" aria-label="About Sosun Fihaara">
+  <!-- Background panel -->
+  <div class="absolute inset-x-0 top-0 overflow-hidden" style="height: clamp(440px, 75vw, 700px);">
+    <div class="w-full h-full" style="background: linear-gradient(135deg, #1a2e1a 0%, #2d5a27 40%, #1e3a1e 100%);"></div>
+    {site.partnerImage && (
+      <img src={resolveWixImage(site.partnerImage)} alt="" class="absolute inset-0 w-full h-full object-cover object-center opacity-40" loading="lazy" aria-hidden="true" onerror="this.style.display='none'" />
+    )}
+  </div>
+  <div class="relative mx-4 sm:mx-8 lg:mx-[14.9vw] rounded-t-[25px] lg:rounded-t-[3.6vw] bg-[#fefdfb] px-6 lg:px-[5.2vw] pt-16 pb-16 lg:pt-[5.2vw] lg:pb-[5.2vw]" style="margin-top: clamp(280px, 52vw, 540px);">
+    <div class="fade-up text-center mb-12 lg:mb-[4.2vw]">
+      <p class="tagline-text mb-2">Who We Are</p>
+      <h2 class="main-title text-[42px] sm:text-[56px] lg:text-[88px] leading-[.9] tracking-[-2px] mb-4">
+        {site.aboutHeading ? site.aboutHeading : (<>BUILT ON <span class="font-alumni">TRUST</span></>)}
+      </h2>
+      <p class="sub-title text-[18px] lg:text-[24px] font-light leading-[1.4] max-w-2xl mx-auto">{site.aboutSubtext || 'Sosun Fihaara has been the backbone of FMCG distribution in the Maldives since 1980 — supplying retailers, cafés and households across every atoll with trusted international brands.'}</p>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 justify-center mb-12">
+      {[
+        { num: "40+", label: "Years of Distribution" },
+        { num: "25+", label: "International Brands" },
+        { num: "300+", label: "Products in Range" },
+        { num: "20", label: "Atolls Served" },
+      ].map((s) => (
+        <div class="text-center border-b-2 border-[#917151] pb-4">
+          <p class="font-alumni text-[#0d2c22] leading-none tracking-tight" style="font-size: clamp(36px, 4vw, 56px);">{s.num}</p>
+          <p class="font-lato text-[11px] sm:text-[13px] font-semibold uppercase tracking-[2px] text-[#917151] mt-2">{s.label}</p>
+        </div>
+      ))}
+    </div>
+    <div class="text-center">
+      <a href="/about" class="btn-explore">Our Story</a>
+    </div>
+  </div>
+  <!-- Green marquee ticker -->
+  <div class="overflow-hidden py-4 mt-0" style="background: #0ea44b;" aria-hidden="true">
+    <div class="marquee-track flex gap-[10px] whitespace-nowrap">
+      <span class="font-alumni text-white text-[24px] tracking-wider">
+        {Array(6).fill("WHOLESALE · RETAIL · FMCG · MALDIVES · TRUSTED BRANDS · ISLAND DISTRIBUTION · QUALITY PRODUCTS · ").join("")}
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BRANDS ===== -->
+<section id="brands" class="overflow-hidden pb-20 lg:pb-[8.3vw]" aria-label="Our brand partners">
+  <div class="px-5 sm:px-8 lg:px-[9.9vw]">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between pb-8 lg:pb-[4.2vw] gap-6">
+      <div class="fade-left">
+        <p class="tagline-text mb-1">Our Trusted Brands</p>
+        <h2 class="main-title text-[42px] sm:text-[56px] lg:text-[88px] leading-[.9] tracking-[-2px] mb-2">GLOBAL DISTRIBUTION <span class="font-alumni">BRANDS</span></h2>
+        <h3 class="sub-title text-[24px] lg:text-[38px] font-light leading-[1.05] tracking-[-0.84px]">Enabling Seamless Market Access</h3>
+      </div>
+      <div class="fade-right">
+        <a href="/brands" class="btn-explore">Explore Brands</a>
+      </div>
+    </div>
+    <div class="fade-up relative">
+      <div class="overflow-hidden">
+        <div class="flex ease-in-out" id="brands-track" style="gap: 8px; transition: transform 0.5s ease;">
+          {activeBrands.length > 0 ? activeBrands.map((b: any) => (
+            <a href={`/brands/${b.slug}`} class="brand-card relative flex-shrink-0 rounded-[16px] border border-[#d3d3d3] bg-white overflow-hidden cursor-pointer no-underline" style="width: calc(20% - 6.4px);" aria-label={`Explore ${b.name}`}>
+              <div class="flex items-center justify-center p-4 lg:p-[0.94vw]" style="height: clamp(90px, 9vw, 160px);">
+                {b.logo ? (
+                  <img src={resolveWixImage(b.logo)} alt={`${b.name} logo`} class="w-full object-contain" style="max-height: clamp(56px, 5.99vw, 110px);" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+                ) : null}
+                <div class={`w-full items-center justify-center font-alumni text-[#917151] text-center text-[18px] font-bold${b.logo ? ' hidden' : ' flex'}`}>{b.name}</div>
+              </div>
+              <div class="brand-detail rounded-[16px]">
+                <p class="font-lato font-bold text-[#0d2c22] text-sm uppercase tracking-wide mb-3">{b.name}</p>
+                <span class="btn-underline text-xs">Explore More</span>
+              </div>
+            </a>
+          )) : (
+            ['Brand A','Brand B','Brand C','Brand D','Brand E'].map((name) => (
+              <div class="brand-card relative flex-shrink-0 rounded-[16px] border border-[#d3d3d3] bg-white overflow-hidden" style="width: calc(20% - 6.4px);">
+                <div class="flex items-center justify-center p-4" style="height: 120px;">
+                  <span class="font-alumni text-[#917151] text-[18px] font-bold">{name}</span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+      <button aria-label="Previous brands" id="brands-prev" class="slick-arrow absolute -left-4 lg:-left-12 top-1/2 -translate-y-1/2 items-center justify-center" style="display:none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button aria-label="Next brands" id="brands-next" class="slick-arrow absolute -right-4 lg:-right-12 top-1/2 -translate-y-1/2 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RECIPES ===== -->
+<section id="recipes" class="mb-16 lg:mb-[10vw]" aria-label="Recipes">
+  <div class="flex flex-col lg:flex-row px-5 sm:px-8 lg:px-[9.9vw] gap-12 lg:gap-0">
+    <div class="lg:w-[38%] lg:pr-[5.2vw]">
+      <div class="fade-left mb-8 lg:mb-[4vw]">
+        <p class="tagline-text mb-1">Recipes Made Simple</p>
+        <h2 class="main-title text-[42px] sm:text-[56px] lg:text-[88px] leading-[.9] tracking-[-2px] mb-2">RECIPES <span class="font-alumni">FOR FOOD</span></h2>
+        <h3 class="sub-title text-[24px] lg:text-[38px] font-light leading-[1.05] tracking-[-0.84px]">Lovers Like You</h3>
+      </div>
+      <div class="fade-left">
+        <p class="font-lato text-[15px] lg:text-[18px] font-light text-[#0d2c22] leading-[1.65] mb-6">Discover delicious recipes using the authentic brands we distribute — from quick weeknight meals to weekend feasts.</p>
+        <a href="/recipes" class="btn-explore">View All Recipes</a>
+      </div>
+    </div>
+    <div class="lg:w-[62%] flex flex-col gap-5">
+      {[
+        { tag: "FEATURED", title: "Real Thai Pad Thai", sub: "Ready in 20 minutes", bg: "linear-gradient(135deg, #2d5a27, #4a7c3a)", h: "300px" },
+        { tag: "QUICK MEAL", title: "Gullon Biscuit Tart", sub: "A crowd-pleasing dessert", bg: "linear-gradient(135deg, #5a3a20, #8c5a30)", h: "200px" },
+      ].map((r) => (
+        <a href="/recipes" class="relative rounded-[20px] overflow-hidden group block no-underline" style={`height: ${r.h};`}>
+          <div class="absolute inset-0" style={`background: ${r.bg};`}></div>
+          <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+          <div class="absolute bottom-5 left-6">
+            <span class="recipe-featured-tag px-2 py-1 text-[11px] tracking-[3px] mb-2 inline-block">{r.tag}</span>
+            <h3 class="font-alumni text-white text-[28px] leading-tight">{r.title}</h3>
+            <p class="font-lato text-white/80 text-sm">{r.sub}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ===== INSTAGRAM ===== -->
+<section class="px-5 sm:px-8 lg:px-[8.3vw] pb-16 lg:pb-[8.3vw]" aria-label="Follow us on Instagram">
+  <div class="fade-up flex items-center justify-center gap-3 mb-6 lg:mb-[2.5vw]">
+    <div class="w-11 h-11 rounded-full overflow-hidden border-2 border-[#917151] flex items-center justify-center bg-[#917151] flex-shrink-0">
+      <span class="font-alumni text-white font-bold text-lg">SF</span>
+    </div>
+    <a href="https://www.instagram.com/sosun.fihaara/" target="_blank" rel="noopener noreferrer" class="font-alumni text-[#0d2c22] text-[24px] font-semibold tracking-wide no-underline hover:text-[#917151] transition-colors">@sosun.fihaara</a>
+  </div>
+  <div class="fade-up grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+    {[
+      { bg: "linear-gradient(135deg, #2d5a27, #4a8c40)", label: "Post 1" },
+      { bg: "linear-gradient(135deg, #5a3a20, #8c5a30)", label: "Post 2" },
+      { bg: "linear-gradient(135deg, #1e3a5a, #2a5a8c)", label: "Post 3" },
+      { bg: "linear-gradient(135deg, #4a2d5a, #7a4a8c)", label: "Post 4" },
+      { bg: "linear-gradient(135deg, #5a5a20, #8c8c30)", label: "Post 5" },
+      { bg: "linear-gradient(135deg, #2d3a5a, #3a5a8c)", label: "Post 6" },
+    ].map((post, i) => (
+      <a href="https://www.instagram.com/sosun.fihaara/" target="_blank" rel="noopener noreferrer" class="relative overflow-hidden rounded-[7px] group block no-underline" style="aspect-ratio: 1;" aria-label={`Instagram post ${i + 1}`}>
+        <div class="absolute inset-0 group-hover:scale-110 transition-transform duration-500" style={`background: ${post.bg};`}></div>
+        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" opacity="0.4"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/></svg>
+        </div>
+      </a>
+    ))}
+  </div>
+  <div class="text-center">
+    <a href="https://www.instagram.com/sosun.fihaara/" target="_blank" rel="noopener noreferrer" class="btn-explore">Follow on Instagram</a>
+  </div>
+</section>
+
+</div><!-- /main-content -->
+
+<!-- ===== FOOTER ===== -->
+<Footer />
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+  // Scroll-reveal
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.08 }
+  );
+  document.querySelectorAll('.fade-up, .fade-left, .fade-right').forEach(el => io.observe(el));
+
+  // Header hide/show on scroll
+  let lastY = 0;
+  const header = document.getElementById('header');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (header) header.style.transform = (y > lastY && y > 100) ? 'translateY(-100%)' : 'translateY(0)';
+    lastY = y;
+  }, { passive: true });
+
+  // Mobile menu
+  const menu = document.getElementById('mobile-menu');
+  const openBtn = document.getElementById('mobile-menu-btn');
+  const closeBtn = document.getElementById('mobile-menu-close');
+  function openMenu() {
+    menu?.classList.remove('hidden'); menu?.classList.add('flex');
+    openBtn?.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMenu() {
+    menu?.classList.add('hidden'); menu?.classList.remove('flex');
+    openBtn?.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+  openBtn?.addEventListener('click', openMenu);
+  closeBtn?.addEventListener('click', closeMenu);
+
+  // Generic slider helper
+  function initSlider(trackId: string, prevId: string, nextId: string, cols: number) {
+    const track = document.getElementById(trackId) as HTMLElement | null;
+    const prev = document.getElementById(prevId) as HTMLElement | null;
+    const next = document.getElementById(nextId) as HTMLElement | null;
+    if (!track) return;
+    const total = track.children.length;
+    let cur = 0;
+    function render() {
+      const w = (track!.parentElement?.offsetWidth ?? 0);
+      const itemW = w / cols;
+      track!.style.transform = `translateX(${-cur * (itemW + 8)}px)`;
+      if (prev) prev.style.display = cur > 0 ? 'flex' : 'none';
+      if (next) next.style.display = cur < total - cols ? 'flex' : 'none';
+    }
+    prev?.addEventListener('click', () => { cur = Math.max(0, cur - 1); render(); });
+    next?.addEventListener('click', () => { cur = Math.min(total - cols, cur + 1); render(); });
+    render();
+    window.addEventListener('resize', render, { passive: true });
+  }
+
+  initSlider('products-track', 'products-prev', 'products-next', window.innerWidth < 640 ? 1 : window.innerWidth < 1024 ? 2 : 3);
+  initSlider('brands-track', 'brands-prev', 'brands-next', window.innerWidth < 640 ? 2 : window.innerWidth < 1024 ? 3 : 5);
+</script>
+
+</HomeLayout>

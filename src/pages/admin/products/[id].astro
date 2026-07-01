@@ -1,0 +1,24 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ProductForm from '../../../components/admin/ProductForm.astro';
+import { adminGetProduct, adminListBrands, adminListCategories } from '../../../lib/admin-data';
+
+const { id } = Astro.params;
+const [product, brands, categories] = await Promise.all([
+  adminGetProduct(id!),
+  adminListBrands(),
+  adminListCategories(),
+]);
+
+if (!product) {
+  return Astro.redirect('/admin/products?error=' + encodeURIComponent('Product not found.'));
+}
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+
+<AdminLayout title={`Edit - ${product.name}`} active="products">
+  <div class="admin-card">
+    <ProductForm product={product} brands={brands} categories={categories} action={`/api/admin/products/${id}/update`} error={error} />
+  </div>
+</AdminLayout>

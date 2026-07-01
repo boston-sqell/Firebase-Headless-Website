@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "website-c3acf"
+  },
+  "targets": {
+    "website-c3acf": {
+      "storage": {
+        "rules": [
+          "website-c3acf.firebasestorage.app"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

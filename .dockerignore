@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+!.env.example
+!.env.local.example
+node_modules
+dist
+.astro
+.firebase
+.vscode
+.gemini
+*.md
+*.log

@@ -12,16 +12,26 @@ html.js-ready [data-reveal-right],
 html.js-ready .card,
 html.js-ready .stat,
 html.js-ready .quote,
-html.js-ready .section-head {
+html.js-ready .section-head,
+html.js-ready .cta-band,
+html.js-ready .tl-step {
   opacity: 0;
 }
 
 html.js-ready [data-reveal="fade-up"],
 html.js-ready .card,
-html.js-ready .stat,
 html.js-ready .quote,
 html.js-ready .section-head {
   transform: translateY(30px);
+}
+
+/* Stats start deeper so the slower slide has more travel distance */
+html.js-ready .stat {
+  transform: translateY(45px);
+}
+
+html.js-ready .cta-band {
+  transform: translateY(30px) scale(0.97);
 }
 
 html.js-ready [data-reveal-left] {
@@ -32,13 +42,27 @@ html.js-ready [data-reveal-right] {
   transform: translateX(40px);
 }
 
+html.js-ready .tl-step:nth-child(odd) {
+  transform: translateX(-40px);
+}
+
+html.js-ready .tl-step:nth-child(even) {
+  transform: translateX(40px);
+}
+
+html.js-ready .quote__mark {
+  opacity: 0;
+  transform: scale(0.5) rotate(-10deg);
+}
+
 /* BULLETPROOF REVEAL STATE */
 html.js-ready .is-revealed {
   opacity: 1 !important;
   transform: none !important;
 }
 
-/* Card hover effect (CSS only, as requested) */
+/* ============================================================
+   Card hover effect (CSS only, as requested) */
 .card {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform, box-shadow;

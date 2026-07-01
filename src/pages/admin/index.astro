@@ -1,0 +1,75 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { adminListProducts, adminListBrands, adminListCategories, adminListContactSubmissions } from '../../lib/admin-data';
+
+const [products, brands, categories, messages] = await Promise.all([
+  adminListProducts(),
+  adminListBrands(),
+  adminListCategories(),
+  adminListContactSubmissions(),
+]);
+
+const unreadCount = messages.filter(m => !m.read).length;
+const activeProducts = products.filter(p => p.active !== false).length;
+const activeBrands = brands.filter(b => b.active !== false).length;
+
+function formatDate(ts: unknown): string {
+  if (!ts) return '-';
+  const anyTs = ts as any;
+  const date = typeof anyTs.toDate === 'function' ? anyTs.toDate() : new Date(anyTs);
+  return date.toLocaleString();
+}
+---
+
+<AdminLayout title="Dashboard" active="dashboard">
+  <div class="admin-grid">
+    <div class="admin-stat">
+      <div class="admin-stat__num">{activeProducts}</div>
+      <div class="admin-stat__label">Active Products ({products.length} total)</div>
+    </div>
+    <div class="admin-stat">
+      <div class="admin-stat__num">{activeBrands}</div>
+      <div class="admin-stat__label">Active Brands ({brands.length} total)</div>
+    </div>
+    <div class="admin-stat">
+      <div class="admin-stat__num">{categories.length}</div>
+      <div class="admin-stat__label">Categories</div>
+    </div>
+    <div class="admin-stat">
+      <div class="admin-stat__num">{unreadCount}</div>
+      <div class="admin-stat__label">Unread Messages ({messages.length} total)</div>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <h2>Quick actions</h2>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a href="/admin/products/new" class="btn-admin">+ New Product</a>
+      <a href="/admin/brands/new" class="btn-admin btn-admin--ghost">+ New Brand</a>
+      <a href="/admin/categories/new" class="btn-admin btn-admin--ghost">+ New Category</a>
+      <a href="/admin/site-content" class="btn-admin btn-admin--ghost">Edit Homepage Content</a>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <h2>Recent messages</h2>
+    {messages.length === 0 ? (
+      <p class="empty-state">No messages yet.</p>
+    ) : (
+      <table class="admin-table">
+        <thead><tr><th>From</th><th>Message</th><th>Received</th><th>Status</th></tr></thead>
+        <tbody>
+          {messages.slice(0, 5).map(m => (
+            <tr>
+              <td>{m.name}<br /><span style="color:var(--admin-muted);font-size:12px">{m.email}</span></td>
+              <td>{m.message.slice(0, 80)}{m.message.length > 80 ? '...' : ''}</td>
+              <td>{formatDate(m.submittedAt)}</td>
+              <td>{m.read ? <span class="pill pill--inactive">Read</span> : <span class="pill pill--unread">New</span>}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+    {messages.length > 0 && <p style="margin-top:14px"><a href="/admin/messages">View all messages</a></p>}
+  </div>
+</AdminLayout>

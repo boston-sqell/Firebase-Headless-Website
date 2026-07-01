@@ -1,0 +1,557 @@
+/*
+ * Hand-written CSS for the homepage: fonts, scroll-triggered fade-in
+ * animations, and a handful of components (buttons, brand-card hover
+ * detail, product-card underline, slider arrows) that aren't Tailwind
+ * utilities. This file is loaded alongside the Tailwind-generated
+ * homepage.css (see that file + tailwind.config.mjs) rather than being
+ * folded into it, so it's never at risk of being wiped out by a Tailwind
+ * rebuild.
+ *
+ * This previously lived appended to the end of a single frozen,
+ * hand-copied homepage.css alongside the Tailwind output itself, with no
+ * build step regenerating either part -- see the engineering audit
+ * ("homepage.css is frozen Tailwind with no build pipeline"). It's split
+ * out here verbatim so homepage.css can go back to being real Tailwind
+ * source compiled at build time.
+ */
+
+/* Alumni Sans SC for headings */
+
+.font-alumni { font-family: 'Alumni Sans SC', sans-serif; }
+
+.font-lato   { font-family: 'Lato', sans-serif; }
+
+/* ─── Scroll animations ─────────────────── */
+
+.fade-up { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+.fade-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+
+.fade-left.visible { opacity: 1; transform: translateX(0); }
+
+.fade-right { opacity: 0; transform: translateX(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+
+.fade-right.visible { opacity: 1; transform: translateX(0); }
+
+/* ─── Header ────────────────────────────── */
+
+.header-gradient {
+  background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 35%, rgba(0,0,0,0.6) 60%, #000 100%);
+}
+
+/* ─── Scroll indicator ──────────────────── */
+
+@keyframes scrollDown {
+  0%   { transform: translateY(-6px); opacity: 0; }
+  20%  { opacity: 1; }
+  70%  { transform: translateY(10px); opacity: 1; }
+  100% { transform: translateY(18px); opacity: 0; }
+}
+
+.scroll-indicator { animation: scrollDown 1.6s ease-in-out infinite; }
+
+/* ─── Leaf float ────────────────────────── */
+
+@keyframes leafFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%  { transform: translateY(-12px) rotate(3deg); }
+  66%  { transform: translateY(6px) rotate(-2deg); }
+}
+
+.leaf-animation { animation: leafFloat 6s ease-in-out infinite; }
+
+/* ─── Slider arrows ─────────────────────── */
+
+.slick-arrow {
+  position: absolute; z-index: 10; width: 48px; height: 48px;
+  border-radius: 50%; background: #fff; border: 1px solid #d3d3d3;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.1);
+  transition: background .2s, border-color .2s;
+}
+
+.slick-arrow:hover { background: #0ea44b; border-color: #0ea44b; color: #fff; }
+
+/* ─── Promotions slider ─────────────────── */
+
+.promo-slider { display: flex; overflow: hidden; }
+
+.promo-slide  { flex-shrink: 0; transition: transform .5s ease; }
+
+/* ─── Products slider ───────────────────── */
+
+.products-track { display: flex; gap: 8px; transition: transform .5s ease; overflow: hidden; }
+
+/* ─── Brand hover detail ────────────────── */
+
+.brand-card .brand-detail {
+  position: absolute; inset: 0; opacity: 0; bottom: -30%;
+  background: rgba(255,255,255,.92); border-radius: inherit;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transition: opacity .4s, bottom .4s;
+}
+
+.brand-card:hover .brand-detail { opacity: 1; bottom: 0; }
+
+.brand-card::after {
+  content: ''; position: absolute; left: 10%; right: 10%; bottom: 0;
+  height: 3px; background: #0ea44b; border-radius: 3px 3px 0 0;
+  opacity: 0; transition: opacity .4s;
+}
+
+.brand-card:hover::after { opacity: 1; }
+
+/* product card green underline */
+
+.product-card::after {
+  content: ''; position: absolute; left: 10%; right: 10%; bottom: 0;
+  height: 3px; background: #0ea44b; border-radius: 3px 3px 0 0;
+  opacity: 0; transition: opacity .4s;
+}
+
+.product-card:hover::after { opacity: 1; }
+
+.product-card:hover .product-img-inner img { transform: scale(1.08); }
+
+/* ─── Explore button ────────────────────── */
+
+.btn-explore {
+  display: inline-block;
+  background: #0ea44b; color: #fff;
+  font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 14px 32px; border-radius: 6px; border: none; cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+
+.btn-explore:hover { background: #0b8a3d; transform: translateY(-2px); }
+
+.btn-underline {
+  background: none; border: none; cursor: pointer;
+  font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 700;
+  color: #1e2424; letter-spacing: 1px; text-transform: uppercase;
+  text-decoration: underline; text-underline-offset: 6px;
+  text-decoration-color: #0ea44b; text-decoration-thickness: 2px;
+  padding: 0; transition: color .2s;
+}
+
+.btn-underline:hover { color: #0ea44b; }
+
+/* ─── Section heading style ─────────────── */
+
+.tagline-text  { font-family: 'Lato', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: -0.39px; text-transform: uppercase; color: #6bbf8a; }
+
+.main-title    { font-family: 'Alumni Sans SC', sans-serif; font-weight: 200; color: #1e2424; line-height: .97; }
+
+.sub-title     { font-family: 'Lato', sans-serif; font-weight: 300; color: #1e2424; }
+
+/* ─── Featured recipe tag ───────────────── */
+
+.recipe-featured-tag { background: #0ea44b; color: #fff; font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+
+/* ─── Scrollbar ─────────────────────────── */
+
+::-webkit-scrollbar { width: 5px; }
+
+::-webkit-scrollbar-thumb { background: #0ea44b; border-radius: 3px; }
+
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+.marquee-track { animation: marquee 40s linear infinite; }
+
+/*
+ * The rules below are Tailwind-generated utility variants (focus/hover/
+ * group-hover states and sm/md/lg breakpoint variants) that lived in this
+ * same tail section of the original frozen file. They're kept here
+ * verbatim rather than relying on the new live Tailwind build to
+ * regenerate them, so this migration carries zero risk of dropping any of
+ * them -- if the live build also happens to regenerate equivalent rules
+ * from homepage.css, that's harmless (identical, non-conflicting CSS).
+ */
+
+.focus-within\:border-\[\#917151\]:focus-within{
+  --tw-border-opacity: 1;
+  border-color: rgb(14 164 75 / var(--tw-border-opacity, 1));
+}
+
+.hover\:border-white:hover{
+  --tw-border-opacity: 1;
+  border-color: rgb(255 255 255 / var(--tw-border-opacity, 1));
+}
+
+.hover\:bg-white\/10:hover{
+  background-color: rgb(255 255 255 / 0.1);
+}
+
+.hover\:to-\[\#0b8a3d\]:hover{
+  --tw-gradient-to: #0b8a3d var(--tw-gradient-to-position);
+}
+
+.hover\:font-bold:hover{
+  font-weight: 700;
+}
+
+.hover\:text-\[\#917151\]:hover{
+  --tw-text-opacity: 1;
+  color: rgb(14 164 75 / var(--tw-text-opacity, 1));
+}
+
+.hover\:text-\[\#c9a96e\]:hover{
+  --tw-text-opacity: 1;
+  color: rgb(107 191 138 / var(--tw-text-opacity, 1));
+}
+
+.hover\:text-gray-700:hover{
+  --tw-text-opacity: 1;
+  color: rgb(55 65 81 / var(--tw-text-opacity, 1));
+}
+
+.focus\:not-sr-only:focus{
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+.focus\:fixed:focus{
+  position: fixed;
+}
+
+.focus\:left-4:focus{
+  left: 1rem;
+}
+
+.focus\:top-4:focus{
+  top: 1rem;
+}
+
+.focus\:z-\[999\]:focus{
+  z-index: 999;
+}
+
+.focus\:rounded:focus{
+  border-radius: 0.25rem;
+}
+
+.focus\:bg-\[\#0ea44b\]:focus{
+  --tw-bg-opacity: 1;
+  background-color: rgb(14 164 75 / var(--tw-bg-opacity, 1));
+}
+
+.focus\:px-4:focus{
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.focus\:py-2:focus{
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.focus\:text-white:focus{
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.group:hover .group-hover\:scale-110{
+  --tw-scale-x: 1.1;
+  --tw-scale-y: 1.1;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.group:hover .group-hover\:bg-black\/25{
+  background-color: rgb(0 0 0 / 0.25);
+}
+
+@media (min-width: 640px){
+
+  .sm\:mx-8{
+    margin-left: 2rem;
+    margin-right: 2rem;
+  }
+
+  .sm\:grid-cols-3{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sm\:flex-row{
+    flex-direction: row;
+  }
+
+  .sm\:px-6{
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .sm\:px-8{
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .sm\:text-\[56px\]{
+    font-size: 56px;
+  }
+
+  .sm\:text-\[8vw\]{
+    font-size: 8vw;
+  }
+
+  .sm\:text-base{
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+}
+
+@media (min-width: 768px){
+
+  .md\:w-\[42\%\]{
+    width: 42%;
+  }
+
+  .md\:w-\[58\%\]{
+    width: 58%;
+  }
+
+  .md\:flex-row{
+    flex-direction: row;
+  }
+
+  .md\:pl-6{
+    padding-left: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px){
+
+  .lg\:-left-12{
+    left: -3rem;
+  }
+
+  .lg\:-left-14{
+    left: -3.5rem;
+  }
+
+  .lg\:-right-12{
+    right: -3rem;
+  }
+
+  .lg\:-right-14{
+    right: -3.5rem;
+  }
+
+  .lg\:left-8{
+    left: 2rem;
+  }
+
+  .lg\:right-8{
+    right: 2rem;
+  }
+
+  .lg\:right-\[37vw\]{
+    right: 37vw;
+  }
+
+  .lg\:mx-\[14\.9vw\]{
+    margin-left: 14.9vw;
+    margin-right: 14.9vw;
+  }
+
+  .lg\:mb-36{
+    margin-bottom: 9rem;
+  }
+
+  .lg\:mb-\[10vw\]{
+    margin-bottom: 10vw;
+  }
+
+  .lg\:mb-\[2\.5vw\]{
+    margin-bottom: 2.5vw;
+  }
+
+  .lg\:mb-\[2vw\]{
+    margin-bottom: 2vw;
+  }
+
+  .lg\:mb-\[4\.2vw\]{
+    margin-bottom: 4.2vw;
+  }
+
+  .lg\:mb-\[4vw\]{
+    margin-bottom: 4vw;
+  }
+
+  .lg\:mt-\[48vw\]{
+    margin-top: 48vw;
+  }
+
+  .lg\:block{
+    display: block;
+  }
+
+  .lg\:flex{
+    display: flex;
+  }
+
+  .lg\:hidden{
+    display: none;
+  }
+
+  .lg\:w-\[38\%\]{
+    width: 38%;
+  }
+
+  .lg\:w-\[62\%\]{
+    width: 62%;
+  }
+
+  .lg\:grid-cols-6{
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .lg\:flex-row{
+    flex-direction: row;
+  }
+
+  .lg\:items-end{
+    align-items: flex-end;
+  }
+
+  .lg\:items-center{
+    align-items: center;
+  }
+
+  .lg\:justify-between{
+    justify-content: space-between;
+  }
+
+  .lg\:gap-0{
+    gap: 0px;
+  }
+
+  .lg\:rounded-t-\[1\.5vw\]{
+    border-top-left-radius: 1.5vw;
+    border-top-right-radius: 1.5vw;
+  }
+
+  .lg\:rounded-t-\[3\.6vw\]{
+    border-top-left-radius: 3.6vw;
+    border-top-right-radius: 3.6vw;
+  }
+
+  .lg\:p-\[0\.94vw\]{
+    padding: 0.94vw;
+  }
+
+  .lg\:px-\[10\.8vw\]{
+    padding-left: 10.8vw;
+    padding-right: 10.8vw;
+  }
+
+  .lg\:px-\[5\.5vw\]{
+    padding-left: 5.5vw;
+    padding-right: 5.5vw;
+  }
+
+  .lg\:px-\[8\.3vw\]{
+    padding-left: 8.3vw;
+    padding-right: 8.3vw;
+  }
+
+  .lg\:px-\[9\.9vw\]{
+    padding-left: 9.9vw;
+    padding-right: 9.9vw;
+  }
+
+  .lg\:pb-\[10vw\]{
+    padding-bottom: 10vw;
+  }
+
+  .lg\:pb-\[4\.2vw\]{
+    padding-bottom: 4.2vw;
+  }
+
+  .lg\:pb-\[8\.3vw\]{
+    padding-bottom: 8.3vw;
+  }
+
+  .lg\:pl-\[5\.2vw\]{
+    padding-left: 5.2vw;
+  }
+
+  .lg\:pr-\[35vw\]{
+    padding-right: 35vw;
+  }
+
+  .lg\:pr-\[5\.2vw\]{
+    padding-right: 5.2vw;
+  }
+
+  .lg\:pt-\[4vw\]{
+    padding-top: 4vw;
+  }
+
+  .lg\:pt-\[5\.2vw\]{
+    padding-top: 5.2vw;
+  }
+
+  .lg\:text-\[13px\]{
+    font-size: 13px;
+  }
+
+  .lg\:text-\[14px\]{
+    font-size: 14px;
+  }
+
+  .lg\:text-\[15px\]{
+    font-size: 15px;
+  }
+
+  .lg\:text-\[18px\]{
+    font-size: 18px;
+  }
+
+  .lg\:text-\[20px\]{
+    font-size: 20px;
+  }
+
+  .lg\:text-\[28px\]{
+    font-size: 28px;
+  }
+
+  .lg\:text-\[2vw\]{
+    font-size: 2vw;
+  }
+
+  .lg\:text-\[38px\]{
+    font-size: 38px;
+  }
+
+  .lg\:text-\[56px\]{
+    font-size: 56px;
+  }
+
+  .lg\:text-\[6vw\]{
+    font-size: 6vw;
+  }
+
+  .lg\:text-\[88px\]{
+    font-size: 88px;
+  }
+}
+
+
+.hover\:text-\[\#6bbf8a\]:hover{
+  --tw-text-opacity: 1;
+  color: rgb(107 191 138 / var(--tw-text-opacity, 1));
+}
+
+.hover\:border-\[\#6bbf8a\]:hover{
+  --tw-border-opacity: 1;
+  border-color: rgb(107 191 138 / var(--tw-border-opacity, 1));
+}

@@ -1,0 +1,17 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - build
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/sosun-fihaara:${_IMAGE_TAG}'
+      - '--build-arg'
+      - 'PUBLIC_FIREBASE_API_KEY=${_PUBLIC_FIREBASE_API_KEY}'
+      - '--build-arg'
+      - 'PUBLIC_FIREBASE_AUTH_DOMAIN=${_PUBLIC_FIREBASE_AUTH_DOMAIN}'
+      - '--build-arg'
+      - 'PUBLIC_FIREBASE_PROJECT_ID=${_PUBLIC_FIREBASE_PROJECT_ID}'
+      - '.'
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/sosun-fihaara:${_IMAGE_TAG}'
+options:
+  substitutionOption: FAIL_ON_MISSING

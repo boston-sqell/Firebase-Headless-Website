@@ -1,0 +1,20 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import CategoryForm from '../../../components/admin/CategoryForm.astro';
+import { adminGetCategory } from '../../../lib/admin-data';
+
+const { id } = Astro.params;
+const category = await adminGetCategory(id!);
+
+if (!category) {
+  return Astro.redirect('/admin/categories?error=' + encodeURIComponent('Category not found.'));
+}
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+
+<AdminLayout title={`Edit - ${category.name}`} active="categories">
+  <div class="admin-card">
+    <CategoryForm category={category} action={`/api/admin/categories/${id}/update`} error={error} />
+  </div>
+</AdminLayout>

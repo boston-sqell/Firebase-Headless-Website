@@ -1,0 +1,51 @@
+---
+import type { Category } from '../../lib/cms';
+
+interface Props {
+  category?: Category;
+  action: string;
+  error?: string;
+}
+
+const { category, action, error } = Astro.props;
+---
+
+<form method="post" action={action} enctype="multipart/form-data" class="admin-form">
+  <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+  {error && <div class="admin-alert admin-alert--error">{error}</div>}
+
+  {category?.image && <input type="hidden" name="currentImage" value={category.image} />}
+
+  <div class="form-row">
+    <div class="field">
+      <label for="name">Category name *</label>
+      <input type="text" id="name" name="name" required value={category?.name} />
+    </div>
+    <div class="field">
+      <label for="order">Display order</label>
+      <input type="number" id="order" name="order" value={category?.order ?? 0} />
+      <p class="hint">Lower numbers appear first in the products sidebar.</p>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="tag">Tag / icon key</label>
+    <input type="text" id="tag" name="tag" value={category?.tag} />
+  </div>
+
+  <div class="admin-current-image">
+    {category?.image && <img src={category.image} alt="" />}
+    <div class="field" style="margin:0">
+      <label for="image">Category image</label>
+      <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="description">Description</label>
+    <textarea id="description" name="description">{category?.description}</textarea>
+  </div>
+
+  <button type="submit" class="btn-admin">{category ? 'Save Changes' : 'Create Category'}</button>
+  <a href="/admin/categories" class="btn-admin btn-admin--ghost">Cancel</a>
+</form>

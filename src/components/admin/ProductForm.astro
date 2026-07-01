@@ -1,0 +1,93 @@
+---
+import type { Product, Brand, Category } from '../../lib/cms';
+
+interface Props {
+  product?: Product;
+  brands: Brand[];
+  categories: Category[];
+  action: string;
+  error?: string;
+}
+
+const { product, brands, categories, action, error } = Astro.props;
+---
+
+<form method="post" action={action} enctype="multipart/form-data" class="admin-form">
+  <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+  {error && <div class="admin-alert admin-alert--error">{error}</div>}
+
+  {product?.image && <input type="hidden" name="currentImage" value={product.image} />}
+
+  <div class="admin-current-image">
+    {product?.image && <img src={product.image} alt="" />}
+    <div class="field" style="margin:0">
+      <label for="image">{product ? 'Replace image' : 'Product image'}</label>
+      <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" />
+      <p class="hint">JPEG, PNG, WebP, GIF, or SVG. Max 5MB.</p>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="field">
+      <label for="name">Product name *</label>
+      <input type="text" id="name" name="name" required value={product?.name} />
+    </div>
+    <div class="field">
+      <label for="code">Product code *</label>
+      <input type="text" id="code" name="code" required value={product?.code} />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="field">
+      <label for="brandName">Brand name *</label>
+      <input type="text" id="brandName" name="brandName" required list="brandOptions" value={product?.brandName} />
+      <datalist id="brandOptions">
+        {brands.map(b => <option value={b.name} />)}
+      </datalist>
+    </div>
+    <div class="field">
+      <label for="brandSlug">Brand slug</label>
+      <input type="text" id="brandSlug" name="brandSlug" value={product?.brandSlug} placeholder="e.g. pascual" />
+      <p class="hint">Must match the brand's slug so it links to the right /brands page.</p>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="field">
+      <label for="category">Category *</label>
+      <input type="text" id="category" name="category" required list="categoryOptions" value={product?.category} />
+      <datalist id="categoryOptions">
+        {categories.map(c => <option value={c.name} />)}
+      </datalist>
+    </div>
+    <div class="field">
+      <label for="subcategory">Subcategory</label>
+      <input type="text" id="subcategory" name="subcategory" value={product?.subcategory} />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="field">
+      <label for="price">Price (MVR)</label>
+      <input type="text" id="price" name="price" value={product?.price} placeholder="Leave blank for 'Request price'" />
+    </div>
+    <div class="field">
+      <label for="packSize">Pack size</label>
+      <input type="text" id="packSize" name="packSize" value={product?.packSize} placeholder="e.g. 500g" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="keywords">Search keywords</label>
+    <input type="text" id="keywords" name="keywords" value={product?.keywords} placeholder="comma separated, helps search" />
+  </div>
+
+  <div class="field checkbox-row">
+    <input type="checkbox" id="active" name="active" checked={product?.active !== false} />
+    <label for="active" style="margin:0">Visible on the public site</label>
+  </div>
+
+  <button type="submit" class="btn-admin">{product ? 'Save Changes' : 'Create Product'}</button>
+  <a href="/admin/products" class="btn-admin btn-admin--ghost">Cancel</a>
+</form>

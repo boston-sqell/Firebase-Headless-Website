@@ -1,0 +1,55 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { adminListContactSubmissions } from '../../../lib/admin-data';
+
+const messages = await adminListContactSubmissions();
+const success = Astro.url.searchParams.get('success');
+
+function formatDate(ts: unknown): string {
+  if (!ts) return '-';
+  const anyTs = ts as any;
+  const date = typeof anyTs.toDate === 'function' ? anyTs.toDate() : new Date(anyTs);
+  return date.toLocaleString();
+}
+---
+
+<AdminLayout title="Messages" active="messages">
+  {success && <div class="admin-alert admin-alert--success">{success}</div>}
+
+  <div class="admin-card" style="padding:0">
+    {messages.length === 0 ? (
+      <p class="empty-state">No messages yet. Submissions from the public contact form will appear here.</p>
+    ) : (
+      <table class="admin-table">
+        <thead><tr><th>Status</th><th>From</th><th>Message</th><th>Received</th><th></th></tr></thead>
+        <tbody>
+          {messages.map(m => (
+            <tr>
+              <td>{m.read ? <span class="pill pill--inactive">Read</span> : <span class="pill pill--unread">New</span>}</td>
+              <td>
+                <strong>{m.name}</strong><br />
+                <a href={`mailto:${m.email}`}>{m.email}</a>
+                {m.phone && <><br /><span style="color:var(--admin-muted);font-size:12px">{m.phone}</span></>}
+                {m.company && <><br /><span style="color:var(--admin-muted);font-size:12px">{m.company}</span></>}
+              </td>
+              <td style="max-width:360px;white-space:pre-wrap">{m.message}</td>
+              <td style="white-space:nowrap">{formatDate(m.submittedAt)}</td>
+              <td style="white-space:nowrap">
+                {!m.read && (
+                  <form method="post" action={`/api/admin/messages/${m.id}/read`} style="display:inline">
+                    <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+                    <button type="submit" class="btn-admin btn-admin--ghost btn-admin--sm">Mark Read</button>
+                  </form>
+                )}
+                <form method="post" action={`/api/admin/messages/${m.id}/delete`} style="display:inline" onsubmit="return confirm('Delete this message?')">
+                  <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+</AdminLayout>

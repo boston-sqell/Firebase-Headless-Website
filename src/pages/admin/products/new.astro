@@ -1,0 +1,14 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ProductForm from '../../../components/admin/ProductForm.astro';
+import { adminListBrands, adminListCategories } from '../../../lib/admin-data';
+
+const [brands, categories] = await Promise.all([adminListBrands(), adminListCategories()]);
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+
+<AdminLayout title="New Product" active="products">
+  <div class="admin-card">
+    <ProductForm brands={brands} categories={categories} action="/api/admin/products/create" error={error} />
+  </div>
+</AdminLayout>

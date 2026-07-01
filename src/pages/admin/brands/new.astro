@@ -1,0 +1,12 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import BrandForm from '../../../components/admin/BrandForm.astro';
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+
+<AdminLayout title="New Brand" active="brands">
+  <div class="admin-card">
+    <BrandForm action="/api/admin/brands/create" error={error} />
+  </div>
+</AdminLayout>

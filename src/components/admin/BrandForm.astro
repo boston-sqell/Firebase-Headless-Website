@@ -1,0 +1,60 @@
+---
+import type { Brand } from '../../lib/cms';
+
+interface Props {
+  brand?: Brand;
+  action: string;
+  error?: string;
+}
+
+const { brand, action, error } = Astro.props;
+---
+
+<form method="post" action={action} enctype="multipart/form-data" class="admin-form">
+  <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+  {error && <div class="admin-alert admin-alert--error">{error}</div>}
+
+  {brand?.logo && <input type="hidden" name="currentLogo" value={brand.logo} />}
+  {brand?.heroImage && <input type="hidden" name="currentHeroImage" value={brand.heroImage} />}
+
+  <div class="form-row">
+    <div class="field">
+      <label for="name">Brand name *</label>
+      <input type="text" id="name" name="name" required value={brand?.name} />
+    </div>
+    <div class="field">
+      <label for="slug">Slug *</label>
+      <input type="text" id="slug" name="slug" required value={brand?.slug} placeholder="e.g. pascual" />
+      <p class="hint">Used in the URL: /brands/&lt;slug&gt;. Keep consistent with existing products.</p>
+    </div>
+  </div>
+
+  <div class="admin-current-image">
+    {brand?.logo && <img src={brand.logo} alt="" />}
+    <div class="field" style="margin:0">
+      <label for="logo">{brand ? 'Replace logo' : 'Brand logo'}</label>
+      <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp,image/svg+xml" />
+    </div>
+  </div>
+
+  <div class="admin-current-image">
+    {brand?.heroImage && <img src={brand.heroImage} alt="" />}
+    <div class="field" style="margin:0">
+      <label for="heroImage">{brand ? 'Replace hero image' : 'Brand page hero image'}</label>
+      <input type="file" id="heroImage" name="heroImage" accept="image/png,image/jpeg,image/webp" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="description">Description</label>
+    <textarea id="description" name="description">{brand?.description}</textarea>
+  </div>
+
+  <div class="field checkbox-row">
+    <input type="checkbox" id="active" name="active" checked={brand?.active !== false} />
+    <label for="active" style="margin:0">Visible on the public site</label>
+  </div>
+
+  <button type="submit" class="btn-admin">{brand ? 'Save Changes' : 'Create Brand'}</button>
+  <a href="/admin/brands" class="btn-admin btn-admin--ghost">Cancel</a>
+</form>

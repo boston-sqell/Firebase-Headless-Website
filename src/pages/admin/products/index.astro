@@ -1,0 +1,59 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { adminListProducts } from '../../../lib/admin-data';
+
+const products = await adminListProducts();
+const success = Astro.url.searchParams.get('success');
+const q = (Astro.url.searchParams.get('q') || '').toLowerCase();
+
+const filtered = q
+  ? products.filter(p =>
+      p.name?.toLowerCase().includes(q) ||
+      p.brandName?.toLowerCase().includes(q) ||
+      p.code?.toLowerCase().includes(q))
+  : products;
+---
+
+<AdminLayout title="Products" active="products">
+  {success && <div class="admin-alert admin-alert--success">{success}</div>}
+
+  <div class="admin-toolbar">
+    <form method="get" style="display:flex;gap:8px">
+      <input type="text" name="q" placeholder="Search products..." value={q} style="padding:7px 10px;border:1px solid var(--admin-border);border-radius:4px;min-width:220px" />
+      <button type="submit" class="btn-admin btn-admin--ghost">Search</button>
+    </form>
+    <a href="/admin/products/new" class="btn-admin">+ New Product</a>
+  </div>
+
+  <div class="admin-card" style="padding:0">
+    {filtered.length === 0 ? (
+      <p class="empty-state">No products found.</p>
+    ) : (
+      <table class="admin-table">
+        <thead>
+          <tr><th></th><th>Name</th><th>Brand</th><th>Category</th><th>Code</th><th>Price</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          {filtered.map(p => (
+            <tr>
+              <td>{p.image ? <img class="thumb" src={p.image} alt="" /> : <div class="thumb" />}</td>
+              <td>{p.name}</td>
+              <td>{p.brandName}</td>
+              <td>{p.category}{p.subcategory ? ` / ${p.subcategory}` : ''}</td>
+              <td>{p.code}</td>
+              <td>{p.price ? `MVR ${p.price}` : '-'}</td>
+              <td>{p.active !== false ? <span class="pill pill--active">Active</span> : <span class="pill pill--inactive">Hidden</span>}</td>
+              <td style="white-space:nowrap">
+                <a href={`/admin/products/${p.id}`} class="btn-admin btn-admin--ghost btn-admin--sm">Edit</a>
+                <form method="post" action={`/api/admin/products/${p.id}/delete`} style="display:inline" onsubmit="return confirm('Delete this product? This cannot be undone.')">
+                  <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+</AdminLayout>

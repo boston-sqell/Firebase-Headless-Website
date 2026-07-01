@@ -1,0 +1,42 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { adminListCategories } from '../../../lib/admin-data';
+
+const categories = await adminListCategories();
+const success = Astro.url.searchParams.get('success');
+---
+
+<AdminLayout title="Categories" active="categories">
+  {success && <div class="admin-alert admin-alert--success">{success}</div>}
+
+  <div class="admin-toolbar">
+    <div></div>
+    <a href="/admin/categories/new" class="btn-admin">+ New Category</a>
+  </div>
+
+  <div class="admin-card" style="padding:0">
+    {categories.length === 0 ? (
+      <p class="empty-state">No categories found.</p>
+    ) : (
+      <table class="admin-table">
+        <thead><tr><th>Order</th><th>Name</th><th>Tag</th><th></th></tr></thead>
+        <tbody>
+          {categories.map(c => (
+            <tr>
+              <td>{c.order}</td>
+              <td>{c.name}</td>
+              <td>{c.tag || '-'}</td>
+              <td style="white-space:nowrap">
+                <a href={`/admin/categories/${c.id}`} class="btn-admin btn-admin--ghost btn-admin--sm">Edit</a>
+                <form method="post" action={`/api/admin/categories/${c.id}/delete`} style="display:inline" onsubmit="return confirm('Delete this category?')">
+                <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+</AdminLayout>

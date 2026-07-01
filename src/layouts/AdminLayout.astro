@@ -1,0 +1,63 @@
+---
+import '../styles/admin.css';
+
+interface Props {
+  title: string;
+  active: 'dashboard' | 'products' | 'brands' | 'categories' | 'site-content' | 'messages';
+}
+
+const { title, active } = Astro.props;
+const email = Astro.locals.adminEmail || '';
+
+const navItems: Array<{ key: Props['active']; href: string; label: string }> = [
+  { key: 'dashboard', href: '/admin', label: 'Dashboard' },
+  { key: 'products', href: '/admin/products', label: 'Products' },
+  { key: 'brands', href: '/admin/brands', label: 'Brands' },
+  { key: 'categories', href: '/admin/categories', label: 'Categories' },
+  { key: 'site-content', href: '/admin/site-content', label: 'Site Content' },
+  { key: 'messages', href: '/admin/messages', label: 'Messages' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>{title} | Admin | Sosun Fihaara</title>
+</head>
+<body class="admin-body">
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar__brand">SOSUN <span>ADMIN</span></div>
+      <ul class="admin-nav">
+        {navItems.map(item => (
+          <li><a href={item.href} class={active === item.key ? 'is-active' : ''}>{item.label}</a></li>
+        ))}
+      </ul>
+      <ul class="admin-nav admin-nav__footer">
+        <li><a href="/" target="_blank" rel="noopener">View site</a></li>
+        <li><a href="#" id="logoutLink">Log Out</a></li>
+      </ul>
+    </aside>
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <h1>{title}</h1>
+        <span class="admin-topbar__user">{email}</span>
+      </header>
+      <main class="admin-content">
+        <slot />
+      </main>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('logoutLink')?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await fetch('/api/admin/session', { method: 'DELETE' });
+      window.location.href = '/admin/login';
+    });
+  </script>
+</body>
+</html>

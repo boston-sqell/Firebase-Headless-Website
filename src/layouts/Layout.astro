@@ -6,12 +6,39 @@ import Footer from '../components/Footer.astro';
 interface Props {
 	title?: string;
 	description?: string;
+	image?: string;
+	noNav?: boolean;
+	noFooter?: boolean;
 }
 
-const { 
+const {
 	title = "Sosun Fihaara | Wholesale & Retail Groceries in the Maldives",
-	description = "A trusted wholesale and retail grocery supplier in the Maldives, specializing in authentic global brands, food service supply, and consumer goods."
+	description = "A trusted wholesale and retail grocery supplier in the Maldives, specializing in authentic global brands, food service supply, and consumer goods.",
+	image = "/logo.png",
+	noNav = false,
+	noFooter = false,
 } = Astro.props;
+
+const organizationSchema = {
+	"@context": "https://schema.org",
+	"@type": "Organization",
+	name: "Sosun Fihaara",
+	url: "https://sosunfihaara.com",
+	logo: "https://sosunfihaara.com/logo.png",
+	description: "A trusted wholesale and retail grocery supplier in the Maldives, distributing authentic global FMCG brands since 1980.",
+	address: {
+		"@type": "PostalAddress",
+		streetAddress: "Moosa Ibrahim Didi Goalhi",
+		addressLocality: "Male",
+		addressCountry: "MV",
+	},
+	telephone: "+960-331-3020",
+	email: "info@sosunfihaara.com",
+	sameAs: [
+		"https://www.facebook.com/sosunfihaara",
+		"https://www.instagram.com/sosun.fihaara",
+	],
+};
 ---
 
 <!doctype html>
@@ -21,23 +48,25 @@ const {
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/png" href="/logo.png" />
 		<meta name="generator" content={Astro.generator} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alumni+Sans+SC:wght@100;200;300;400;500;600;700;800;900&family=Lato:wght@300;400;600;700;900&display=swap" />
 		<title>{title}</title>
 		<meta name="description" content={description} />
-		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site || "https://sosun-fihaara.com").toString()} />
+		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site || "https://sosunfihaara.com").toString()} />
 		<meta property="og:type" content="website" />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
-		<meta property="og:image" content="/logo.png" />
+		<meta property="og:image" content={image} />
 		<meta property="twitter:card" content="summary_large_image" />
 		<meta property="twitter:title" content={title} />
 		<meta property="twitter:description" content={description} />
-		<meta property="twitter:image" content="/logo.png" />
+		<meta property="twitter:image" content={image} />
+		<script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
 	</head>
 	<body>
-		<Nav />
-		<main>
-			<slot />
-		</main>
-		<Footer />
+		{!noNav && <Nav />}
+		<slot />
+		{!noFooter && <Footer />}
 	</body>
 </html>

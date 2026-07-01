@@ -1,14 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getProducts, getBrands, getSiteContent, resolveWixImage } from '../lib/cms';
+import { getProducts, getBrands } from '../lib/cms';
+import type { Product, Brand } from '../lib/cms';
 
-const [allProducts, brands, site] = await Promise.all([
+const [allProducts, brands] = await Promise.all([
   getProducts(),
-  getBrands(),
-  getSiteContent()
+  getBrands()
 ]);
 
-const sortedBrands = brands.map((b: any) => b.name).sort();
+const sortedBrands = brands.map((b: Brand) => b.name).sort();
 
 const brandFilter = Astro.url.searchParams.get('brand') || '';
 const catFilter = Astro.url.searchParams.get('cat') || '';
@@ -18,21 +18,21 @@ const pageStr = Astro.url.searchParams.get('page') || '1';
 const page = parseInt(pageStr, 10) || 1;
 const pageSize = 24;
 
-let filteredProducts = allProducts.filter((p: any) => {
-  if (brandFilter && p.b !== brandFilter) return false;
-  if (catFilter && p.cat !== catFilter) return false;
-  if (subFilter && p.sub !== subFilter) return false;
+let filteredProducts = allProducts.filter((p: Product) => {
+  if (brandFilter && p.brandName !== brandFilter) return false;
+  if (catFilter && p.category !== catFilter) return false;
+  if (subFilter && p.subcategory !== subFilter) return false;
   return true;
 });
 
-if (sortFilter === 'Name (A–Z)') {
-  filteredProducts.sort((a: any, b: any) => a.n.localeCompare(b.n));
-} else if (sortFilter === 'Name (Z–A)') {
-  filteredProducts.sort((a: any, b: any) => b.n.localeCompare(a.n));
-} else if (sortFilter === 'Price (low–high)') {
-  filteredProducts.sort((a: any, b: any) => {
-    const pa = parseFloat(a.pr?.replace(/,/g, '') || '0');
-    const pb = parseFloat(b.pr?.replace(/,/g, '') || '0');
+if (sortFilter === 'Name (A-Z)') {
+  filteredProducts.sort((a: Product, b: Product) => a.name.localeCompare(b.name));
+} else if (sortFilter === 'Name (Z-A)') {
+  filteredProducts.sort((a: Product, b: Product) => b.name.localeCompare(a.name));
+} else if (sortFilter === 'Price (low-high)') {
+  filteredProducts.sort((a: Product, b: Product) => {
+    const pa = parseFloat((a.price || '').replace(/,/g, '') || '0');
+    const pb = parseFloat((b.price || '').replace(/,/g, '') || '0');
     return pa - pb;
   });
 }
@@ -58,7 +58,7 @@ const hasMore = products.length < totalProducts;
   <div class="container">
     <div class="section-head center">
       <h2 style="font-size:clamp(26px,4vw,40px)">Crafted for freshness, sourced for trust</h2>
-      <p>From bakery staples to sauces and spices, every product in our range is selected for quality, consistency and flavour — ready for shelves, cafés and kitchens across the Maldives.</p>
+      <p>From bakery staples to sauces and spices, every product in our range is selected for quality, consistency and flavour -- ready for shelves, cafes and kitchens across the Maldives.</p>
     </div>
   </div>
 </section>
@@ -80,9 +80,9 @@ const hasMore = products.length < totalProducts;
           <label for="sortFilter">Sort by</label>
           <select id="sortFilter" name="sort" aria-label="Sort products">
             <option value="" selected={!sortFilter || sortFilter === 'Featured'}>Featured</option>
-            <option value="Name (A–Z)" selected={sortFilter === 'Name (A–Z)'}>Name (A–Z)</option>
-            <option value="Name (Z–A)" selected={sortFilter === 'Name (Z–A)'}>Name (Z–A)</option>
-            <option value="Price (low–high)" selected={sortFilter === 'Price (low–high)'}>Price (low–high)</option>
+            <option value="Name (A-Z)" selected={sortFilter === 'Name (A-Z)'}>Name (A-Z)</option>
+            <option value="Name (Z-A)" selected={sortFilter === 'Name (Z-A)'}>Name (Z-A)</option>
+            <option value="Price (low-high)" selected={sortFilter === 'Price (low-high)'}>Price (low-high)</option>
           </select>
         </div>
       </div>
@@ -112,21 +112,21 @@ const hasMore = products.length < totalProducts;
 
       <div>
         <div class="cat-grid" id="catGrid">
-          {products.map((p: any) => (
-            <article class="pcard pcard--brand" data-brand={p.b} data-cat={p.cat} data-sub={p.sub} data-price={p.pr ? p.pr.replace(/,/g, '') : '0'} data-name={p.n}>
+          {products.map((p: Product) => (
+            <article class="pcard pcard--brand" data-brand={p.brandName} data-cat={p.category} data-sub={p.subcategory} data-price={p.price ? p.price.replace(/,/g, '') : '0'} data-name={p.name}>
               <div class="pcard__img">
-                <img src={p.img} alt={p.n} loading="lazy">
+                <img src={p.image} alt={p.name} loading="lazy">
               </div>
-              <span class="pcard__cat">{p.b} &middot; {p.cat}</span>
-              <h3>{p.n}</h3>
+              <span class="pcard__cat">{p.brandName} &middot; {p.category}</span>
+              <h3>{p.name}</h3>
               <div style="flex:1 0 auto;margin-bottom:14px">
-                {p.p && <p style="color:var(--muted);font-size:12px;margin:0 0 8px">Pack: {p.p}</p>}
-                {p.pr ? 
-                  <p style="font-family:var(--font-display);font-weight:800;color:var(--green);font-size:17px;margin:0">MVR {p.pr}</p> 
+                {p.packSize && <p style="color:var(--muted);font-size:12px;margin:0 0 8px">Pack: {p.packSize}</p>}
+                {p.price ?
+                  <p style="font-family:var(--font-display);font-weight:800;color:var(--green);font-size:17px;margin:0">MVR {p.price}</p>
                   : <p style="font-family:var(--font-display);font-weight:700;color:var(--muted);font-size:13px;margin:0">Request price</p>
                 }
               </div>
-              <a href={`/products/${p.c}`} class="textlink">Explore More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              <a href={`/products/${p.code}`} class="textlink">Explore More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
             </article>
           ))}
         </div>
@@ -147,7 +147,7 @@ const hasMore = products.length < totalProducts;
     </div>
   </div>
   <script>
-    function updateUrl(params) {
+    function updateUrl(params: Record<string, string>) {
       const url = new URL(window.location.href);
       for (const [k, v] of Object.entries(params)) {
         if (v) url.searchParams.set(k, v);
@@ -158,14 +158,16 @@ const hasMore = products.length < totalProducts;
     }
 
     document.getElementById('brandFilter')?.addEventListener('change', (e) => {
-      updateUrl({ brand: e.target.value, page: '1' });
+      const target = e.target as HTMLSelectElement;
+      updateUrl({ brand: target.value, page: '1' });
     });
-    
+
     document.getElementById('sortFilter')?.addEventListener('change', (e) => {
-      updateUrl({ sort: e.target.value, page: '1' });
+      const target = e.target as HTMLSelectElement;
+      updateUrl({ sort: target.value, page: '1' });
     });
-    
-    document.querySelectorAll('.cat-link').forEach(link => {
+
+    document.querySelectorAll<HTMLElement>('.cat-link').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         updateUrl({ cat: link.dataset.cat || '', sub: link.dataset.sub || '', page: '1' });
@@ -179,22 +181,22 @@ const hasMore = products.length < totalProducts;
   <div class="container">
     <div class="section-head center">
       <span class="eyebrow">Two ways to buy</span>
-      <h2>Wholesale or retail — <span class="accent">we supply both</span></h2>
+      <h2>Wholesale or retail -- <span class="accent">we supply both</span></h2>
       <p>Whether you're stocking a store or buying for your household, here's how each route works.</p>
     </div>
     <div style="overflow-x:auto">
       <table class="compare">
-        <caption>Wholesale terms are tailored per account — request a quote for current pricing.</caption>
+        <caption>Wholesale terms are tailored per account -- request a quote for current pricing.</caption>
         <thead>
           <tr><th scope="col">What you get</th><th scope="col">Wholesale</th><th scope="col" class="hl">Retail</th></tr>
         </thead>
         <tbody>
-          <tr><th scope="row">Ideal for</th><td>Retailers, cafés, institutions</td><td class="hl">Households &amp; end customers</td></tr>
+          <tr><th scope="row">Ideal for</th><td>Retailers, cafes, institutions</td><td class="hl">Households &amp; end customers</td></tr>
           <tr><th scope="row">Order volume</th><td>Cases &amp; bulk pallets</td><td class="hl">Single &amp; small packs</td></tr>
           <tr><th scope="row">Pricing</th><td>Volume &amp; trade terms</td><td class="hl">Standard shelf pricing</td></tr>
-          <tr><th scope="row">Island-wide delivery</th><td class="yes">✓ Included</td><td class="hl yes">✓ Available</td></tr>
-          <tr><th scope="row">Dedicated trade support</th><td class="yes">✓ Yes</td><td class="hl">On request</td></tr>
-          <tr><th scope="row">Authentic, quality-assured stock</th><td class="yes">✓ Always</td><td class="hl yes">✓ Always</td></tr>
+          <tr><th scope="row">Island-wide delivery</th><td class="yes">Included</td><td class="hl yes">Available</td></tr>
+          <tr><th scope="row">Dedicated trade support</th><td class="yes">Yes</td><td class="hl">On request</td></tr>
+          <tr><th scope="row">Authentic, quality-assured stock</th><td class="yes">Always</td><td class="hl yes">Always</td></tr>
         </tbody>
       </table>
     </div>
@@ -204,7 +206,7 @@ const hasMore = products.length < totalProducts;
 <section class="section bg-cream" style="padding-top:0">
   <div class="container"><div class="cta-band">
     <h2>Need a tailored wholesale quote?</h2>
-    <p>Send us your product list and order volumes — our trade team will get back to you fast.</p>
+    <p>Send us your product list and order volumes -- our trade team will get back to you fast.</p>
     <div class="btns"><a href="/contact" class="btn btn--gold btn--lg">Get a Quote</a><a href="/brands" class="btn btn--on-dark btn--lg">View Brands</a></div>
   </div></div>
 </section>

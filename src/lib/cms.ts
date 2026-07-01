@@ -1,7 +1,22 @@
-export const CLIENT_ID = import.meta.env.WIX_CLIENT_ID || "6b9c7399-c871-4eec-9007-49ccfbf59b01";
-export const SITE_ID   = "ce3c6696-e20c-4ed7-934e-04017b645c53"; // From wix.config.json
+/**
+ * CMS data layer — public, read-only side.
+ *
+ * Firestore collections:
+ *   Products, Brands, SiteContent, Categories
+ *
+ * All reads go through the shared Firebase Admin singleton in
+ * firebase-admin.ts. Writes (used by the admin panel) live in
+ * admin-data.ts, which also calls invalidateCmsCache() after every
+ * mutation so editors see their changes immediately instead of waiting
+ * out the cache TTL.
+ */
+
+import { getDb } from "./firebase-admin";
+
+// ---------- Types ----------
 
 export interface Product {
+  id?: string;
   name: string;
   brandName: string;
   category: string;
@@ -12,16 +27,21 @@ export interface Product {
   brandSlug: string;
   keywords?: string;
   image?: string;
+  active?: boolean;
 }
 
 export interface Brand {
+  id?: string;
   name: string;
   slug: string;
   logo?: string;
+  heroImage?: string;
+  description?: string;
   active: boolean;
 }
 
 export interface Category {
+  id?: string;
   name: string;
   description?: string;
   tag?: string;
@@ -29,151 +49,156 @@ export interface Category {
   image?: string;
 }
 
+export type SiteContent = Record<string, string>;
+
+// ---------- Image URL helper ----------
+// Handles both legacy Wix URIs (migrated data) and plain HTTPS (Firebase Storage)
+
 export function resolveWixImage(url?: string): string {
-  if (!url) return '/logo.png';
-  if (!url.startsWith('wix:image://v1/')) return url;
-  const parts = url.split('/');
-  if (parts.length > 3) {
-    return `https://static.wixstatic.com/media/${parts[3]}`;
+  if (!url) return "/logo.png";
+  if (url.startsWith("wix:image://v1/")) {
+    const parts = url.split("/");
+    return parts.length > 3
+      ? `https://static.wixstatic.com/media/${parts[3]}`
+      : "/logo.png";
   }
-  return '/logo.png';
+  return url;
 }
 
-const _cache = new Map<string, { value: any; expiry: number }>();
-const CACHE_TTL_MS = 60 * 5 * 1000; // 5 minutes
+// ---------- In-memory cache (per-instance, short TTL) ----------
+//
+// NOTE: on Cloud Run this cache is per-instance, not shared across
+// concurrent instances or survivable across scale-to-zero. It exists purely
+// to absorb bursts of requests hitting the same instance; it is NOT a
+// substitute for query-level efficiency or a CDN layer. See README's
+// "Known limitations" section. invalidateCmsCache() is called by
+// admin-data.ts after every write so editors always see fresh content
+// immediately regardless of TTL.
 
-export async function getToken(): Promise<string> {
-  const cacheKey = 'wix_token';
-  const cached = _cache.get(cacheKey);
-  if (cached && cached.expiry > Date.now()) {
-    return cached.value;
-  }
+const _cache = new Map<string, { value: unknown; expiry: number }>();
+const CACHE_TTL_MS = 2 * 60 * 1000;
 
-  // WIX_CLIENT_SECRET removed for security, but we need a fallback for the Wix SSR build.
-  const clientSecret = import.meta.env.WIX_CLIENT_SECRET || "ec4fc311-378b-4350-9d5e-f6988e011d1d";
-  if (!clientSecret) {
-    console.error('WIX_CLIENT_SECRET is missing. API calls will fail.');
-  }
-
-  const r = await fetch('https://www.wixapis.com/oauth2/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-      grantType: 'client_credentials', 
-      clientId: CLIENT_ID,
-      clientSecret: clientSecret
-    })
-  });
-  
-  if (!r.ok) {
-    console.error('Failed to get Wix token:', await r.text());
-    return "";
-  }
-  
-  const d = await r.json() as { access_token: string };
-  _cache.set(cacheKey, { value: d.access_token, expiry: Date.now() + CACHE_TTL_MS });
-  return d.access_token;
+function fromCache<T>(key: string): T | undefined {
+  const hit = _cache.get(key);
+  if (hit && hit.expiry > Date.now()) return hit.value as T;
+  return undefined;
 }
 
-export async function query(
-  token: string,
+function toCache(key: string, value: unknown): void {
+  _cache.set(key, { value, expiry: Date.now() + CACHE_TTL_MS });
+}
+
+/** Clears the whole in-process CMS cache. Called by admin-data.ts after writes. */
+export function invalidateCmsCache(): void {
+  _cache.clear();
+}
+
+// ---------- Generic Firestore query ----------
+
+async function queryCollection<T>(
   collectionId: string,
-  filter?: object,
-  limit = 1000,
-  sort?: object[]
-): Promise<any[]> {
-  if (!token) return [];
+  filters?: Array<{ field: string; op: FirebaseFirestore.WhereFilterOp; value: unknown }>,
+  orderBy?: { field: string; direction: "asc" | "desc" },
+  limit = 1000
+): Promise<T[]> {
+  const cacheKey = `${collectionId}_${JSON.stringify(filters)}_${JSON.stringify(orderBy)}_${limit}`;
+  const cached = fromCache<T[]>(cacheKey);
+  if (cached) return cached;
 
-  const cacheKey = `query_${collectionId}_${JSON.stringify(filter)}_${limit}_${JSON.stringify(sort)}`;
-  const cached = _cache.get(cacheKey);
-  if (cached && cached.expiry > Date.now()) {
-    return cached.value;
+  const db = getDb();
+  let q: FirebaseFirestore.Query = db.collection(collectionId);
+  if (filters) {
+    for (const f of filters) q = q.where(f.field, f.op, f.value);
   }
+  if (orderBy) q = q.orderBy(orderBy.field, orderBy.direction);
+  q = q.limit(limit);
 
-  const body: Record<string, unknown> = {
-    dataCollectionId: collectionId,
-    query: { paging: { limit } }
-  };
-  if (filter) (body.query as Record<string, unknown>).filter = filter;
-  if (sort)   (body.query as Record<string, unknown>).sort   = sort;
-
-  const r = await fetch('https://www.wixapis.com/wix-data/v2/items/query', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'wix-site-id': SITE_ID,
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(body)
-  });
-  
-  if (!r.ok) {
-    console.error(`Wix API Error (Collection: ${collectionId}):`, await r.text());
-    return [];
-  }
-  
-  const d = await r.json() as { dataItems?: { data?: any }[] };
-  const res = (d.dataItems || []).map(i => i.data || i);
-  _cache.set(cacheKey, { value: res, expiry: Date.now() + CACHE_TTL_MS });
-  return res;
+  const snap = await q.get();
+  const results = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as T[];
+  toCache(cacheKey, results);
+  return results;
 }
 
-export async function getProducts() {
-  const token = await getToken();
-  const products = await query(token, 'Products', { active: { $eq: true } }, 1000, [{ fieldName: 'name', order: 'ASC' }]);
-  return products.map((p: Product) => ({
-    n: p.name,
-    b: p.brandName,
-    cat: p.category,
-    c: p.code,
-    sub: p.subcategory,
-    pr: p.price,
-    p: p.packSize,
-    bs: p.brandSlug,
-    kw: p.keywords,
-    img: resolveWixImage(p.image)
+// ---------- Public API ----------
+
+export async function getProducts(): Promise<Product[]> {
+  const raw = await queryCollection<Product & { active?: boolean }>(
+    "Products",
+    [{ field: "active", op: "==", value: true }],
+    { field: "name", direction: "asc" },
+    1000
+  );
+  return raw.map(p => ({
+    id:          p.id,
+    name:        p.name,
+    brandName:   p.brandName,
+    category:    p.category,
+    code:        p.code,
+    subcategory: p.subcategory,
+    price:       p.price,
+    packSize:    p.packSize,
+    brandSlug:   p.brandSlug,
+    keywords:    p.keywords,
+    image:       resolveWixImage(p.image),
+    active:      p.active,
   }));
 }
 
-export async function getBrands() {
-  const token = await getToken();
-  const brands = await query(token, 'Brands', { active: { $eq: true } }, 100, [{ fieldName: 'name', order: 'ASC' }]);
-  return brands.map((b: Brand) => ({
+export async function getBrands(): Promise<Brand[]> {
+  const raw = await queryCollection<Brand>(
+    "Brands",
+    [{ field: "active", op: "==", value: true }],
+    { field: "name", direction: "asc" },
+    100
+  );
+  return raw.map(b => ({
     ...b,
-    logo: resolveWixImage(b.logo)
+    logo:      resolveWixImage(b.logo),
+    heroImage: resolveWixImage(b.heroImage),
   }));
 }
 
-export async function getSiteContent() {
-  const token = await getToken();
-  const siteArr = await query(token, 'SiteContent', undefined, 1);
-  const site = siteArr[0] || {};
-  return {
-    ...site,
-    homeHeroImage: resolveWixImage(site.homeHeroImage),
-    partnerImage: resolveWixImage(site.partnerImage),
-    homeIntroImage: resolveWixImage(site.homeIntroImage),
-    newsPageHero: resolveWixImage(site.newsPageHero),
-  };
+export async function getSiteContent(): Promise<SiteContent> {
+  const cacheKey = "SiteContent_main";
+  const cached = fromCache<SiteContent>(cacheKey);
+  if (cached) return cached;
+
+  const db = getDb();
+  const doc = await db.collection("SiteContent").doc("main").get();
+  if (!doc.exists) return {};
+
+  const raw = doc.data() as Record<string, string>;
+  const resolved: SiteContent = {};
+  for (const [k, v] of Object.entries(raw)) {
+    resolved[k] = typeof v === "string" && v.startsWith("wix:image://")
+      ? resolveWixImage(v)
+      : v;
+  }
+  toCache(cacheKey, resolved);
+  return resolved;
 }
 
-export async function getCategories() {
-  const token = await getToken();
-  const categories = await query(token, 'Categories', undefined, 50, [{ fieldName: 'order', order: 'ASC' }]);
-  return categories.map((c: Category) => ({
-    name: c.name,
-    description: c.description,
-    tag: c.tag,
-    order: c.order,
-    image: resolveWixImage(c.image)
-  }));
+export async function getCategories(): Promise<Category[]> {
+  return queryCollection<Category>(
+    "Categories",
+    undefined,
+    { field: "order", direction: "asc" },
+    50
+  );
 }
 
+/** Convenience: fetch products + brands + site content in parallel */
 export async function getCmsData() {
   const [products, brands, site] = await Promise.all([
     getProducts(),
     getBrands(),
-    getSiteContent()
+    getSiteContent(),
   ]);
   return { products, brands, site };
 }
+
+/**
+ * Called by middleware.ts — kept as a no-op for API compatibility.
+ * Firebase uses env vars / ADC at init time, not per-request injection.
+ */
+export function setRuntimeConfig(_config: { clientSecret?: string; clientId?: string }) {}

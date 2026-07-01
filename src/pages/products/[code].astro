@@ -7,16 +7,44 @@ const { code } = Astro.params;
 const { products } = await getCmsData();
 const matches = products.filter((p: Product) => String(p.code) === code);
 if (matches.length > 1) {
-  console.warn(`[BUG-003] Duplicate product code "${code}" found (${matches.length} products). Returning first match. Fix codes in Wix CMS.`);
+  console.warn(JSON.stringify({
+    severity: 'WARNING',
+    message: 'duplicate_product_code',
+    code,
+    count: matches.length,
+    hint: 'Fix duplicate product codes in the admin panel (/admin/products).',
+  }));
 }
 const product = matches[0];
 
 if (!product) {
   return Astro.redirect('/products');
 }
+
+const description = `${product.name} by ${product.brandName} -- ${product.category}${product.packSize ? `, ${product.packSize}` : ''}. Available wholesale and retail from Sosun Fihaara in the Maldives.`;
+
+const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: product.name,
+  image: product.image,
+  description,
+  brand: { "@type": "Brand", name: product.brandName },
+  sku: product.code,
+  category: product.category,
+  ...(product.price ? {
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "MVR",
+      price: product.price.replace(/,/g, ''),
+      availability: "https://schema.org/InStock",
+    },
+  } : {}),
+};
 ---
 
-<Layout title={`${product.name} | Sosun Fihaara`}>
+<Layout title={`${product.name} | Sosun Fihaara`} description={description} image={product.image}>
+  <script type="application/ld+json" set:html={JSON.stringify(productSchema)} />
   <main>
     <section class="section bg-cream" style="padding-top: 120px;">
       <div class="container">
@@ -27,14 +55,14 @@ if (!product) {
           <div style="flex: 1;">
             <span class="eyebrow">{product.brandName} &middot; {product.category}</span>
             <h1 style="margin-top: 10px; margin-bottom: 20px;">{product.name}</h1>
-            
+
             <div style="margin-bottom: 24px;">
               <p style="font-family: var(--font-display); font-weight: 800; color: var(--green); font-size: 24px; margin: 0;">
                 {product.price ? `MVR ${product.price}` : 'Request price'}
               </p>
               {product.packSize && <p style="color: var(--muted); margin-top: 5px;">Pack size: {product.packSize}</p>}
             </div>
-            
+
             <a href="/contact" class="btn btn--gold">Get a Wholesale Quote</a>
           </div>
         </div>
