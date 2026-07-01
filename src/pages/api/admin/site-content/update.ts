@@ -37,6 +37,12 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     const brandsPageHero = await uploadImageIfPresent(formData, 'brandsPageHero', 'site-content');
     if (brandsPageHero) patch.brandsPageHero = brandsPageHero;
   } catch (err) {
+    console.error(JSON.stringify({
+      severity: 'ERROR',
+      message: 'site_content_image_upload_failed',
+      error: String(err),
+      stack: err instanceof Error ? err.stack : undefined,
+    }));
     const message = err instanceof UploadError ? err.message : 'Image upload failed.';
     return redirect('/admin/site-content?error=' + encodeURIComponent(message));
   }

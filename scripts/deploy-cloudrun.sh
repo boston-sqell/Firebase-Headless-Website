@@ -57,7 +57,9 @@ gcloud run deploy "$SERVICE" \
   --region "$REGION" \
   --image "$IMAGE" \
   --min-instances=0 --max-instances=10 --memory=512Mi --cpu=1 \
-  --concurrency=80 --timeout=30s --allow-unauthenticated --quiet
+  --concurrency=80 --timeout=30s --allow-unauthenticated \
+  --set-env-vars="FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}" \
+  --quiet
 
 echo "==> Verifying the new revision is healthy"
 SERVICE_URL="$(gcloud run services describe "$SERVICE" \
