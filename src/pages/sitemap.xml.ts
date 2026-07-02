@@ -10,8 +10,10 @@ const STATIC_PAGES = [
   { path: '/about',    priority: '0.8', changefreq: 'monthly' },
   { path: '/products', priority: '0.9', changefreq: 'weekly'  },
   { path: '/brands',   priority: '0.8', changefreq: 'weekly'  },
-  { path: '/recipes',  priority: '0.7', changefreq: 'weekly'  },
-  { path: '/news',     priority: '0.7', changefreq: 'weekly'  },
+  // /news and /recipes are intentionally EXCLUDED until they carry real CMS
+  // content -- both currently render hardcoded placeholder articles, and
+  // advertising placeholder pages to crawlers hurts more than it helps.
+  // Re-add them here when the News/Recipes collections go live.
   { path: '/contact',  priority: '0.6', changefreq: 'monthly' },
 ];
 

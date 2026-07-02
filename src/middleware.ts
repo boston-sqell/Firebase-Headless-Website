@@ -1,10 +1,11 @@
 import { defineMiddleware } from 'astro:middleware';
-import { setRuntimeConfig } from './lib/cms';
 import { verifyAdminSession, SESSION_COOKIE_NAME } from './lib/admin-auth';
 import { ensureCsrfToken, verifyCsrf } from './lib/csrf';
+import { requiresCsrfToken, requiresLoginOriginCheck } from './lib/csrf-policy';
+import { isAllowedOrigin } from './lib/origins';
 
-// img-src includes static.wixstatic.com for migrated images still on Wix CDN,
-// and Firebase Storage domains for images uploaded via the admin panel.
+// img-src includes the Firebase Storage domains for images uploaded via the
+// admin panel.
 // connect-src / script-src include Firebase Auth's identity endpoints, used
 // by the admin login page's client-side sign-in call.
 // style-src / font-src include Google Fonts, used by Layout.astro /
@@ -12,8 +13,9 @@ import { ensureCsrfToken, verifyCsrf } from './lib/csrf';
 const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'",
+  "object-src 'none'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data: https://static.wixstatic.com https://firebasestorage.googleapis.com https://storage.googleapis.com",
+  "img-src 'self' data: https://firebasestorage.googleapis.com https://storage.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
   "connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com",
   "frame-ancestors 'none'",
@@ -22,11 +24,8 @@ const CSP = [
 ].join('; ');
 
 const PUBLIC_ADMIN_PATHS = new Set(['/admin/login']);
-const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  setRuntimeConfig({});
-
   const { pathname } = context.url;
   const secureCookies = !import.meta.env.DEV;
 
@@ -36,12 +35,31 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   const isAdminPage = pathname.startsWith('/admin') && !PUBLIC_ADMIN_PATHS.has(pathname);
   const isAdminApi = pathname.startsWith('/api/admin') && pathname !== '/api/admin/session';
-  // Broader than isAdminApi on purpose: this also covers /api/admin/session
-  // itself (login), which isAdminApi excludes because there's no session to
-  // check yet at that point.
-  const isAdminApiPath = pathname.startsWith('/api/admin');
 
-  if (isAdminApiPath && MUTATING_METHODS.has(context.request.method)) {
+  // The login endpoint (/api/admin/session) is deliberately EXEMPT from the
+  // CSRF token check below: the token is derived from the __session cookie
+  // (see csrf.ts), which cannot exist before login -- gating login on it
+  // would 403 every fresh browser. Login is instead protected by:
+  //   1. the Firebase idToken it must carry (unforgeable by a CSRF attacker),
+  //   2. this Origin allowlist check (login-CSRF defense).
+  // See csrf-policy.ts for the full rationale + regression tests.
+  if (requiresLoginOriginCheck(pathname, context.request.method)) {
+    const origin = context.request.headers.get('origin');
+    if (!isAllowedOrigin(origin)) {
+      console.warn(JSON.stringify({
+        severity: 'WARNING',
+        message: 'session_origin_check_failed',
+        method: context.request.method,
+        origin,
+      }));
+      return new Response(JSON.stringify({ error: 'Cross-origin request rejected.' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+  }
+
+  if (requiresCsrfToken(pathname, context.request.method)) {
     // extractSubmittedCsrfToken always clones the request before reading the
     // body, so the original stream is never consumed here -- the downstream
     // API route handler can still call request.formData() / request.json().
@@ -91,6 +109,22 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // submission (https://hstspreload.org).
   if (!import.meta.env.DEV) {
     response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  }
+
+  // Let Firebase Hosting's CDN cache public HTML: every page view otherwise
+  // hits the Cloud Run container (cold starts + full Firestore reads on
+  // cache miss). s-maxage is CDN-only -- browsers still revalidate
+  // (max-age=0), so a CMS edit is at most ~5 min stale at the edge.
+  // Routes that set their own Cache-Control (sitemap, cms.json) win via the
+  // has() guard; admin routes are overridden to no-store just below.
+  const isPublicPage = !pathname.startsWith('/admin') && !pathname.startsWith('/api');
+  if (
+    isPublicPage &&
+    context.request.method === 'GET' &&
+    response.ok &&
+    !response.headers.has('Cache-Control')
+  ) {
+    response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300, stale-while-revalidate=600');
   }
 
   if (isAdminPage || isAdminApi || pathname === '/admin/login') {

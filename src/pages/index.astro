@@ -1,6 +1,6 @@
 ---
 import HomeLayout from '../layouts/HomeLayout.astro';
-import { getCmsData, resolveWixImage } from '../lib/cms';
+import { getCmsData, resolveImage } from '../lib/cms';
 import Footer from '../components/Footer.astro';
 
 let cmsError = false;
@@ -13,7 +13,7 @@ try {
 }
 const { products, brands, site } = cmsData;
 
-const heroImage: string = resolveWixImage(site.homeHeroImage) || '';
+const heroImage: string = resolveImage(site.homeHeroImage) || '';
 const featuredProducts = products.slice(0, 9);
 const activeBrands = brands.filter((b: any) => b.active !== false);
 ---
@@ -186,7 +186,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
                 <article class="product-card relative flex flex-col items-center rounded-[20px] border border-[#d3d3d3] bg-[#fefdfb] h-full overflow-hidden">
                   <div class="product-img-inner w-full overflow-hidden rounded-t-[20px]" style="height: clamp(160px, 18.85vw, 340px);">
                     {p.image ? (
-                      <img src={resolveWixImage(p.image)} alt={p.name} class="w-full h-full object-cover transition-transform duration-500" loading="lazy" />
+                      <img src={resolveImage(p.image)} alt={p.name} class="w-full h-full object-cover transition-transform duration-500" loading="lazy" />
                     ) : (
                       <div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9);">
                         <span class="font-alumni text-[#0ea44b] text-[24px] text-center px-4 leading-tight">{p.name.split(' ').slice(0,2).join(' ')}</span>
@@ -239,7 +239,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
   <div class="absolute inset-x-0 top-0 overflow-hidden" style="height: clamp(440px, 75vw, 700px);">
     <div class="w-full h-full" style="background: linear-gradient(135deg, #1a2e1a 0%, #2d5a27 40%, #1e3a1e 100%);"></div>
     {site.partnerImage && (
-      <img src={resolveWixImage(site.partnerImage)} alt="" class="absolute inset-0 w-full h-full object-cover object-center opacity-40" loading="lazy" aria-hidden="true" onerror="this.style.display='none'" />
+      <img src={resolveImage(site.partnerImage)} alt="" class="absolute inset-0 w-full h-full object-cover object-center opacity-40" loading="lazy" aria-hidden="true" onerror="this.style.display='none'" />
     )}
   </div>
   <div class="relative mx-4 sm:mx-8 lg:mx-[14.9vw] rounded-t-[25px] lg:rounded-t-[3.6vw] bg-[#fefdfb] px-6 lg:px-[5.2vw] pt-16 pb-16 lg:pt-[5.2vw] lg:pb-[5.2vw]" style="margin-top: clamp(280px, 52vw, 540px);">
@@ -297,7 +297,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
             <a href={`/brands/${b.slug}`} class="brand-card relative flex-shrink-0 rounded-[16px] border border-[#d3d3d3] bg-white overflow-hidden cursor-pointer no-underline" style="width: calc(20% - 6.4px);" aria-label={`Explore ${b.name}`}>
               <div class="flex items-center justify-center p-4 lg:p-[0.94vw]" style="height: clamp(90px, 9vw, 160px);">
                 {b.logo ? (
-                  <img src={resolveWixImage(b.logo)} alt={`${b.name} logo`} class="w-full object-contain" style="max-height: clamp(56px, 5.99vw, 110px);" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+                  <img src={resolveImage(b.logo)} alt={`${b.name} logo`} class="w-full object-contain" style="max-height: clamp(56px, 5.99vw, 110px);" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
                 ) : null}
                 <div class={`w-full items-center justify-center font-alumni text-[#917151] text-center text-[18px] font-bold${b.logo ? ' hidden' : ' flex'}`}>{b.name}</div>
               </div>

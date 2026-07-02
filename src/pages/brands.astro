@@ -16,7 +16,10 @@ const { brands, site } = cmsData;
 const sortedBrands = [...brands].sort((a: Brand, b: Brand) => a.name.localeCompare(b.name));
 ---
 
-<Layout title="BRANDS | Sosun Fihaara">
+<Layout
+  title="BRANDS | Sosun Fihaara"
+  description="The world-renowned FMCG brands Sosun Fihaara distributes across the Maldives — authentic products sourced directly from trusted global manufacturers since 1980."
+>
 <main>
 {cmsError && (
   <div style="background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:16px 24px;text-align:center;font-size:15px;">

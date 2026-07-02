@@ -11,7 +11,10 @@
 import { randomUUID } from 'node:crypto';
 import { getAdminStorage } from './firebase-admin';
 
-const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif']);
+// SVG is deliberately NOT allowed: it is a script-capable format, so an
+// uploaded SVG served inline from the site origin would be stored XSS.
+// Static SVGs an admin genuinely needs can ship via public/ in a deploy.
+const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const MAX_BYTES = 5 * 1024 * 1024; // 5MB
 
 export class UploadError extends Error {}
@@ -21,7 +24,7 @@ export async function uploadImageIfPresent(formData: FormData, fieldName: string
   if (!file || !(file instanceof File) || file.size === 0) return undefined;
 
   if (!ALLOWED_TYPES.has(file.type)) {
-    throw new UploadError(`Unsupported image type "${file.type}". Use JPEG, PNG, WebP, GIF, or SVG.`);
+    throw new UploadError(`Unsupported image type "${file.type}". Use JPEG, PNG, WebP, or GIF.`);
   }
   if (file.size > MAX_BYTES) {
     throw new UploadError('Image is too large (max 5MB).');

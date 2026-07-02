@@ -24,8 +24,8 @@ export default defineConfig({
   },
 
   image: {
-    // Allow images from Firebase Storage CDN + old Wix CDN (for migrated images)
-    domains: ["firebasestorage.googleapis.com", "storage.googleapis.com", "static.wixstatic.com"],
+    // Allow images from Firebase Storage CDN
+    domains: ["firebasestorage.googleapis.com", "storage.googleapis.com"],
   },
 
   security: {

@@ -53,6 +53,21 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 };
 
 export const DELETE: APIRoute = async ({ cookies }) => {
+  // Revoke server-side, not just clear the cookie: verifySessionCookie(…, true)
+  // in admin-auth.ts checks revocation, so a stolen/leaked copy of this cookie
+  // dies here instead of surviving up to 5 days.
+  const sessionCookie = cookies.get(SESSION_COOKIE_NAME)?.value;
+  if (sessionCookie) {
+    try {
+      const auth = getAdminAuth();
+      const decoded = await auth.verifySessionCookie(sessionCookie);
+      await auth.revokeRefreshTokens(decoded.uid);
+    } catch (err) {
+      // Cookie may already be expired/invalid -- still clear it below.
+      console.warn(JSON.stringify({ severity: 'WARNING', message: 'logout_revoke_failed', error: String(err) }));
+    }
+  }
+
   cookies.delete(SESSION_COOKIE_NAME, { path: '/' });
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,

@@ -41,9 +41,28 @@ describe('rate-limit: isAllowed', () => {
 });
 
 describe('rate-limit: getClientKey', () => {
-  it('uses the first entry of x-forwarded-for', () => {
+  it('uses the LAST entry of x-forwarded-for (appended by Google front end, unspoofable)', () => {
     const request = new Request('http://example.com', {
       headers: { 'x-forwarded-for': '203.0.113.5, 10.0.0.1' },
+    });
+    expect(getClientKey(request)).toBe('10.0.0.1');
+  });
+
+  it('ignores attacker-prepended entries', () => {
+    // A client can send its own x-forwarded-for; proxies append the real
+    // peer address. Rotating the first entry must not evade the limiter.
+    const spoofA = new Request('http://example.com', {
+      headers: { 'x-forwarded-for': '1.1.1.1, 198.51.100.7' },
+    });
+    const spoofB = new Request('http://example.com', {
+      headers: { 'x-forwarded-for': '2.2.2.2, 198.51.100.7' },
+    });
+    expect(getClientKey(spoofA)).toBe(getClientKey(spoofB));
+  });
+
+  it('handles a single-entry header', () => {
+    const request = new Request('http://example.com', {
+      headers: { 'x-forwarded-for': '203.0.113.5' },
     });
     expect(getClientKey(request)).toBe('203.0.113.5');
   });

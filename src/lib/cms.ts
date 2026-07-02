@@ -52,17 +52,13 @@ export interface Category {
 export type SiteContent = Record<string, string>;
 
 // ---------- Image URL helper ----------
-// Handles both legacy Wix URIs (migrated data) and plain HTTPS (Firebase Storage)
+// All images live on Firebase Storage (or in public/). Falls back to the
+// logo when a field is empty. (The legacy Wix-URI branch was removed on
+// 2026-07-02 after scripts/migrate-wix-images.mjs re-hosted the last
+// wix:image:// references and a full Firestore scan confirmed zero remain.)
 
-export function resolveWixImage(url?: string): string {
-  if (!url) return "/logo.png";
-  if (url.startsWith("wix:image://v1/")) {
-    const parts = url.split("/");
-    return parts.length > 3
-      ? `https://static.wixstatic.com/media/${parts[3]}`
-      : "/logo.png";
-  }
-  return url;
+export function resolveImage(url?: string): string {
+  return url || "/logo.png";
 }
 
 // ---------- In-memory cache (per-instance, short TTL) ----------
@@ -139,7 +135,7 @@ export async function getProducts(): Promise<Product[]> {
     packSize:    p.packSize,
     brandSlug:   p.brandSlug,
     keywords:    p.keywords,
-    image:       resolveWixImage(p.image),
+    image:       resolveImage(p.image),
     active:      p.active,
   }));
 }
@@ -153,8 +149,8 @@ export async function getBrands(): Promise<Brand[]> {
   );
   return raw.map(b => ({
     ...b,
-    logo:      resolveWixImage(b.logo),
-    heroImage: resolveWixImage(b.heroImage),
+    logo:      resolveImage(b.logo),
+    heroImage: resolveImage(b.heroImage),
   }));
 }
 
@@ -167,13 +163,7 @@ export async function getSiteContent(): Promise<SiteContent> {
   const doc = await db.collection("SiteContent").doc("main").get();
   if (!doc.exists) return {};
 
-  const raw = doc.data() as Record<string, string>;
-  const resolved: SiteContent = {};
-  for (const [k, v] of Object.entries(raw)) {
-    resolved[k] = typeof v === "string" && v.startsWith("wix:image://")
-      ? resolveWixImage(v)
-      : v;
-  }
+  const resolved = doc.data() as SiteContent;
   toCache(cacheKey, resolved);
   return resolved;
 }
@@ -197,8 +187,3 @@ export async function getCmsData() {
   return { products, brands, site };
 }
 
-/**
- * Called by middleware.ts — kept as a no-op for API compatibility.
- * Firebase uses env vars / ADC at init time, not per-request injection.
- */
-export function setRuntimeConfig(_config: { clientSecret?: string; clientId?: string }) {}

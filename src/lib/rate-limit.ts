@@ -35,8 +35,15 @@ export function isAllowed(key: string, maxRequests: number, windowMs: number): b
 }
 
 export function getClientKey(request: Request): string {
+  // Use the LAST x-forwarded-for entry, not the first. The first entries are
+  // client-supplied and trivially spoofable (an attacker can rotate them to
+  // dodge the limiter); the last entry is the peer address appended by
+  // Google's front end and cannot be forged by the client.
   const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
+  if (forwarded) {
+    const hops = forwarded.split(",").map((h) => h.trim()).filter(Boolean);
+    if (hops.length > 0) return hops[hops.length - 1];
+  }
   return "unknown";
 }
 

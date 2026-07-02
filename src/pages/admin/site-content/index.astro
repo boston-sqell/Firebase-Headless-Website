@@ -1,7 +1,7 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import { adminGetSiteContent } from '../../../lib/admin-data';
-import { resolveWixImage } from '../../../lib/cms';
+import { resolveImage } from '../../../lib/cms';
 
 const site = await adminGetSiteContent();
 const success = Astro.url.searchParams.get('success');
@@ -17,7 +17,7 @@ const error = Astro.url.searchParams.get('error');
     <div class="admin-card">
       <h2>Homepage Hero</h2>
       <div class="admin-current-image">
-        {site.homeHeroImage && <img src={resolveWixImage(site.homeHeroImage)} alt="" />}
+        {site.homeHeroImage && <img src={resolveImage(site.homeHeroImage)} alt="" />}
         <div class="field" style="margin:0">
           <label for="homeHeroImage">Hero background image</label>
           <input type="file" id="homeHeroImage" name="homeHeroImage" accept="image/png,image/jpeg,image/webp" />
@@ -44,7 +44,7 @@ const error = Astro.url.searchParams.get('error');
         <textarea id="aboutSubtext" name="aboutSubtext" placeholder="Sosun Fihaara has been the backbone of FMCG distribution...">{site.aboutSubtext}</textarea>
       </div>
       <div class="admin-current-image">
-        {site.partnerImage && <img src={resolveWixImage(site.partnerImage)} alt="" />}
+        {site.partnerImage && <img src={resolveImage(site.partnerImage)} alt="" />}
         <div class="field" style="margin:0">
           <label for="partnerImage">Background panel image</label>
           <input type="file" id="partnerImage" name="partnerImage" accept="image/png,image/jpeg,image/webp" />
@@ -55,7 +55,7 @@ const error = Astro.url.searchParams.get('error');
     <div class="admin-card">
       <h2>Brands Page</h2>
       <div class="admin-current-image">
-        {site.brandsPageHero && <img src={resolveWixImage(site.brandsPageHero)} alt="" />}
+        {site.brandsPageHero && <img src={resolveImage(site.brandsPageHero)} alt="" />}
         <div class="field" style="margin:0">
           <label for="brandsPageHero">Brands page hero image</label>
           <input type="file" id="brandsPageHero" name="brandsPageHero" accept="image/png,image/jpeg,image/webp" />

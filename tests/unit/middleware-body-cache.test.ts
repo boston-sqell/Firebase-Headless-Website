@@ -2,16 +2,15 @@
  * End-to-end tests for the middleware CSRF check + downstream API handler body access.
  *
  * These tests verify that:
- *   1. The CSRF check passes when the correct token is present (cookie + form field).
+ *   1. The CSRF check passes when the correct session-derived token is present.
  *   2. The API route handler can still read ALL form fields after the CSRF check ran —
  *      i.e. extractSubmittedCsrfToken's request.clone() approach leaves the original
  *      body stream intact.
- *   3. CSRF check correctly rejects missing cookie and missing form token.
- *
- * No Object.defineProperty hack is needed with the fix applied to csrf.ts.
+ *   3. CSRF check correctly rejects a missing session and a missing token.
  */
 import { describe, it, expect } from 'vitest';
 import { verifyCsrf, ensureCsrfToken } from '../../src/lib/csrf';
+import { SESSION_COOKIE_NAME } from '../../src/lib/admin-auth';
 import type { AstroCookies } from 'astro';
 
 function makeFakeCookies(initial: Record<string, string> = {}) {
@@ -31,9 +30,14 @@ function makeFakeCookies(initial: Record<string, string> = {}) {
   return { cookies: fake as unknown as AstroCookies, store };
 }
 
-describe('middleware CSRF check + downstream body access (no Object.defineProperty)', () => {
+/** A cookie jar representing a logged-in admin browser. */
+function makeSessionCookies() {
+  return makeFakeCookies({ [SESSION_COOKIE_NAME]: 'fake-session-cookie-value' });
+}
+
+describe('middleware CSRF check + downstream body access', () => {
   it('CSRF check passes via x-csrf-token header and the original request body is still readable by the API handler', async () => {
-    const { cookies } = makeFakeCookies();
+    const { cookies } = makeSessionCookies();
     const token = ensureCsrfToken(cookies, false);
 
     const formData = new FormData();
@@ -62,8 +66,8 @@ describe('middleware CSRF check + downstream body access (no Object.defineProper
     expect(apiFormData.get('aboutSubtext')).toBe('Backbone of FMCG distribution');
   });
 
-  it('CSRF check fails when cookie is absent', async () => {
-    const { cookies } = makeFakeCookies(); // no csrf_token cookie
+  it('CSRF check fails when the session cookie is absent', async () => {
+    const { cookies } = makeFakeCookies(); // no __session cookie
     const formData = new FormData();
     formData.set('csrf_token', 'any-token-value');
 
@@ -75,9 +79,8 @@ describe('middleware CSRF check + downstream body access (no Object.defineProper
     expect(await verifyCsrf(request, cookies)).toBe(false);
   });
 
-  it('CSRF check fails when form token is absent', async () => {
-    const { cookies } = makeFakeCookies();
-    ensureCsrfToken(cookies, false); // cookie is set, but no matching form field
+  it('CSRF check fails when the submitted token is absent', async () => {
+    const { cookies } = makeSessionCookies();
     const formData = new FormData();
     formData.set('heroTagline', 'no csrf token here');
 
@@ -90,7 +93,7 @@ describe('middleware CSRF check + downstream body access (no Object.defineProper
   });
 
   it('URL-encoded form (delete action) works correctly', async () => {
-    const { cookies } = makeFakeCookies();
+    const { cookies } = makeSessionCookies();
     const token = ensureCsrfToken(cookies, false);
 
     // Inline delete forms use application/x-www-form-urlencoded (no enctype="multipart/form-data")

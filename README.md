@@ -4,7 +4,7 @@ A server-rendered marketing and product-catalog website for Sosun Fihaara, an FM
 
 **Stack:** Astro 5 (SSR) -> Cloud Run -> Firebase Hosting (edge) -> Firestore (data) -> Firebase Storage (images) -> Firebase Auth (staff login only).
 
-This project was originally migrated from a Wix-hosted site; that migration is complete. The `scripts/` folder keeps the one-time import script for reference, but Wix is no longer part of the running application.
+This project was originally migrated from a Wix-hosted site. That migration is fully complete: all images are hosted on Firebase Storage, all Wix code and tooling has been removed, and a Firestore scan on 2026-07-02 confirmed zero remaining Wix references. The application is purely Astro + Firebase + Cloud Run.
 
 ---
 
@@ -72,7 +72,7 @@ Run this again any time to add another staff member or reset a password. It also
 
 ### 6. (Optional) Seed initial catalog data
 
-If migrating from an existing Wix site, `scripts/seed-firestore.mjs` does a one-time import. For a fresh project, skip this and add your first products/brands directly through `/admin` instead.
+Add your first products/brands directly through `/admin`. (The one-time Wix import script has been removed; it remains available in git history if ever needed.)
 
 ### 7. Run locally
 

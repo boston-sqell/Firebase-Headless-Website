@@ -3,15 +3,22 @@ import '../styles/homepage.css';
 
 import '../styles/homepage-custom.css';
 
+import { DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, SITE_URL, organizationSchema } from '../lib/seo';
+
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
 }
 
 const {
   title = "HOME | Sosun Fihaara",
-  description = "A trusted wholesale and retail grocery supplier in the Maldives, specializing in authentic global brands, food service supply, and consumer goods.",
+  description = DEFAULT_DESCRIPTION,
+  image = DEFAULT_OG_IMAGE,
 } = Astro.props;
+
+// og:image must be an absolute URL per the Open Graph spec.
+const imageUrl = new URL(image, Astro.site || SITE_URL).toString();
 ---
 
 <!doctype html>
@@ -20,17 +27,19 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/logo.png" />
+    <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site || "https://sosunfihaara.com").toString()} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site || SITE_URL).toString()} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="/logo.png" />
+    <meta property="og:image" content={imageUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content="/logo.png" />
+    <meta name="twitter:image" content={imageUrl} />
+    <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
   </head>
   <body>
     <slot />

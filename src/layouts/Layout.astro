@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import { DEFAULT_TITLE, DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, SITE_URL, organizationSchema } from '../lib/seo';
 
 interface Props {
 	title?: string;
@@ -12,33 +13,15 @@ interface Props {
 }
 
 const {
-	title = "Sosun Fihaara | Wholesale & Retail Groceries in the Maldives",
-	description = "A trusted wholesale and retail grocery supplier in the Maldives, specializing in authentic global brands, food service supply, and consumer goods.",
-	image = "/logo.png",
+	title = DEFAULT_TITLE,
+	description = DEFAULT_DESCRIPTION,
+	image = DEFAULT_OG_IMAGE,
 	noNav = false,
 	noFooter = false,
 } = Astro.props;
 
-const organizationSchema = {
-	"@context": "https://schema.org",
-	"@type": "Organization",
-	name: "Sosun Fihaara",
-	url: "https://sosunfihaara.com",
-	logo: "https://sosunfihaara.com/logo.png",
-	description: "A trusted wholesale and retail grocery supplier in the Maldives, distributing authentic global FMCG brands since 1980.",
-	address: {
-		"@type": "PostalAddress",
-		streetAddress: "Moosa Ibrahim Didi Goalhi",
-		addressLocality: "Male",
-		addressCountry: "MV",
-	},
-	telephone: "+960-331-3020",
-	email: "info@sosunfihaara.com",
-	sameAs: [
-		"https://www.facebook.com/sosunfihaara",
-		"https://www.instagram.com/sosun.fihaara",
-	],
-};
+// og:image must be an absolute URL per the Open Graph spec.
+const imageUrl = new URL(image, Astro.site || SITE_URL).toString();
 ---
 
 <!doctype html>
@@ -57,11 +40,11 @@ const organizationSchema = {
 		<meta property="og:type" content="website" />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
-		<meta property="og:image" content={image} />
+		<meta property="og:image" content={imageUrl} />
 		<meta property="twitter:card" content="summary_large_image" />
 		<meta property="twitter:title" content={title} />
 		<meta property="twitter:description" content={description} />
-		<meta property="twitter:image" content={image} />
+		<meta property="twitter:image" content={imageUrl} />
 		<script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
 	</head>
 	<body>
