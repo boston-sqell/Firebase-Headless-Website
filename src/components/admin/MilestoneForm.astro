@@ -1,0 +1,47 @@
+---
+import type { Milestone } from '../../lib/cms';
+
+interface Props {
+  milestone?: Milestone;
+  action: string;
+  error?: string;
+}
+
+const { milestone, action, error } = Astro.props;
+---
+
+{error && <div class="admin-alert admin-alert--error">{error}</div>}
+
+<form method="post" action={action} class="admin-form">
+  <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+  
+  <div class="field">
+    <label for="order">Order (1 for first, etc.)</label>
+    <input type="number" id="order" name="order" value={milestone?.order ?? 0} required />
+  </div>
+
+  <div class="field">
+    <label for="year">Year</label>
+    <input type="text" id="year" name="year" value={milestone?.year || ''} placeholder="e.g. 1980" required />
+  </div>
+
+  <div class="field">
+    <label for="chapter">Chapter</label>
+    <input type="text" id="chapter" name="chapter" value={milestone?.chapter || ''} placeholder="Our Beginning" required />
+  </div>
+
+  <div class="field">
+    <label for="title">Title (HTML allowed)</label>
+    <input type="text" id="title" name="title" value={milestone?.title || ''} placeholder="A store on<br>Majeedhee Magu" required />
+  </div>
+
+  <div class="field">
+    <label for="body">Body</label>
+    <textarea id="body" name="body" required>{milestone?.body || ''}</textarea>
+  </div>
+
+  <div class="actions">
+    <a href="/admin/milestones" class="btn-admin btn-admin--ghost">Cancel</a>
+    <button type="submit" class="btn-admin">{milestone ? 'Update Milestone' : 'Create Milestone'}</button>
+  </div>
+</form>

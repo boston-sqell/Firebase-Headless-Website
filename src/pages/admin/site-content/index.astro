@@ -63,6 +63,30 @@ const error = Astro.url.searchParams.get('error');
       </div>
     </div>
 
+    <div class="admin-card">
+      <h2>About Us Page</h2>
+      <div class="field">
+        <label for="aboutHeroHeading">Hero Heading</label>
+        <input type="text" id="aboutHeroHeading" name="aboutHeroHeading" value={site.aboutHeroHeading} placeholder="SOSUN FIHAARA" />
+      </div>
+      <div class="field">
+        <label for="aboutHeroSubtext">Hero Subtext</label>
+        <input type="text" id="aboutHeroSubtext" name="aboutHeroSubtext" value={site.aboutHeroSubtext} placeholder="Decades of Growing Maldives" />
+      </div>
+      <div class="field">
+        <label for="aboutHeroDesc">Hero Description</label>
+        <textarea id="aboutHeroDesc" name="aboutHeroDesc" placeholder="From a single store on Majeedhee Magu...">{site.aboutHeroDesc}</textarea>
+      </div>
+      <div class="field">
+        <label for="aboutJourneyQuote">Journey Quote</label>
+        <textarea id="aboutJourneyQuote" name="aboutJourneyQuote" placeholder="Four decades. Four directors. One unwavering commitment...">{site.aboutJourneyQuote}</textarea>
+      </div>
+      <div class="field">
+        <label for="aboutJourneyDesc">Journey Description</label>
+        <textarea id="aboutJourneyDesc" name="aboutJourneyDesc" placeholder="What began as a humble store...">{site.aboutJourneyDesc}</textarea>
+      </div>
+    </div>
+
     <button type="submit" class="btn-admin">Save Changes</button>
   </form>
 </AdminLayout>

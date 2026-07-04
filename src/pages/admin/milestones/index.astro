@@ -1,0 +1,42 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { adminListMilestones } from '../../../lib/admin-data';
+
+const milestones = await adminListMilestones();
+const success = Astro.url.searchParams.get('success');
+---
+
+<AdminLayout title="Milestones" active="milestones">
+  {success && <div class="admin-alert admin-alert--success">{success}</div>}
+
+  <div class="admin-toolbar">
+    <div></div>
+    <a href="/admin/milestones/new" class="btn-admin">+ New Milestone</a>
+  </div>
+
+  <div class="admin-card" style="padding:0">
+    {milestones.length === 0 ? (
+      <p class="empty-state">No milestones found.</p>
+    ) : (
+      <table class="admin-table">
+        <thead><tr><th>Order</th><th>Year</th><th>Title</th><th></th></tr></thead>
+        <tbody>
+          {milestones.map(m => (
+            <tr>
+              <td>{m.order}</td>
+              <td>{m.year}</td>
+              <td>{m.title}</td>
+              <td style="white-space:nowrap">
+                <a href={`/admin/milestones/${m.id}`} class="btn-admin btn-admin--ghost btn-admin--sm">Edit</a>
+                <form method="post" action={`/api/admin/milestones/${m.id}/delete`} style="display:inline" onsubmit="return confirm('Delete this milestone?')">
+                <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+</AdminLayout>

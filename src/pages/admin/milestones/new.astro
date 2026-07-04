@@ -1,0 +1,12 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import MilestoneForm from '../../../components/admin/MilestoneForm.astro';
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+
+<AdminLayout title="New Milestone" active="milestones">
+  <div class="admin-card">
+    <MilestoneForm action="/api/admin/milestones/create" error={error} />
+  </div>
+</AdminLayout>

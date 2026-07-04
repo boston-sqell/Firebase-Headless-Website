@@ -119,6 +119,40 @@ export async function adminDeleteCategory(id: string): Promise<void> {
   invalidateCmsCache();
 }
 
+// ---------- Milestones ----------
+
+export async function adminListMilestones(): Promise<any[]> {
+  const snap = await getDb().collection("Milestones").orderBy("order", "asc").get();
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function adminGetMilestone(id: string): Promise<any | null> {
+  const doc = await getDb().collection("Milestones").doc(id).get();
+  return doc.exists ? { id: doc.id, ...doc.data() } : null;
+}
+
+export async function adminCreateMilestone(data: any): Promise<string> {
+  const ref = await getDb().collection("Milestones").add({
+    ...data,
+    _updatedAt: FieldValue.serverTimestamp(),
+  });
+  invalidateCmsCache();
+  return ref.id;
+}
+
+export async function adminUpdateMilestone(id: string, data: any): Promise<void> {
+  await getDb().collection("Milestones").doc(id).set(
+    { ...data, _updatedAt: FieldValue.serverTimestamp() },
+    { merge: true }
+  );
+  invalidateCmsCache();
+}
+
+export async function adminDeleteMilestone(id: string): Promise<void> {
+  await getDb().collection("Milestones").doc(id).delete();
+  invalidateCmsCache();
+}
+
 // ---------- Site content (headings, hero images, per-page copy) ----------
 
 export async function adminGetSiteContent(): Promise<Record<string, string>> {

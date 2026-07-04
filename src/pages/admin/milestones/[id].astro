@@ -1,0 +1,20 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import MilestoneForm from '../../../components/admin/MilestoneForm.astro';
+import { adminGetMilestone } from '../../../lib/admin-data';
+
+const { id } = Astro.params;
+const milestone = await adminGetMilestone(id!);
+
+if (!milestone) {
+  return Astro.redirect('/admin/milestones?error=' + encodeURIComponent('Milestone not found.'));
+}
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+
+<AdminLayout title={`Edit - ${milestone.year}`} active="milestones">
+  <div class="admin-card">
+    <MilestoneForm milestone={milestone} action={`/api/admin/milestones/${id}/update`} error={error} />
+  </div>
+</AdminLayout>

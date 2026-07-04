@@ -15,6 +15,11 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     heroSubtext: str(formData.get('heroSubtext')),
     aboutHeading: str(formData.get('aboutHeading')),
     aboutSubtext: str(formData.get('aboutSubtext')),
+    aboutHeroHeading: str(formData.get('aboutHeroHeading')),
+    aboutHeroSubtext: str(formData.get('aboutHeroSubtext')),
+    aboutHeroDesc: str(formData.get('aboutHeroDesc')),
+    aboutJourneyQuote: str(formData.get('aboutJourneyQuote')),
+    aboutJourneyDesc: str(formData.get('aboutJourneyDesc')),
   };
 
   const issues = [
@@ -22,6 +27,11 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     ...validateMaxLength(patch.heroSubtext, 'heroSubtext', 'Hero paragraph', 5000),
     ...validateMaxLength(patch.aboutHeading, 'aboutHeading', '"Built on Trust" heading', 300),
     ...validateMaxLength(patch.aboutSubtext, 'aboutSubtext', '"Built on Trust" paragraph', 5000),
+    ...validateMaxLength(patch.aboutHeroHeading, 'aboutHeroHeading', 'About Hero Heading', 300),
+    ...validateMaxLength(patch.aboutHeroSubtext, 'aboutHeroSubtext', 'About Hero Subtext', 300),
+    ...validateMaxLength(patch.aboutHeroDesc, 'aboutHeroDesc', 'About Hero Description', 5000),
+    ...validateMaxLength(patch.aboutJourneyQuote, 'aboutJourneyQuote', 'About Journey Quote', 5000),
+    ...validateMaxLength(patch.aboutJourneyDesc, 'aboutJourneyDesc', 'About Journey Description', 5000),
   ];
   if (issues.length > 0) {
     return redirect('/admin/site-content?error=' + encodeURIComponent(formatIssues(issues)));

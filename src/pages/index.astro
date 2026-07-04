@@ -1,6 +1,7 @@
 ---
 import HomeLayout from '../layouts/HomeLayout.astro';
 import { getCmsData, resolveImage } from '../lib/cms';
+import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 
 let cmsError = false;
@@ -29,73 +30,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
 <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[999] focus:bg-[#0ea44b] focus:text-white focus:px-4 focus:py-2 focus:rounded font-lato font-bold">Skip to main content</a>
 
 <!-- ===== HEADER ===== -->
-<header id="header" class="fixed top-0 left-0 w-full z-50 transition-transform duration-500 translate-y-0">
-  <div class="header-gradient">
-    <!-- Desktop nav -->
-    <div class="hidden lg:flex items-stretch h-[6vw] min-h-[72px] px-[5.2vw]">
-      <div class="flex items-end pb-[2vw] w-[20%]">
-        <a href="/" class="flex items-center gap-2" aria-label="Sosun Fihaara – go to homepage">
-          <img src="/logo.png" alt="Sosun Fihaara" class="h-10 w-auto object-contain" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-          <div style="display:none" class="w-10 h-10 bg-[#917151] rounded-lg items-center justify-center flex-shrink-0">
-            <span class="text-white font-bold text-lg font-alumni">SF</span>
-          </div>
-        </a>
-      </div>
-      <nav aria-label="Main navigation" class="flex items-start pt-[2vw] w-[43.5%] border-b border-white/20 pr-[3vw]">
-        <ul class="flex w-full justify-between" role="list">
-          <li><a href="/" class="font-lato text-[0.83vw] font-normal text-white uppercase tracking-tight hover:font-bold transition-all leading-[3.6vw] whitespace-nowrap">Home</a></li>
-          <li><a href="/about" class="font-lato text-[0.83vw] font-normal text-white uppercase tracking-tight hover:font-bold transition-all leading-[3.6vw] whitespace-nowrap">About Us</a></li>
-          <li><a href="/products" class="font-lato text-[0.83vw] font-normal text-white uppercase tracking-tight hover:font-bold transition-all leading-[3.6vw] whitespace-nowrap">Products</a></li>
-          <li><a href="/brands" class="font-lato text-[0.83vw] font-normal text-white uppercase tracking-tight hover:font-bold transition-all leading-[3.6vw] whitespace-nowrap">Brands</a></li>
-          <li><a href="/news" class="font-lato text-[0.83vw] font-normal text-white uppercase tracking-tight hover:font-bold transition-all leading-[3.6vw] whitespace-nowrap">News</a></li>
-          <li><a href="/recipes" class="font-lato text-[0.83vw] font-normal text-white uppercase tracking-tight hover:font-bold transition-all leading-[3.6vw] whitespace-nowrap">Recipes</a></li>
-        </ul>
-      </nav>
-      <div class="flex items-stretch ml-auto border-b border-white/20 w-[36.5%]">
-        <a href="tel:+9603313020" aria-label="Call us at +960 331 3020" class="flex flex-col items-center justify-center gap-[0.5vw] bg-gradient-to-b from-[#0ea44b00] to-[#0ea44b] px-[0.94vw] text-white border-0 cursor-pointer hover:to-[#0b8a3d] transition-all no-underline ml-auto">
-          <span class="font-lato text-[0.83vw] font-normal uppercase tracking-[2px]">Call Us Now</span>
-          <span class="font-alumni text-[1.5vw] font-bold tracking-wide">+960 331 3020</span>
-        </a>
-      </div>
-    </div>
-    <!-- Mobile nav -->
-    <div class="flex lg:hidden items-center justify-between px-5 h-[72px]">
-      <a href="/" aria-label="Sosun Fihaara homepage" class="flex items-center gap-2">
-        <img src="/logo.png" alt="Sosun Fihaara" class="h-9 w-auto object-contain" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-        <div style="display:none" class="w-9 h-9 bg-[#917151] rounded-lg items-center justify-center">
-          <span class="text-white font-bold font-alumni">SF</span>
-        </div>
-        <span class="text-white font-alumni font-bold text-lg tracking-wider">SOSUN FIHAARA</span>
-      </a>
-      <button id="mobile-menu-btn" aria-label="Open menu" aria-expanded="false" class="text-white p-1 bg-transparent border-0 cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-    </div>
-  </div>
-</header>
-
-<!-- Mobile Menu -->
-<div id="mobile-menu" class="fixed inset-0 z-[60] bg-[#0d2c22] hidden flex-col px-6 pt-6 pb-10">
-  <div class="flex items-center justify-between mb-10">
-    <span class="text-white font-alumni font-bold text-xl tracking-wider">SOSUN FIHAARA</span>
-    <button id="mobile-menu-close" aria-label="Close menu" class="text-white p-1 bg-transparent border-0 cursor-pointer">
-      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
-  <nav>
-    <ul class="flex flex-col gap-5">
-      {['Home,/', 'About Us,/about', 'Products,/products', 'Brands,/brands', 'News,/news', 'Recipes,/recipes', 'Contact,/contact'].map(item => {
-        const [label, href] = item.split(',');
-        return (
-          <li><a href={href} class="font-alumni text-white text-[48px] leading-none uppercase tracking-tight hover:text-[#917151] transition-colors no-underline">{label}</a></li>
-        );
-      })}
-    </ul>
-  </nav>
-  <div class="mt-auto pt-8 border-t border-white/10">
-    <a href="tel:+9603313020" class="font-alumni text-[#917151] text-2xl tracking-wide no-underline">+960 331 3020</a>
-  </div>
-</div>
+<Nav />
 
 <div id="main-content">
 
@@ -137,8 +72,8 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
 </section>
 
 <!-- ===== PROMOTIONS ===== -->
-<section class="mb-28 lg:mb-36" aria-label="Exclusive promotions">
-  <div class="fade-up px-5 lg:px-[8.3vw] pb-10 lg:pb-[4.2vw]">
+<section class="mb-20 lg:mb-24" aria-label="Exclusive promotions">
+  <div class="fade-up px-5 lg:px-[8.3vw] pb-10 lg:pb-12">
     <div class="text-center">
       <p class="tagline-text mb-1">Offers Worth Grabbing</p>
       <h2 class="main-title text-[42px] sm:text-[56px] lg:text-[88px] leading-[.9] tracking-[-2px] mb-2">EXCLUSIVE <span class="font-alumni">PROMOTIONS</span></h2>
@@ -166,9 +101,9 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
 </section>
 
 <!-- ===== BEST SELLING PRODUCTS ===== -->
-<section id="products" class="overflow-hidden pb-20 lg:pb-[8.3vw]" aria-label="Best selling products">
+<section id="products" class="overflow-hidden pb-20 lg:pb-24" aria-label="Best selling products">
   <div class="px-5 sm:px-8 lg:px-[10.8vw]">
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between pb-8 lg:pb-[4.2vw] gap-6">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between pb-8 lg:pb-12 gap-6">
       <div class="fade-left">
         <p class="tagline-text mb-1">Most Popular Products</p>
         <h2 class="main-title text-[42px] sm:text-[56px] lg:text-[88px] leading-[.9] tracking-[-2px] mb-2">BEST SELLING <span class="font-alumni">PRODUCTS</span></h2>
@@ -234,7 +169,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
 </section>
 
 <!-- ===== ABOUT / STATS ===== -->
-<section class="relative pb-20 lg:pb-[8.3vw]" aria-label="About Sosun Fihaara">
+<section class="relative flow-root pb-20 lg:pb-24" aria-label="About Sosun Fihaara">
   <!-- Background panel -->
   <div class="absolute inset-x-0 top-0 overflow-hidden" style="height: clamp(440px, 75vw, 700px);">
     <div class="w-full h-full" style="background: linear-gradient(135deg, #1a2e1a 0%, #2d5a27 40%, #1e3a1e 100%);"></div>
@@ -242,8 +177,8 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
       <img src={resolveImage(site.partnerImage)} alt="" class="absolute inset-0 w-full h-full object-cover object-center opacity-40" loading="lazy" aria-hidden="true" onerror="this.style.display='none'" />
     )}
   </div>
-  <div class="relative mx-4 sm:mx-8 lg:mx-[14.9vw] rounded-t-[25px] lg:rounded-t-[3.6vw] bg-[#fefdfb] px-6 lg:px-[5.2vw] pt-16 pb-16 lg:pt-[5.2vw] lg:pb-[5.2vw]" style="margin-top: clamp(280px, 52vw, 540px);">
-    <div class="fade-up text-center mb-12 lg:mb-[4.2vw]">
+  <div class="relative mx-4 sm:mx-8 lg:mx-[14.9vw] rounded-t-[25px] lg:rounded-t-[3.6vw] bg-[#fefdfb] px-6 lg:px-[5.2vw] pt-16 pb-16 lg:pt-20 lg:pb-20" style="margin-top: clamp(240px, 35vw, 360px);">
+    <div class="fade-up text-center mb-12 lg:mb-12">
       <p class="tagline-text mb-2">Who We Are</p>
       <h2 class="main-title text-[42px] sm:text-[56px] lg:text-[88px] leading-[.9] tracking-[-2px] mb-4">
         {site.aboutHeading ? site.aboutHeading : (<>BUILT ON <span class="font-alumni">TRUST</span></>)}
@@ -278,9 +213,9 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
 </section>
 
 <!-- ===== BRANDS ===== -->
-<section id="brands" class="overflow-hidden pb-20 lg:pb-[8.3vw]" aria-label="Our brand partners">
+<section id="brands" class="overflow-hidden pb-20 lg:pb-24" aria-label="Our brand partners">
   <div class="px-5 sm:px-8 lg:px-[9.9vw]">
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between pb-8 lg:pb-[4.2vw] gap-6">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between pb-8 lg:pb-12 gap-6">
       <div class="fade-left">
         <p class="tagline-text mb-1">Our Trusted Brands</p>
         <h2 class="main-title text-[42px] sm:text-[56px] lg:text-[88px] leading-[.9] tracking-[-2px] mb-2">GLOBAL DISTRIBUTION <span class="font-alumni">BRANDS</span></h2>
@@ -328,10 +263,10 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
 </section>
 
 <!-- ===== RECIPES ===== -->
-<section id="recipes" class="mb-16 lg:mb-[10vw]" aria-label="Recipes">
+<section id="recipes" class="mb-16 lg:mb-24" aria-label="Recipes">
   <div class="flex flex-col lg:flex-row px-5 sm:px-8 lg:px-[9.9vw] gap-12 lg:gap-0">
     <div class="lg:w-[38%] lg:pr-[5.2vw]">
-      <div class="fade-left mb-8 lg:mb-[4vw]">
+      <div class="fade-left mb-8 lg:mb-10">
         <p class="tagline-text mb-1">Recipes Made Simple</p>
         <h2 class="main-title text-[42px] sm:text-[56px] lg:text-[88px] leading-[.9] tracking-[-2px] mb-2">RECIPES <span class="font-alumni">FOR FOOD</span></h2>
         <h3 class="sub-title text-[24px] lg:text-[38px] font-light leading-[1.05] tracking-[-0.84px]">Lovers Like You</h3>
@@ -361,8 +296,8 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
 </section>
 
 <!-- ===== INSTAGRAM ===== -->
-<section class="px-5 sm:px-8 lg:px-[8.3vw] pb-16 lg:pb-[8.3vw]" aria-label="Follow us on Instagram">
-  <div class="fade-up flex items-center justify-center gap-3 mb-6 lg:mb-[2.5vw]">
+<section class="px-5 sm:px-8 lg:px-[8.3vw] pb-16 lg:pb-24" aria-label="Follow us on Instagram">
+  <div class="fade-up flex items-center justify-center gap-3 mb-6 lg:mb-8">
     <div class="w-11 h-11 rounded-full overflow-hidden border-2 border-[#917151] flex items-center justify-center bg-[#917151] flex-shrink-0">
       <span class="font-alumni text-white font-bold text-lg">SF</span>
     </div>
@@ -404,31 +339,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
   );
   document.querySelectorAll('.fade-up, .fade-left, .fade-right').forEach(el => io.observe(el));
 
-  // Header hide/show on scroll
-  let lastY = 0;
-  const header = document.getElementById('header');
-  window.addEventListener('scroll', () => {
-    const y = window.scrollY;
-    if (header) header.style.transform = (y > lastY && y > 100) ? 'translateY(-100%)' : 'translateY(0)';
-    lastY = y;
-  }, { passive: true });
 
-  // Mobile menu
-  const menu = document.getElementById('mobile-menu');
-  const openBtn = document.getElementById('mobile-menu-btn');
-  const closeBtn = document.getElementById('mobile-menu-close');
-  function openMenu() {
-    menu?.classList.remove('hidden'); menu?.classList.add('flex');
-    openBtn?.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMenu() {
-    menu?.classList.add('hidden'); menu?.classList.remove('flex');
-    openBtn?.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-  }
-  openBtn?.addEventListener('click', openMenu);
-  closeBtn?.addEventListener('click', closeMenu);
 
   // Generic slider helper
   function initSlider(trackId: string, prevId: string, nextId: string, cols: number) {

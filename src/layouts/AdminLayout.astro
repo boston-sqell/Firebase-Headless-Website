@@ -3,7 +3,7 @@ import '../styles/admin.css';
 
 interface Props {
   title: string;
-  active: 'dashboard' | 'products' | 'brands' | 'categories' | 'site-content' | 'messages';
+  active: 'dashboard' | 'products' | 'brands' | 'categories' | 'site-content' | 'messages' | 'milestones';
 }
 
 const { title, active } = Astro.props;
@@ -14,6 +14,7 @@ const navItems: Array<{ key: Props['active']; href: string; label: string }> = [
   { key: 'products', href: '/admin/products', label: 'Products' },
   { key: 'brands', href: '/admin/brands', label: 'Brands' },
   { key: 'categories', href: '/admin/categories', label: 'Categories' },
+  { key: 'milestones', href: '/admin/milestones', label: 'Milestones' },
   { key: 'site-content', href: '/admin/site-content', label: 'Site Content' },
   { key: 'messages', href: '/admin/messages', label: 'Messages' },
 ];

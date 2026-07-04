@@ -49,6 +49,15 @@ export interface Category {
   image?: string;
 }
 
+export interface Milestone {
+  id?: string;
+  year: string;
+  chapter: string;
+  title: string;
+  body: string;
+  order: number;
+}
+
 export type SiteContent = Record<string, string>;
 
 // ---------- Image URL helper ----------
@@ -171,6 +180,15 @@ export async function getSiteContent(): Promise<SiteContent> {
 export async function getCategories(): Promise<Category[]> {
   return queryCollection<Category>(
     "Categories",
+    undefined,
+    { field: "order", direction: "asc" },
+    50
+  );
+}
+
+export async function getMilestones(): Promise<Milestone[]> {
+  return queryCollection<Milestone>(
+    "Milestones",
     undefined,
     { field: "order", direction: "asc" },
     50
