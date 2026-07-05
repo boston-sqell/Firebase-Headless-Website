@@ -15,6 +15,12 @@ import { getDb } from "./firebase-admin";
 import { invalidateCmsCache } from "./cms";
 import type { Product, Brand, Category } from "./cms";
 
+export async function bumpCacheVersion(): Promise<void> {
+  await getDb().collection("metadata").doc("cache_version").set({
+    timestamp: FieldValue.serverTimestamp()
+  }, { merge: true });
+}
+
 // ---------- Products ----------
 
 export async function adminListProducts(): Promise<Product[]> {
@@ -34,6 +40,7 @@ export async function adminCreateProduct(data: Omit<Product, "id">): Promise<str
     _updatedAt: FieldValue.serverTimestamp(),
   });
   invalidateCmsCache();
+  await bumpCacheVersion();
   return ref.id;
 }
 
@@ -43,11 +50,13 @@ export async function adminUpdateProduct(id: string, data: Partial<Product>): Pr
     { merge: true }
   );
   invalidateCmsCache();
+  await bumpCacheVersion();
 }
 
 export async function adminDeleteProduct(id: string): Promise<void> {
   await getDb().collection("Products").doc(id).delete();
   invalidateCmsCache();
+  await bumpCacheVersion();
 }
 
 // ---------- Brands ----------
@@ -78,11 +87,13 @@ export async function adminUpdateBrand(id: string, data: Partial<Brand>): Promis
     { merge: true }
   );
   invalidateCmsCache();
+  await bumpCacheVersion();
 }
 
 export async function adminDeleteBrand(id: string): Promise<void> {
   await getDb().collection("Brands").doc(id).delete();
   invalidateCmsCache();
+  await bumpCacheVersion();
 }
 
 // ---------- Categories ----------
@@ -112,11 +123,13 @@ export async function adminUpdateCategory(id: string, data: Partial<Category>): 
     { merge: true }
   );
   invalidateCmsCache();
+  await bumpCacheVersion();
 }
 
 export async function adminDeleteCategory(id: string): Promise<void> {
   await getDb().collection("Categories").doc(id).delete();
   invalidateCmsCache();
+  await bumpCacheVersion();
 }
 
 // ---------- Milestones ----------
@@ -146,11 +159,13 @@ export async function adminUpdateMilestone(id: string, data: any): Promise<void>
     { merge: true }
   );
   invalidateCmsCache();
+  await bumpCacheVersion();
 }
 
 export async function adminDeleteMilestone(id: string): Promise<void> {
   await getDb().collection("Milestones").doc(id).delete();
   invalidateCmsCache();
+  await bumpCacheVersion();
 }
 
 // ---------- Site content (headings, hero images, per-page copy) ----------
@@ -166,6 +181,7 @@ export async function adminUpdateSiteContent(patch: Record<string, string>): Pro
     { merge: true }
   );
   invalidateCmsCache();
+  await bumpCacheVersion();
 }
 
 // ---------- Contact submissions ----------

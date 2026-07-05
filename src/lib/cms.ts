@@ -82,6 +82,17 @@ export function resolveImage(url?: string): string {
 
 const _cache = new Map<string, { value: unknown; expiry: number }>();
 const CACHE_TTL_MS = 2 * 60 * 1000;
+let _localCacheVersion = 0;
+
+async function checkCacheVersion(): Promise<void> {
+  const db = getDb();
+  const doc = await db.collection("metadata").doc("cache_version").get();
+  const remoteVersion = doc.exists ? doc.data()?.timestamp?.toMillis() || 0 : 0;
+  if (remoteVersion > _localCacheVersion) {
+    _cache.clear();
+    _localCacheVersion = remoteVersion;
+  }
+}
 
 function fromCache<T>(key: string): T | undefined {
   const hit = _cache.get(key);
@@ -106,6 +117,7 @@ async function queryCollection<T>(
   orderBy?: { field: string; direction: "asc" | "desc" },
   limit = 1000
 ): Promise<T[]> {
+  await checkCacheVersion();
   const cacheKey = `${collectionId}_${JSON.stringify(filters)}_${JSON.stringify(orderBy)}_${limit}`;
   const cached = fromCache<T[]>(cacheKey);
   if (cached) return cached;
@@ -164,6 +176,7 @@ export async function getBrands(): Promise<Brand[]> {
 }
 
 export async function getSiteContent(): Promise<SiteContent> {
+  await checkCacheVersion();
   const cacheKey = "SiteContent_main";
   const cached = fromCache<SiteContent>(cacheKey);
   if (cached) return cached;

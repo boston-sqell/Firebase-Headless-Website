@@ -72,7 +72,7 @@
   transition: background .2s, border-color .2s;
 }
 
-.slick-arrow:hover { background: #0ea44b; border-color: #0ea44b; color: #fff; }
+.slick-arrow:hover { background: var(--green); border-color: var(--green); color: #fff; }
 
 /* ─── Promotions slider ─────────────────── */
 
@@ -97,7 +97,7 @@
 
 .brand-card::after {
   content: ''; position: absolute; left: 10%; right: 10%; bottom: 0;
-  height: 3px; background: #0ea44b; border-radius: 3px 3px 0 0;
+  height: 3px; background: var(--green); border-radius: 3px 3px 0 0;
   opacity: 0; transition: opacity .4s;
 }
 
@@ -107,7 +107,7 @@
 
 .product-card::after {
   content: ''; position: absolute; left: 10%; right: 10%; bottom: 0;
-  height: 3px; background: #0ea44b; border-radius: 3px 3px 0 0;
+  height: 3px; background: var(--green); border-radius: 3px 3px 0 0;
   opacity: 0; transition: opacity .4s;
 }
 
@@ -119,7 +119,7 @@
 
 .btn-explore {
   display: inline-block;
-  background: #0ea44b; color: #fff;
+  background: var(--green); color: #fff;
   font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 700;
   letter-spacing: 2px; text-transform: uppercase;
   padding: 14px 32px; border-radius: 6px; border: none; cursor: pointer;
@@ -133,11 +133,11 @@
   font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 700;
   color: #1e2424; letter-spacing: 1px; text-transform: uppercase;
   text-decoration: underline; text-underline-offset: 6px;
-  text-decoration-color: #0ea44b; text-decoration-thickness: 2px;
+  text-decoration-color: var(--green); text-decoration-thickness: 2px;
   padding: 0; transition: color .2s;
 }
 
-.btn-underline:hover { color: #0ea44b; }
+.btn-underline:hover { color: var(--green); }
 
 /* ─── Section heading style ─────────────── */
 
@@ -149,13 +149,13 @@
 
 /* ─── Featured recipe tag ───────────────── */
 
-.recipe-featured-tag { background: #0ea44b; color: #fff; font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+.recipe-featured-tag { background: var(--green); color: #fff; font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
 
 /* ─── Scrollbar ─────────────────────────── */
 
 ::-webkit-scrollbar { width: 5px; }
 
-::-webkit-scrollbar-thumb { background: #0ea44b; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--green); border-radius: 3px; }
 
 @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
@@ -171,7 +171,7 @@
  * from homepage.css, that's harmless (identical, non-conflicting CSS).
  */
 
-.focus-within\:border-\[\#917151\]:focus-within{
+.focus-within\:border-gold-accent:focus-within{
   --tw-border-opacity: 1;
   border-color: rgb(14 164 75 / var(--tw-border-opacity, 1));
 }
@@ -193,7 +193,7 @@
   font-weight: 700;
 }
 
-.hover\:text-\[\#917151\]:hover{
+.hover\:text-gold-accent:hover{
   --tw-text-opacity: 1;
   color: rgb(14 164 75 / var(--tw-text-opacity, 1));
 }
@@ -239,7 +239,7 @@
   border-radius: 0.25rem;
 }
 
-.focus\:bg-\[\#0ea44b\]:focus{
+.focus\:bg-green:focus{
   --tw-bg-opacity: 1;
   background-color: rgb(14 164 75 / var(--tw-bg-opacity, 1));
 }

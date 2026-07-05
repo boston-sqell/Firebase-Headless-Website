@@ -499,6 +499,7 @@
   --green-soft:   #e7f1ea;   /* tinted surfaces */
   --gold:         #a8d5ba;   /* secondary brand light green */
   --gold-soft:    #e2f0e7;
+  --gold-accent:  #917151;   /* consistent brown/gold accent */
 
   /* ---- Neutrals ---- */
   --cream:        #f5f3ec;   /* warm page canvas (never pure white) */
@@ -621,10 +622,14 @@ h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.08; font-weigh
   border-radius: var(--r-pill);
   border: 1.5px solid transparent;
   cursor: pointer;
-  transition: transform var(--ease), background var(--ease), color var(--ease), border-color var(--ease);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .btn svg { width: 18px; height: 18px; }
 .btn:active { transform: scale(.96); }
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 122, 69, 0.15);
+}
 .btn--primary { background: var(--green); color: #fff; }
 .btn--primary:hover { background: var(--green-deep); }
 .btn--gold { background: var(--gold); color: #1c1405; }
@@ -1419,19 +1424,6 @@ h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.08; font-weigh
    ============================================================ */
 
 :root {
-  --green:        #0ea44b;
-  --green-deep:   #0b8a3d;
-  --green-house:  #0d2c22;
-  --green-soft:   rgba(14,164,75,0.10);
-  --gold:         #6bbf8a;
-  --gold-soft:    rgba(107,191,138,0.12);
-  --cream:        #fefdfb;
-  --ceramic:      #f0ece4;
-  --ink:          #0d2c22;
-  --muted:        #6b7280;
-  --line:         #e5e7eb;
-  --on-dark:      #f0f0ee;
-  --on-dark-mut:  #9aa09a;
   --font-display: 'Alumni Sans SC', system-ui, sans-serif;
   --font-body:    'Lato', system-ui, sans-serif;
   --shadow-sm: 0 1px 3px rgba(30,36,36,.06), 0 4px 14px rgba(30,36,36,.05);
@@ -1570,15 +1562,15 @@ h1, h2, h3, h4 {
    ============================================================ */
 
 :root {
-  --tan:        #917151;   /* heritage accent — matches homepage tagline/CTA */
+  --tan:        var(--gold-accent);   /* heritage accent — matches homepage tagline/CTA */
   --tan-light:  #c9a96e;
-  --story-1980: #917151;
+  --story-1980: var(--gold-accent);
   --story-1995: #7d8a52;
   --story-2010: #4f9c68;
   --story-2014: #2fa860;
-  --story-2018: #0ea44b;
-  --story-2021: #0b8a3d;
-  --story-2025: #0d2c22;
+  --story-2018: var(--green);
+  --story-2021: var(--green-deep);
+  --story-2025: var(--green-house);
 }
 
 /* ---- Cinematic hero ---- */

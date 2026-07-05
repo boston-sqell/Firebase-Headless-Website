@@ -9,7 +9,7 @@ const pathname = Astro.url.pathname;
       <div class="flex items-end pb-[2vw] flex-1">
         <a href="/" class="flex items-center gap-2" aria-label="Sosun Fihaara – go to homepage">
           <img src="/logo.png" alt="Sosun Fihaara" class="h-10 w-auto object-contain" style="height: 40px !important; width: auto !important;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-          <div style="display:none" class="w-10 h-10 bg-[#917151] rounded-lg items-center justify-center flex-shrink-0">
+          <div style="display:none" class="w-10 h-10 rounded-lg items-center justify-center flex-shrink-0" style="background: var(--gold-accent);">
             <span class="text-white font-bold text-lg font-alumni">SF</span>
           </div>
         </a>
@@ -27,7 +27,7 @@ const pathname = Astro.url.pathname;
         </ul>
       </nav>
       <div class="flex items-stretch justify-end border-b border-white/20 flex-1">
-        <a href="tel:+9603313020" aria-label="Call us at +960 331 3020" class="flex flex-col items-center justify-center gap-[0.5vw] bg-gradient-to-b from-[#0ea44b00] to-[#0ea44b] px-[0.94vw] text-white border-0 cursor-pointer hover:to-[#0b8a3d] transition-all no-underline ml-auto" style="color: #ffffff !important;">
+        <a href="tel:+9603313020" aria-label="Call us at +960 331 3020" class="flex flex-col items-center justify-center gap-[0.5vw] px-[0.94vw] text-white border-0 cursor-pointer transition-all no-underline ml-auto nav-call-btn" style="color: #ffffff !important;">
           <span class="font-lato text-[0.83vw] font-normal uppercase tracking-[2px]">Call Us Now</span>
           <span class="font-alumni text-[1.5vw] font-bold tracking-wide">+960 331 3020</span>
         </a>
@@ -37,7 +37,7 @@ const pathname = Astro.url.pathname;
     <div class="flex lg:hidden items-center justify-between px-5 h-[72px]">
       <a href="/" aria-label="Sosun Fihaara homepage" class="flex items-center gap-2">
         <img src="/logo.png" alt="Sosun Fihaara" class="h-9 w-auto object-contain" style="height: 36px !important; width: auto !important;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-        <div style="display:none" class="w-9 h-9 bg-[#917151] rounded-lg items-center justify-center">
+        <div style="display:none" class="w-9 h-9 rounded-lg items-center justify-center" style="background: var(--gold-accent);">
           <span class="text-white font-bold font-alumni">SF</span>
         </div>
         <span class="text-white font-alumni font-bold text-lg tracking-wider">SOSUN FIHAARA</span>
@@ -69,9 +69,21 @@ const pathname = Astro.url.pathname;
     </ul>
   </nav>
   <div class="mt-auto pt-8 border-t border-white/10">
-    <a href="tel:+9603313020" class="font-alumni text-[#917151] text-2xl tracking-wide no-underline">+960 331 3020</a>
+    <a href="tel:+9603313020" class="font-alumni text-2xl tracking-wide no-underline" style="color: var(--gold-accent);">+960 331 3020</a>
   </div>
 </div>
+
+<style>
+  #header {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nav-call-btn {
+    background: linear-gradient(to bottom, transparent, var(--green));
+  }
+  .nav-call-btn:hover {
+    background: linear-gradient(to bottom, transparent, var(--green-deep));
+  }
+</style>
 
 <script>
   // Header hide/show on scroll

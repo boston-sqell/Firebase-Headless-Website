@@ -1,11 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getProducts, getBrands } from '../lib/cms';
+import { getProducts, getBrands, getSiteContent } from '../lib/cms';
 import type { Product, Brand } from '../lib/cms';
 
-const [allProducts, brands] = await Promise.all([
+const [allProducts, brands, site] = await Promise.all([
   getProducts(),
-  getBrands()
+  getBrands(),
+  getSiteContent()
 ]);
 
 const sortedBrands = brands.map((b: Brand) => b.name).sort();
@@ -50,7 +51,7 @@ const hasMore = products.length < totalProducts;
 
 
 <section class="page-hero" style="background:#0b3d2e">
-  <img id="products-hero-img" class="page-hero__img" src="" alt="" style="display:none">
+  <img id="products-hero-img" class="page-hero__img" src={site.productsPageHero || "/products-hero.jpg"} alt="Sosun Fihaara Products">
   <div class="container page-hero__inner">
     <h1>Products</h1>
     <p class="crumbs"><a href="/">Home</a> &nbsp;/&nbsp; <span>Products</span></p>

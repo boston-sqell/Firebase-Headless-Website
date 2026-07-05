@@ -27,7 +27,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
   </div>
 )}
 
-<a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[999] focus:bg-[#0ea44b] focus:text-white focus:px-4 focus:py-2 focus:rounded font-lato font-bold">Skip to main content</a>
+<a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[999] focus:text-white focus:px-4 focus:py-2 focus:rounded font-lato font-bold" style="background-color: var(--green);">Skip to main content</a>
 
 <!-- ===== HEADER ===== -->
 <Nav />
@@ -57,7 +57,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
         <p class="font-lato text-white/80 text-[15px] lg:text-[18px] font-light leading-[1.65] mb-6 max-w-xl">{site.heroSubtext || 'Four decades of trusted FMCG wholesale and retail distribution — delivering quality food and grocery brands across every atoll of the Maldives.'}</p>
         <div class="flex flex-wrap gap-4 items-center">
           <a href="/products" class="btn-explore">Explore Products</a>
-          <a href="/contact" class="font-lato text-white text-[14px] font-bold uppercase tracking-[2px] border-b-2 border-[#917151] pb-0.5 no-underline hover:text-[#917151] transition-colors">Contact Us</a>
+          <a href="/contact" class="font-lato text-white text-[14px] font-bold uppercase tracking-[2px] border-b-2 pb-0.5 no-underline transition-colors nav-contact" style="border-color: var(--gold-accent);">Contact Us</a>
         </div>
       </div>
     </div>
@@ -124,13 +124,13 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
                       <img src={resolveImage(p.image)} alt={p.name} class="w-full h-full object-cover transition-transform duration-500" loading="lazy" />
                     ) : (
                       <div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9);">
-                        <span class="font-alumni text-[#0ea44b] text-[24px] text-center px-4 leading-tight">{p.name.split(' ').slice(0,2).join(' ')}</span>
+                        <span class="font-alumni text-[24px] text-center px-4 leading-tight" style="color: var(--green);">{p.name.split(' ').slice(0,2).join(' ')}</span>
                       </div>
                     )}
                   </div>
                   <div class="flex flex-col items-center flex-1 px-5 pt-4 pb-10 gap-2 text-center">
-                    {p.brandName && <p class="font-lato text-[11px] font-semibold uppercase tracking-widest text-[#917151]">{p.brandName}</p>}
-                    <h3 class="font-lato font-bold text-[#0d2c22] text-[16px] lg:text-[20px] leading-tight">{p.name}</h3>
+                    {p.brandName && <p class="font-lato text-[11px] font-semibold uppercase tracking-widest" style="color: var(--gold-accent);">{p.brandName}</p>}
+                    <h3 class="font-lato font-bold text-[16px] lg:text-[20px] leading-tight" style="color: var(--green-house);">{p.name}</h3>
                     <div class="mt-auto">
                       <a href="/products" class="btn-underline" aria-label={`Explore more about ${p.name}`}>Explore More</a>
                     </div>
@@ -146,7 +146,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
                 <div class="flex-shrink-0" style="width: calc(33.3333% - 5.33333px);">
                   <article class="product-card relative flex flex-col items-center rounded-[20px] border border-[#d3d3d3] bg-[#fefdfb] h-full overflow-hidden">
                     <div class="product-img-inner w-full rounded-t-[20px] flex items-center justify-center" style={`height: clamp(160px, 18.85vw, 340px); background: ${ph.color};`}>
-                      <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#0ea44b" stroke-width="1" opacity="0.4"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                      <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: var(--green); opacity: 0.4;" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
                     </div>
                     <div class="flex flex-col items-center flex-1 px-5 pt-4 pb-10 gap-4 text-center">
                       <h3 class="font-lato font-bold text-gray-400 text-[16px]">Loading...</h3>
@@ -192,9 +192,9 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
         { num: "300+", label: "Products in Range" },
         { num: "20", label: "Atolls Served" },
       ].map((s) => (
-        <div class="text-center border-b-2 border-[#917151] pb-4">
-          <p class="font-alumni text-[#0d2c22] leading-none tracking-tight" style="font-size: clamp(36px, 4vw, 56px);">{s.num}</p>
-          <p class="font-lato text-[11px] sm:text-[13px] font-semibold uppercase tracking-[2px] text-[#917151] mt-2">{s.label}</p>
+        <div class="text-center border-b-2 pb-4" style="border-color: var(--gold-accent);">
+          <p class="font-alumni leading-none tracking-tight" style="color: var(--green-house); font-size: clamp(36px, 4vw, 56px);">{s.num}</p>
+          <p class="font-lato text-[11px] sm:text-[13px] font-semibold uppercase tracking-[2px] mt-2" style="color: var(--gold-accent);">{s.label}</p>
         </div>
       ))}
     </div>
@@ -203,7 +203,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
     </div>
   </div>
   <!-- Green marquee ticker -->
-  <div class="overflow-hidden py-4 mt-0" style="background: #0ea44b;" aria-hidden="true">
+  <div class="overflow-hidden py-4 mt-0" style="background: var(--green);" aria-hidden="true">
     <div class="marquee-track flex gap-[10px] whitespace-nowrap">
       <span class="font-alumni text-white text-[24px] tracking-wider">
         {Array(6).fill("WHOLESALE · RETAIL · FMCG · MALDIVES · TRUSTED BRANDS · ISLAND DISTRIBUTION · QUALITY PRODUCTS · ").join("")}
@@ -234,10 +234,10 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
                 {b.logo ? (
                   <img src={resolveImage(b.logo)} alt={`${b.name} logo`} class="w-full object-contain" style="max-height: clamp(56px, 5.99vw, 110px);" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
                 ) : null}
-                <div class={`w-full items-center justify-center font-alumni text-[#917151] text-center text-[18px] font-bold${b.logo ? ' hidden' : ' flex'}`}>{b.name}</div>
+                <div class={`w-full items-center justify-center font-alumni text-center text-[18px] font-bold${b.logo ? ' hidden' : ' flex'}`} style="color: var(--gold-accent);">{b.name}</div>
               </div>
               <div class="brand-detail rounded-[16px]">
-                <p class="font-lato font-bold text-[#0d2c22] text-sm uppercase tracking-wide mb-3">{b.name}</p>
+                <p class="font-lato font-bold text-sm uppercase tracking-wide mb-3" style="color: var(--green-house);">{b.name}</p>
                 <span class="btn-underline text-xs">Explore More</span>
               </div>
             </a>
@@ -245,7 +245,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
             ['Brand A','Brand B','Brand C','Brand D','Brand E'].map((name) => (
               <div class="brand-card relative flex-shrink-0 rounded-[16px] border border-[#d3d3d3] bg-white overflow-hidden" style="width: calc(20% - 6.4px);">
                 <div class="flex items-center justify-center p-4" style="height: 120px;">
-                  <span class="font-alumni text-[#917151] text-[18px] font-bold">{name}</span>
+                  <span class="font-alumni text-[18px] font-bold" style="color: var(--gold-accent);">{name}</span>
                 </div>
               </div>
             ))
@@ -298,10 +298,10 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
 <!-- ===== INSTAGRAM ===== -->
 <section class="px-5 sm:px-8 lg:px-[8.3vw] pb-16 lg:pb-24" aria-label="Follow us on Instagram">
   <div class="fade-up flex items-center justify-center gap-3 mb-6 lg:mb-8">
-    <div class="w-11 h-11 rounded-full overflow-hidden border-2 border-[#917151] flex items-center justify-center bg-[#917151] flex-shrink-0">
+    <div class="w-11 h-11 rounded-full overflow-hidden border-2 flex items-center justify-center flex-shrink-0" style="border-color: var(--gold-accent); background: var(--gold-accent);">
       <span class="font-alumni text-white font-bold text-lg">SF</span>
     </div>
-    <a href="https://www.instagram.com/sosun.fihaara/" target="_blank" rel="noopener noreferrer" class="font-alumni text-[#0d2c22] text-[24px] font-semibold tracking-wide no-underline hover:text-[#917151] transition-colors">@sosun.fihaara</a>
+    <a href="https://www.instagram.com/sosun.fihaara/" target="_blank" rel="noopener noreferrer" class="font-alumni text-[24px] font-semibold tracking-wide no-underline transition-colors nav-insta" style="color: var(--green-house);">@sosun.fihaara</a>
   </div>
   <div class="fade-up grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
     {[
