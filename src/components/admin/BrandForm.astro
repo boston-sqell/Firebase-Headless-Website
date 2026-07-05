@@ -1,5 +1,6 @@
 ---
 import type { Brand } from '../../lib/cms';
+import ImageUpload from './ImageUpload.astro';
 
 interface Props {
   brand?: Brand;
@@ -29,21 +30,9 @@ const { brand, action, error } = Astro.props;
     </div>
   </div>
 
-  <div class="admin-current-image">
-    {brand?.logo && <img src={brand.logo} alt="" />}
-    <div class="field" style="margin:0">
-      <label for="logo">{brand ? 'Replace logo' : 'Brand logo'}</label>
-      <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp,image/svg+xml" />
-    </div>
-  </div>
-
-  <div class="admin-current-image">
-    {brand?.heroImage && <img src={brand.heroImage} alt="" />}
-    <div class="field" style="margin:0">
-      <label for="heroImage">{brand ? 'Replace hero image' : 'Brand page hero image'}</label>
-      <input type="file" id="heroImage" name="heroImage" accept="image/png,image/jpeg,image/webp" />
-    </div>
-  </div>
+  <ImageUpload id="logo" name="logo" label={brand ? 'Replace logo' : 'Brand logo'} currentImage={brand?.logo} />
+  
+  <ImageUpload id="heroImage" name="heroImage" label={brand ? 'Replace hero image' : 'Brand page hero image'} currentImage={brand?.heroImage} />
 
   <div class="field">
     <label for="description">Description</label>

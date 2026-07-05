@@ -1,0 +1,62 @@
+---
+import type { NewsItem } from '../../lib/cms';
+import ImageUpload from './ImageUpload.astro';
+
+interface Props {
+  newsItem?: NewsItem;
+  action: string;
+  error?: string;
+}
+
+const { newsItem, action, error } = Astro.props;
+---
+
+<form method="post" action={action} enctype="multipart/form-data" class="admin-form">
+  <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+  {error && <div class="admin-alert admin-alert--error">{error}</div>}
+
+  {newsItem?.image && <input type="hidden" name="currentImage" value={newsItem.image} />}
+
+  <div class="form-row">
+    <div class="field">
+      <label for="title">News Title *</label>
+      <input type="text" id="title" name="title" required value={newsItem?.title} />
+    </div>
+    <div class="field">
+      <label for="publishedAt">Publish Date *</label>
+      <input type="date" id="publishedAt" name="publishedAt" required value={newsItem?.publishedAt || new Date().toISOString().split('T')[0]} />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="field">
+      <label for="eyebrow">Eyebrow / Category</label>
+      <input type="text" id="eyebrow" name="eyebrow" value={newsItem?.eyebrow} placeholder="e.g. June 2025 · Products" />
+    </div>
+    <div class="field" style="display:flex;gap:16px;">
+      <div style="flex:1">
+        <label for="emoji">Emoji Icon</label>
+        <input type="text" id="emoji" name="emoji" value={newsItem?.emoji} placeholder="e.g. 🆕" />
+      </div>
+      <div style="flex:1">
+        <label for="backgroundColor">Background Color</label>
+        <input type="color" id="backgroundColor" name="backgroundColor" value={newsItem?.backgroundColor || '#0b3d2e'} style="height:42px;width:100%;padding:0;border:1px solid var(--admin-border);border-radius:4px;" />
+      </div>
+    </div>
+  </div>
+
+  <ImageUpload id="image" name="image" label="Cover Image (optional fallback/override)" currentImage={newsItem?.image} />
+
+  <div class="field">
+    <label for="description">Content (HTML allowed)</label>
+    <textarea id="description" name="description" class="rich-text" required>{newsItem?.description}</textarea>
+  </div>
+
+  <div class="field checkbox-field">
+    <input type="checkbox" id="active" name="active" checked={newsItem ? newsItem.active : true} />
+    <label for="active">Active (Visible on site)</label>
+  </div>
+
+  <button type="submit" class="btn-admin">{newsItem ? 'Save Changes' : 'Create News Item'}</button>
+  <a href="/admin/news" class="btn-admin btn-admin--ghost">Cancel</a>
+</form>

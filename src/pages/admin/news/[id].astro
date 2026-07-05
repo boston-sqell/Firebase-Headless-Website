@@ -1,0 +1,17 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import NewsForm from '../../../components/admin/NewsForm.astro';
+import { adminGetNewsItem } from '../../../lib/admin-data';
+
+const { id } = Astro.params;
+const newsItem = await adminGetNewsItem(id!);
+
+if (!newsItem) {
+  return Astro.redirect('/admin/news?error=News+item+not+found');
+}
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+<AdminLayout title={`Edit: ${newsItem.title}`} active="news">
+  <NewsForm newsItem={newsItem} action={`/api/admin/news/${id}/update`} error={error} />
+</AdminLayout>

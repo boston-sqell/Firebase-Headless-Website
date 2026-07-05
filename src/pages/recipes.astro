@@ -1,5 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getRecipes } from '../lib/cms';
+
+const recipes = await getRecipes();
+const featured = recipes.find(r => r.featured);
+const others = recipes.filter(r => !r.featured || r.id !== featured?.id);
 ---
 
 <Layout
@@ -27,24 +32,26 @@ import Layout from '../layouts/Layout.astro';
 </section>
 
 <!-- FEATURED RECIPE -->
+{featured && (
 <section class="section bg-cream" style="padding-top:0">
   <div class="container">
     <div class="split" style="background:var(--white);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow);gap:0">
-      <div class="split__media" style="border-radius:0;box-shadow:none"><img src="/images/recipes/cake-pops.jpg" alt="Chocolate cake pops decorated with toppings" loading="lazy" style="height:100%"></div>
+      <div class="split__media" style="border-radius:0;box-shadow:none">
+        {featured.image && <img src={featured.image} alt={featured.title} loading="lazy" style="height:100%">}
+      </div>
       <div style="padding:clamp(28px,4vw,52px);display:flex;flex-direction:column;justify-content:center">
         <span class="pill">Featured of the week</span>
-        <h2 style="font-size:clamp(28px,3.6vw,42px);margin:16px 0 8px">Cake Pops with Crave Chocolate Topping</h2>
-        <p>Bite-sized, party-ready and irresistibly rich. Made simple with Crave chocolate topping — the crowd-pleaser your customers will keep coming back for.</p>
+        <h2 style="font-size:clamp(28px,3.6vw,42px);margin:16px 0 8px">{featured.title}</h2>
+        <div set:html={featured.description} />
         <ul class="recipe-facts mt-4">
-          <li><strong>30</strong><span>Min Prep</span></li>
-          <li><strong>10</strong><span>Min Cook</span></li>
-          <li><strong>12</strong><span>Servings</span></li>
+          <li><strong>{featured.prepTime || '0'}</strong><span>Min Prep</span></li>
+          <li><strong>{featured.cookTime || '0'}</strong><span>Min Cook</span></li>
         </ul>
-        <a href="/recipes" class="btn btn--primary mt-4" style="align-self:flex-start">View Recipe</a>
       </div>
     </div>
   </div>
 </section>
+)}
 
 <!-- RECIPE GRID -->
 <section class="section bg-white" style="padding-top:0">
@@ -54,60 +61,27 @@ import Layout from '../layouts/Layout.astro';
       <h2>Dishes built on <span class="accent">brands you trust</span></h2>
     </div>
     <div class="grid grid-3">
-      <article class="card">
-        <div class="card__media"><img src="/images/recipes/biryani.jpg" alt="Aromatic chicken biryani" loading="lazy"></div>
-        <div class="card__body">
-          <div class="meta" style="margin-bottom:10px"><span class="pill">Main</span><span class="dot"></span><span>With Shan mix</span></div>
-          <h3>Authentic Chicken Biryani</h3>
-          <p>Layered, fragrant and foolproof with a Shan biryani mix — a feast that fills the whole kitchen with aroma.</p>
-          <ul class="recipe-facts mt-3"><li><strong>20</strong><span>Prep</span></li><li><strong>45</strong><span>Cook</span></li></ul>
-        </div>
-      </article>
-      <article class="card">
-        <div class="card__media"><img src="/images/recipes/vermicelli.jpg" alt="Real Thai rice vermicelli stir fry" loading="lazy"></div>
-        <div class="card__body">
-          <div class="meta" style="margin-bottom:10px"><span class="pill">Quick</span><span class="dot"></span><span>With Real Thai</span></div>
-          <h3>Rice Vermicelli Stir-Fry</h3>
-          <p>Light, springy noodles tossed with sweet plum sauce — a 20-minute dinner that never disappoints.</p>
-          <ul class="recipe-facts mt-3"><li><strong>10</strong><span>Prep</span></li><li><strong>15</strong><span>Cook</span></li></ul>
-        </div>
-      </article>
-      <article class="card">
-        <div class="card__media"><img src="/images/recipes/vanilla-parfait.jpg" alt="Vanilla pudding parfait dessert" loading="lazy"></div>
-        <div class="card__body">
-          <div class="meta" style="margin-bottom:10px"><span class="pill">Dessert</span><span class="dot"></span><span>With Pascual</span></div>
-          <h3>No-Bake Vanilla Parfait</h3>
-          <p>Layer Pascual vanilla pudding with biscuit and fruit for an effortless dessert that looks like a showstopper.</p>
-          <ul class="recipe-facts mt-3"><li><strong>15</strong><span>Prep</span></li><li><strong>0</strong><span>Cook</span></li></ul>
-        </div>
-      </article>
-      <article class="card">
-        <div class="card__media"><img src="/images/recipes/fish-curry.jpg" alt="Coconut milk fish curry" loading="lazy"></div>
-        <div class="card__body">
-          <div class="meta" style="margin-bottom:10px"><span class="pill">Main</span><span class="dot"></span><span>With coconut milk</span></div>
-          <h3>Maldivian Coconut Fish Curry</h3>
-          <p>Creamy, spiced and comforting — a local classic made rich with quality coconut milk and fresh spices.</p>
-          <ul class="recipe-facts mt-3"><li><strong>15</strong><span>Prep</span></li><li><strong>30</strong><span>Cook</span></li></ul>
-        </div>
-      </article>
-      <article class="card">
-        <div class="card__media"><img src="/images/recipes/chicken-mayo.jpg" alt="Creamy chicken mayo sandwich" loading="lazy"></div>
-        <div class="card__body">
-          <div class="meta" style="margin-bottom:10px"><span class="pill">Snack</span><span class="dot"></span><span>With Young's mayo</span></div>
-          <h3>Creamy Chicken Mayo Sandwich</h3>
-          <p>Café-style and ready in minutes — rich mayonnaise binds tender chicken for the perfect lunchtime bite.</p>
-          <ul class="recipe-facts mt-3"><li><strong>10</strong><span>Prep</span></li><li><strong>0</strong><span>Cook</span></li></ul>
-        </div>
-      </article>
-      <article class="card">
-        <div class="card__media"><img src="/images/recipes/butter-cookies.jpg" alt="Freshly baked butter cookies" loading="lazy"></div>
-        <div class="card__body">
-          <div class="meta" style="margin-bottom:10px"><span class="pill">Bake</span><span class="dot"></span><span>With Pillsbury atta</span></div>
-          <h3>Wholemeal Butter Cookies</h3>
-          <p>Crisp, golden and wholesome — baked with quality wholemeal flour for a treat the whole family loves.</p>
-          <ul class="recipe-facts mt-3"><li><strong>20</strong><span>Prep</span></li><li><strong>12</strong><span>Cook</span></li></ul>
-        </div>
-      </article>
+      {others.map(r => (
+        <article class="card">
+          <div class="card__media">
+            {r.image && <img src={r.image} alt={r.title} loading="lazy">}
+          </div>
+          <div class="card__body">
+            <div class="meta" style="margin-bottom:10px">
+              {r.pill && <span class="pill">{r.pill}</span>}
+              {r.pill && r.meta && <span class="dot"></span>}
+              {r.meta && <span>{r.meta}</span>}
+            </div>
+            <h3>{r.title}</h3>
+            <div class="recipe-desc" set:html={r.description} />
+            <ul class="recipe-facts mt-3">
+              <li><strong>{r.prepTime || '0'}</strong><span>Prep</span></li>
+              <li><strong>{r.cookTime || '0'}</strong><span>Cook</span></li>
+            </ul>
+          </div>
+        </article>
+      ))}
+      {others.length === 0 && <p>More recipes coming soon!</p>}
     </div>
   </div>
 </section>

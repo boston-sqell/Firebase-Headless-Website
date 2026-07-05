@@ -1,0 +1,17 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import RecipeForm from '../../../components/admin/RecipeForm.astro';
+import { adminGetRecipe } from '../../../lib/admin-data';
+
+const { id } = Astro.params;
+const recipe = await adminGetRecipe(id!);
+
+if (!recipe) {
+  return Astro.redirect('/admin/recipes?error=Recipe+not+found');
+}
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+<AdminLayout title={`Edit: ${recipe.title}`} active="recipes">
+  <RecipeForm recipe={recipe} action={`/api/admin/recipes/${id}/update`} error={error} />
+</AdminLayout>

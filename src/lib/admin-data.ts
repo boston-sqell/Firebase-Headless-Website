@@ -144,6 +144,8 @@ export async function adminGetMilestone(id: string): Promise<any | null> {
   return doc.exists ? { id: doc.id, ...doc.data() } : null;
 }
 
+export { getDb };
+
 export async function adminCreateMilestone(data: any): Promise<string> {
   const ref = await getDb().collection("Milestones").add({
     ...data,
@@ -164,6 +166,132 @@ export async function adminUpdateMilestone(id: string, data: any): Promise<void>
 
 export async function adminDeleteMilestone(id: string): Promise<void> {
   await getDb().collection("Milestones").doc(id).delete();
+  invalidateCmsCache();
+  await bumpCacheVersion();
+}
+
+// ---------- News ----------
+
+export async function adminListNews(): Promise<any[]> {
+  const snap = await getDb().collection("News").orderBy("publishedAt", "desc").get();
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function adminGetNewsItem(id: string): Promise<any | null> {
+  const doc = await getDb().collection("News").doc(id).get();
+  return doc.exists ? { id: doc.id, ...doc.data() } : null;
+}
+
+export async function adminCreateNewsItem(data: any): Promise<string> {
+  const ref = await getDb().collection("News").add({
+    ...data,
+    _updatedAt: FieldValue.serverTimestamp(),
+  });
+  invalidateCmsCache();
+  await bumpCacheVersion();
+  return ref.id;
+}
+
+export async function adminUpdateNewsItem(id: string, data: any): Promise<void> {
+  await getDb().collection("News").doc(id).set(
+    { ...data, _updatedAt: FieldValue.serverTimestamp() },
+    { merge: true }
+  );
+  invalidateCmsCache();
+  await bumpCacheVersion();
+}
+
+export async function adminDeleteNewsItem(id: string): Promise<void> {
+  await getDb().collection("News").doc(id).delete();
+  invalidateCmsCache();
+  await bumpCacheVersion();
+}
+
+// ---------- Recipes ----------
+
+export async function adminListRecipes(): Promise<any[]> {
+  const snap = await getDb().collection("Recipes").orderBy("title", "asc").get();
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function adminGetRecipe(id: string): Promise<any | null> {
+  const doc = await getDb().collection("Recipes").doc(id).get();
+  return doc.exists ? { id: doc.id, ...doc.data() } : null;
+}
+
+export async function adminCreateRecipe(data: any): Promise<string> {
+  const ref = await getDb().collection("Recipes").add({
+    ...data,
+    _updatedAt: FieldValue.serverTimestamp(),
+  });
+  invalidateCmsCache();
+  await bumpCacheVersion();
+  return ref.id;
+}
+
+export async function adminUpdateRecipe(id: string, data: any): Promise<void> {
+  await getDb().collection("Recipes").doc(id).set(
+    { ...data, _updatedAt: FieldValue.serverTimestamp() },
+    { merge: true }
+  );
+  invalidateCmsCache();
+  await bumpCacheVersion();
+}
+
+export async function adminDeleteRecipe(id: string): Promise<void> {
+  await getDb().collection("Recipes").doc(id).delete();
+  invalidateCmsCache();
+  await bumpCacheVersion();
+}
+
+// ---------- Promotions ----------
+export async function adminListPromotions(): Promise<any[]> {
+  const snap = await getDb().collection("Promotions").orderBy("order", "asc").get();
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+export async function adminGetPromotion(id: string): Promise<any | null> {
+  const doc = await getDb().collection("Promotions").doc(id).get();
+  return doc.exists ? { id: doc.id, ...doc.data() } : null;
+}
+export async function adminCreatePromotion(data: any): Promise<string> {
+  const ref = await getDb().collection("Promotions").add({ ...data, _updatedAt: FieldValue.serverTimestamp() });
+  invalidateCmsCache();
+  await bumpCacheVersion();
+  return ref.id;
+}
+export async function adminUpdatePromotion(id: string, data: any): Promise<void> {
+  await getDb().collection("Promotions").doc(id).set({ ...data, _updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+  invalidateCmsCache();
+  await bumpCacheVersion();
+}
+export async function adminDeletePromotion(id: string): Promise<void> {
+  await getDb().collection("Promotions").doc(id).delete();
+  invalidateCmsCache();
+  await bumpCacheVersion();
+}
+
+// ---------- FAQs ----------
+export async function adminListFAQs(): Promise<any[]> {
+  const snap = await getDb().collection("FAQs").orderBy("order", "asc").get();
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+export async function adminGetFAQ(id: string): Promise<any | null> {
+  const doc = await getDb().collection("FAQs").doc(id).get();
+  return doc.exists ? { id: doc.id, ...doc.data() } : null;
+}
+export async function adminCreateFAQ(data: any): Promise<string> {
+  const ref = await getDb().collection("FAQs").add({ ...data, _updatedAt: FieldValue.serverTimestamp() });
+  invalidateCmsCache();
+  await bumpCacheVersion();
+  return ref.id;
+}
+export async function adminUpdateFAQ(id: string, data: any): Promise<void> {
+  await getDb().collection("FAQs").doc(id).set({ ...data, _updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+  invalidateCmsCache();
+  await bumpCacheVersion();
+}
+export async function adminDeleteFAQ(id: string): Promise<void> {
+  await getDb().collection("FAQs").doc(id).delete();
   invalidateCmsCache();
   await bumpCacheVersion();
 }

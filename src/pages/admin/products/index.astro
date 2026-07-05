@@ -1,28 +1,96 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
-import { adminListProducts } from '../../../lib/admin-data';
+import { adminListProducts, adminListBrands, adminListCategories } from '../../../lib/admin-data';
 
-const products = await adminListProducts();
+const [products, brands, categories] = await Promise.all([
+  adminListProducts(),
+  adminListBrands(),
+  adminListCategories()
+]);
+
 const success = Astro.url.searchParams.get('success');
 const q = (Astro.url.searchParams.get('q') || '').toLowerCase();
+const brand = Astro.url.searchParams.get('brand') || '';
+const category = Astro.url.searchParams.get('category') || '';
+const status = Astro.url.searchParams.get('status') || '';
+const sort = Astro.url.searchParams.get('sort') || '';
 
-const filtered = q
-  ? products.filter(p =>
-      p.name?.toLowerCase().includes(q) ||
-      p.brandName?.toLowerCase().includes(q) ||
-      p.code?.toLowerCase().includes(q))
-  : products;
+let filtered = products;
+
+if (q) {
+  filtered = filtered.filter(p =>
+    p.name?.toLowerCase().includes(q) ||
+    p.brandName?.toLowerCase().includes(q) ||
+    p.code?.toLowerCase().includes(q)
+  );
+}
+
+if (brand) {
+  filtered = filtered.filter(p => p.brandName === brand);
+}
+
+if (category) {
+  filtered = filtered.filter(p => p.category === category);
+}
+
+if (status) {
+  const isActive = status === 'active';
+  filtered = filtered.filter(p => (p.active !== false) === isActive);
+}
+
+filtered.sort((a, b) => {
+  if (sort === 'name_asc') return (a.name || '').localeCompare(b.name || '');
+  if (sort === 'name_desc') return (b.name || '').localeCompare(a.name || '');
+  if (sort === 'brand_asc') return (a.brandName || '').localeCompare(b.brandName || '');
+  if (sort === 'brand_desc') return (b.brandName || '').localeCompare(a.brandName || '');
+  if (sort === 'category_asc') return (a.category || '').localeCompare(b.category || '');
+  if (sort === 'category_desc') return (b.category || '').localeCompare(a.category || '');
+  if (sort === 'price_asc') {
+    const pa = parseFloat((a.price || '').replace(/,/g, '') || '0');
+    const pb = parseFloat((b.price || '').replace(/,/g, '') || '0');
+    return pa - pb;
+  }
+  if (sort === 'price_desc') {
+    const pa = parseFloat((a.price || '').replace(/,/g, '') || '0');
+    const pb = parseFloat((b.price || '').replace(/,/g, '') || '0');
+    return pb - pa;
+  }
+  return 0; // default order
+});
+
+function sortUrl(field: string) {
+  const params = new URLSearchParams(Astro.url.searchParams);
+  const currentSort = params.get('sort');
+  const newSort = currentSort === `${field}_asc` ? `${field}_desc` : `${field}_asc`;
+  params.set('sort', newSort);
+  return `?${params.toString()}`;
+}
 ---
 
 <AdminLayout title="Products" active="products">
   {success && <div class="admin-alert admin-alert--success">{success}</div>}
 
   <div class="admin-toolbar">
-    <form method="get" style="display:flex;gap:8px">
+    <form method="get" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
       <input type="text" name="q" placeholder="Search products..." value={q} style="padding:7px 10px;border:1px solid var(--admin-border);border-radius:4px;min-width:220px" />
+      <select name="brand" style="padding:7px;border:1px solid var(--admin-border);border-radius:4px;" onchange="this.form.submit()">
+        <option value="">All Brands</option>
+        {brands.map(b => <option value={b.name} selected={brand === b.name}>{b.name}</option>)}
+      </select>
+      <select name="category" style="padding:7px;border:1px solid var(--admin-border);border-radius:4px;" onchange="this.form.submit()">
+        <option value="">All Categories</option>
+        {categories.map(c => <option value={c.name} selected={category === c.name}>{c.name}</option>)}
+      </select>
+      <select name="status" style="padding:7px;border:1px solid var(--admin-border);border-radius:4px;" onchange="this.form.submit()">
+        <option value="">All Statuses</option>
+        <option value="active" selected={status === 'active'}>Active</option>
+        <option value="hidden" selected={status === 'hidden'}>Hidden</option>
+      </select>
+      {sort && <input type="hidden" name="sort" value={sort} />}
       <button type="submit" class="btn-admin btn-admin--ghost">Search</button>
+      <a href="/admin/products" class="btn-admin btn-admin--ghost" style="padding:7px 10px;text-decoration:none">Clear</a>
     </form>
-    <a href="/admin/products/new" class="btn-admin">+ New Product</a>
+    <a href="/admin/products/new" class="btn-admin" style="white-space:nowrap">+ New Product</a>
   </div>
 
   <div class="admin-card" style="padding:0">
@@ -31,7 +99,16 @@ const filtered = q
     ) : (
       <table class="admin-table">
         <thead>
-          <tr><th></th><th>Name</th><th>Brand</th><th>Category</th><th>Code</th><th>Price</th><th>Status</th><th></th></tr>
+          <tr>
+            <th></th>
+            <th><a href={sortUrl('name')} style="color:inherit;text-decoration:none">Name {sort.startsWith('name') ? (sort.endsWith('asc') ? '↑' : '↓') : ''}</a></th>
+            <th><a href={sortUrl('brand')} style="color:inherit;text-decoration:none">Brand {sort.startsWith('brand') ? (sort.endsWith('asc') ? '↑' : '↓') : ''}</a></th>
+            <th><a href={sortUrl('category')} style="color:inherit;text-decoration:none">Category {sort.startsWith('category') ? (sort.endsWith('asc') ? '↑' : '↓') : ''}</a></th>
+            <th>Code</th>
+            <th><a href={sortUrl('price')} style="color:inherit;text-decoration:none">Price {sort.startsWith('price') ? (sort.endsWith('asc') ? '↑' : '↓') : ''}</a></th>
+            <th>Status</th>
+            <th></th>
+          </tr>
         </thead>
         <tbody>
           {filtered.map(p => (

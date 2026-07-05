@@ -1,0 +1,9 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import NewsForm from '../../../components/admin/NewsForm.astro';
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+<AdminLayout title="New News Item" active="news">
+  <NewsForm action="/api/admin/news/create" error={error} />
+</AdminLayout>

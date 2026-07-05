@@ -1,0 +1,46 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { adminListRecipes } from '../../../lib/admin-data';
+
+const recipes = await adminListRecipes();
+const success = Astro.url.searchParams.get('success');
+---
+
+<AdminLayout title="Recipes" active="recipes">
+  {success && <div class="admin-alert admin-alert--success">{success}</div>}
+
+  <div class="admin-toolbar">
+    <div style="flex:1"></div>
+    <a href="/admin/recipes/new" class="btn-admin">+ New Recipe</a>
+  </div>
+
+  <div class="admin-card" style="padding:0">
+    {recipes.length === 0 ? (
+      <p class="empty-state">No recipes found.</p>
+    ) : (
+      <table class="admin-table">
+        <thead>
+          <tr><th></th><th>Title</th><th>Pill</th><th>Meta</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          {recipes.map((r: any) => (
+            <tr>
+              <td>{r.image ? <img class="thumb" src={r.image} alt="" /> : <div class="thumb" />}</td>
+              <td>{r.title} {r.featured ? '⭐' : ''}</td>
+              <td>{r.pill}</td>
+              <td>{r.meta}</td>
+              <td>{r.active !== false ? <span class="pill pill--active">Active</span> : <span class="pill pill--inactive">Hidden</span>}</td>
+              <td style="white-space:nowrap; text-align:right">
+                <a href={`/admin/recipes/${r.id}`} class="btn-admin btn-admin--ghost btn-admin--sm">Edit</a>
+                <form method="post" action={`/api/admin/recipes/${r.id}/delete`} style="display:inline" onsubmit="return confirm('Delete this recipe?')">
+                  <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+</AdminLayout>

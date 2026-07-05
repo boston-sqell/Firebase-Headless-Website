@@ -1,0 +1,17 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import PromotionForm from '../../../components/admin/PromotionForm.astro';
+import { adminGetPromotion } from '../../../lib/admin-data';
+
+const { id } = Astro.params;
+const promotion = await adminGetPromotion(id!);
+
+if (!promotion) {
+  return Astro.redirect('/admin/promotions?error=Promotion+not+found');
+}
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+<AdminLayout title={`Edit: ${promotion.title}`} active="promotions">
+  <PromotionForm promotion={promotion} action={`/api/admin/promotions/${id}/update`} error={error} />
+</AdminLayout>

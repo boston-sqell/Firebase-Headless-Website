@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { isAllowedOrigin } from '../../lib/origins';
-import { createContactSubmission } from '../../lib/admin-data';
+import { createContactSubmission, adminGetSiteContent, getDb } from '../../lib/admin-data';
 import { isAllowed, getClientKey } from '../../lib/rate-limit';
 
 function validateEmail(email: string): boolean {
@@ -65,6 +65,25 @@ export const POST: APIRoute = async ({ request, redirect }) => {
 
   try {
     await createContactSubmission({ name, email, phone, company, message });
+    
+    // Check if email alerts are configured
+    const site = await adminGetSiteContent();
+    if (site.alertEmail) {
+      await getDb().collection('mail').add({
+        to: site.alertEmail,
+        message: {
+          subject: `New Contact Form Submission from ${name}`,
+          html: `
+            <h2>New Contact Submission</h2>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>Company:</strong> ${company || 'N/A'}</p>
+            <p><strong>Message:</strong><br/>${message.replace(/\n/g, '<br/>')}</p>
+          `,
+        }
+      });
+    }
   } catch (err) {
     console.error(JSON.stringify({ severity: 'ERROR', message: 'contact_submission_failed', error: String(err) }));
     return new Response(JSON.stringify({ error: 'Something went wrong. Please try again or call us directly.' }), {

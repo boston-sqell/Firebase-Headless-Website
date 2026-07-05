@@ -1,5 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getNews } from '../lib/cms';
+
+const news = await getNews();
 ---
 
 <Layout
@@ -21,43 +24,25 @@ import Layout from '../layouts/Layout.astro';
 <!-- ================= NEWS GRID ================= -->
 <section class="section">
   <div class="container">
-    <!-- TODO: Replace placeholder articles with real content once a News collection exists in Firestore -->
+    <!-- Dynamic News Collection -->
     <div class="news-grid">
-      <article class="news-card">
-        <div class="news-card-img" style="background:#0b3d2e;">
-          <span class="news-emoji">🆕</span>
-        </div>
-        <div class="news-card-content">
-          <span class="eyebrow news-eyebrow">June 2025 · Products</span>
-          <h3 class="news-title">New Product Range Launch</h3>
-          <p class="news-desc">Sosun Fihaara expands its portfolio with an exciting new selection of international FMCG brands, now available for wholesale and retail distribution across the Maldives.</p>
-          <a href="/contact" class="btn btn--outline news-btn">Get in Touch</a>
-        </div>
-      </article>
-
-      <article class="news-card">
-        <div class="news-card-img" style="background:#1a5c44;">
-          <span class="news-emoji">🤝</span>
-        </div>
-        <div class="news-card-content">
-          <span class="eyebrow news-eyebrow">May 2025 · Partnerships</span>
-          <h3 class="news-title">Distribution Partnership Expansion</h3>
-          <p class="news-desc">We are proud to announce extended distribution agreements with several of our key international brand partners, strengthening supply across all 20 atolls.</p>
-          <a href="/contact" class="btn btn--outline news-btn">Get in Touch</a>
-        </div>
-      </article>
-
-      <article class="news-card">
-        <div class="news-card-img" style="background:#0b3d2e;">
-          <span class="news-emoji">🏪</span>
-        </div>
-        <div class="news-card-content">
-          <span class="eyebrow news-eyebrow">April 2025 · Company</span>
-          <h3 class="news-title">Four Decades of Service</h3>
-          <p class="news-desc">Sosun Fihaara celebrates over 40 years of dedicated FMCG distribution in the Maldives. Thank you to all our retail partners, customers, and the communities we serve.</p>
-          <a href="/about" class="btn btn--outline news-btn">Our Story</a>
-        </div>
-      </article>
+      {news.map(n => (
+        <article class="news-card">
+          <div class="news-card-img" style={`background:${n.backgroundColor || '#0b3d2e'};`}>
+            {n.image ? (
+              <img src={n.image} alt="" style="width:100%;height:100%;object-fit:cover;" />
+            ) : (
+              <span class="news-emoji">{n.emoji || '📰'}</span>
+            )}
+          </div>
+          <div class="news-card-content">
+            <span class="eyebrow news-eyebrow">{n.eyebrow}</span>
+            <h3 class="news-title">{n.title}</h3>
+            <div class="news-desc" set:html={n.description} />
+          </div>
+        </article>
+      ))}
+      {news.length === 0 && <p>No news updates yet. Please check back later!</p>}
     </div>
 
     <div class="news-cta">

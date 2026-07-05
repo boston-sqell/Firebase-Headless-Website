@@ -1,0 +1,9 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import PromotionForm from '../../../components/admin/PromotionForm.astro';
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+<AdminLayout title="New Promotion" active="promotions">
+  <PromotionForm action="/api/admin/promotions/create" error={error} />
+</AdminLayout>

@@ -1,5 +1,6 @@
 ---
 import type { Category } from '../../lib/cms';
+import ImageUpload from './ImageUpload.astro';
 
 interface Props {
   category?: Category;
@@ -33,13 +34,7 @@ const { category, action, error } = Astro.props;
     <input type="text" id="tag" name="tag" value={category?.tag} />
   </div>
 
-  <div class="admin-current-image">
-    {category?.image && <img src={category.image} alt="" />}
-    <div class="field" style="margin:0">
-      <label for="image">Category image</label>
-      <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp" />
-    </div>
-  </div>
+  <ImageUpload id="image" name="image" label={category ? 'Replace icon' : 'Category icon (SVG or transparent PNG)'} currentImage={category?.image} />
 
   <div class="field">
     <label for="description">Description</label>

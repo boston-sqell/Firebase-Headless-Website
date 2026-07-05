@@ -1,18 +1,19 @@
 ---
 import HomeLayout from '../layouts/HomeLayout.astro';
-import { getCmsData, resolveImage } from '../lib/cms';
+import { getCmsData, getPromotions, resolveImage } from '../lib/cms';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 
 let cmsError = false;
-let cmsData: any = { products: [], brands: [], site: {} as any };
+let cmsData: any = { products: [], brands: [], site: {} as any, promotions: [] };
 try {
-  cmsData = await getCmsData();
+  const [data, promotions] = await Promise.all([getCmsData(), getPromotions()]);
+  cmsData = { ...data, promotions };
 } catch (e) {
   console.error("[homepage] getCmsData failed:", e);
   cmsError = true;
 }
-const { products, brands, site } = cmsData;
+const { products, brands, site, promotions } = cmsData;
 
 const heroImage: string = resolveImage(site.homeHeroImage) || '';
 const featuredProducts = products.slice(0, 9);
@@ -72,6 +73,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
 </section>
 
 <!-- ===== PROMOTIONS ===== -->
+{promotions.length > 0 && (
 <section class="mb-20 lg:mb-24" aria-label="Exclusive promotions">
   <div class="fade-up px-5 lg:px-[8.3vw] pb-10 lg:pb-12">
     <div class="text-center">
@@ -82,23 +84,20 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
   </div>
   <div class="fade-up px-5 sm:px-8 lg:px-[5.2vw]">
     <div class="flex gap-4 overflow-hidden">
-      {[
-        { label: "Weekly Special", title: "Fresh Dairy Range", sub: "Quality dairy delivered island-wide", bg: "linear-gradient(135deg, #2d5a27, #4a8c40)" },
-        { label: "Bundle Deal", title: "Pantry Essentials", sub: "Stock up on everyday staples", bg: "linear-gradient(135deg, #5a4520, #8c6b30)" },
-        { label: "New Arrival", title: "International Sauces", sub: "Authentic flavours from around the world", bg: "linear-gradient(135deg, #1e3a5a, #2a5a8c)" },
-      ].map((p) => (
-        <div class="flex-shrink-0 w-full sm:w-[48%] lg:w-[31%] relative rounded-[20px] overflow-hidden group cursor-pointer" style={`min-height:340px; background: ${p.bg};`}>
+      {promotions.map((p: any) => (
+        <div class="flex-shrink-0 w-full sm:w-[48%] lg:w-[31%] relative rounded-[20px] overflow-hidden group cursor-pointer" style={`min-height:340px; background: ${p.background};`}>
           <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
           <div class="absolute bottom-6 left-6 right-6">
-            <span class="recipe-featured-tag px-2 py-1 text-[11px] tracking-[3px] mb-3 inline-block">{p.label}</span>
+            {p.label && <span class="recipe-featured-tag px-2 py-1 text-[11px] tracking-[3px] mb-3 inline-block">{p.label}</span>}
             <h3 class="font-alumni text-white text-[32px] leading-tight tracking-tight mb-1">{p.title}</h3>
-            <p class="font-lato text-white/80 text-sm">{p.sub}</p>
+            {p.subtitle && <p class="font-lato text-white/80 text-sm">{p.subtitle}</p>}
           </div>
         </div>
       ))}
     </div>
   </div>
 </section>
+)}
 
 <!-- ===== BEST SELLING PRODUCTS ===== -->
 <section id="products" class="overflow-hidden pb-20 lg:pb-24" aria-label="Best selling products">

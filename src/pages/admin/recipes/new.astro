@@ -1,0 +1,9 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import RecipeForm from '../../../components/admin/RecipeForm.astro';
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+<AdminLayout title="New Recipe" active="recipes">
+  <RecipeForm action="/api/admin/recipes/create" error={error} />
+</AdminLayout>

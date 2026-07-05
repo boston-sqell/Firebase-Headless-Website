@@ -1,0 +1,40 @@
+---
+import type { FAQ } from '../../lib/cms';
+
+interface Props {
+  faq?: FAQ;
+  action: string;
+  error?: string;
+}
+
+const { faq, action, error } = Astro.props;
+---
+
+<form method="post" action={action} class="admin-form">
+  <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+  {error && <div class="admin-alert admin-alert--error">{error}</div>}
+
+  <div class="field">
+    <label for="question">Question *</label>
+    <input type="text" id="question" name="question" required value={faq?.question} />
+  </div>
+
+  <div class="field">
+    <label for="answer">Answer (HTML allowed) *</label>
+    <textarea id="answer" name="answer" class="rich-text" required>{faq?.answer}</textarea>
+  </div>
+
+  <div class="form-row">
+    <div class="field">
+      <label for="order">Sort Order</label>
+      <input type="number" id="order" name="order" value={faq?.order ?? 0} />
+    </div>
+    <div class="field checkbox-field" style="margin-top:28px">
+      <input type="checkbox" id="active" name="active" checked={faq ? faq.active : true} />
+      <label for="active">Active (Visible on site)</label>
+    </div>
+  </div>
+
+  <button type="submit" class="btn-admin">{faq ? 'Save Changes' : 'Create FAQ'}</button>
+  <a href="/admin/faqs" class="btn-admin btn-admin--ghost">Cancel</a>
+</form>

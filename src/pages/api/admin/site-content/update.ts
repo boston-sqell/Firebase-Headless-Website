@@ -20,6 +20,10 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     aboutHeroDesc: str(formData.get('aboutHeroDesc')),
     aboutJourneyQuote: str(formData.get('aboutJourneyQuote')),
     aboutJourneyDesc: str(formData.get('aboutJourneyDesc')),
+    contactEmail: str(formData.get('contactEmail')),
+    contactPhone: str(formData.get('contactPhone')),
+    contactAddress: str(formData.get('contactAddress')),
+    alertEmail: str(formData.get('alertEmail')),
   };
 
   const issues = [
@@ -32,6 +36,10 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     ...validateMaxLength(patch.aboutHeroDesc, 'aboutHeroDesc', 'About Hero Description', 5000),
     ...validateMaxLength(patch.aboutJourneyQuote, 'aboutJourneyQuote', 'About Journey Quote', 5000),
     ...validateMaxLength(patch.aboutJourneyDesc, 'aboutJourneyDesc', 'About Journey Description', 5000),
+    ...validateMaxLength(patch.contactEmail, 'contactEmail', 'Contact Email', 254),
+    ...validateMaxLength(patch.contactPhone, 'contactPhone', 'Contact Phone', 100),
+    ...validateMaxLength(patch.contactAddress, 'contactAddress', 'Contact Address', 500),
+    ...validateMaxLength(patch.alertEmail, 'alertEmail', 'Alert Email', 254),
   ];
   if (issues.length > 0) {
     return redirect('/admin/site-content?error=' + encodeURIComponent(formatIssues(issues)));

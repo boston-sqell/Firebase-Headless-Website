@@ -2,6 +2,7 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import { adminGetSiteContent } from '../../../lib/admin-data';
 import { resolveImage } from '../../../lib/cms';
+import ImageUpload from '../../../components/admin/ImageUpload.astro';
 
 const site = await adminGetSiteContent();
 const success = Astro.url.searchParams.get('success');
@@ -16,20 +17,14 @@ const error = Astro.url.searchParams.get('error');
     <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
     <div class="admin-card">
       <h2>Homepage Hero</h2>
-      <div class="admin-current-image">
-        {site.homeHeroImage && <img src={resolveImage(site.homeHeroImage)} alt="" />}
-        <div class="field" style="margin:0">
-          <label for="homeHeroImage">Hero background image</label>
-          <input type="file" id="homeHeroImage" name="homeHeroImage" accept="image/png,image/jpeg,image/webp" />
-        </div>
-      </div>
+      <ImageUpload id="homeHeroImage" name="homeHeroImage" label="Hero background image" currentImage={site.homeHeroImage ? resolveImage(site.homeHeroImage) : undefined} />
       <div class="field">
         <label for="heroTagline">Tagline (small text above the headline)</label>
         <input type="text" id="heroTagline" name="heroTagline" value={site.heroTagline} placeholder="Est. 1980 - Maldives FMCG" />
       </div>
       <div class="field">
         <label for="heroSubtext">Hero paragraph</label>
-        <textarea id="heroSubtext" name="heroSubtext" placeholder="Four decades of trusted FMCG wholesale and retail distribution...">{site.heroSubtext}</textarea>
+        <textarea id="heroSubtext" name="heroSubtext" class="rich-text" placeholder="Four decades of trusted FMCG wholesale and retail distribution...">{site.heroSubtext}</textarea>
       </div>
     </div>
 
@@ -41,26 +36,14 @@ const error = Astro.url.searchParams.get('error');
       </div>
       <div class="field">
         <label for="aboutSubtext">Paragraph</label>
-        <textarea id="aboutSubtext" name="aboutSubtext" placeholder="Sosun Fihaara has been the backbone of FMCG distribution...">{site.aboutSubtext}</textarea>
+        <textarea id="aboutSubtext" name="aboutSubtext" class="rich-text" placeholder="Sosun Fihaara has been the backbone of FMCG distribution...">{site.aboutSubtext}</textarea>
       </div>
-      <div class="admin-current-image">
-        {site.partnerImage && <img src={resolveImage(site.partnerImage)} alt="" />}
-        <div class="field" style="margin:0">
-          <label for="partnerImage">Background panel image</label>
-          <input type="file" id="partnerImage" name="partnerImage" accept="image/png,image/jpeg,image/webp" />
-        </div>
-      </div>
+      <ImageUpload id="partnerImage" name="partnerImage" label="Background panel image" currentImage={site.partnerImage ? resolveImage(site.partnerImage) : undefined} />
     </div>
 
     <div class="admin-card">
       <h2>Brands Page</h2>
-      <div class="admin-current-image">
-        {site.brandsPageHero && <img src={resolveImage(site.brandsPageHero)} alt="" />}
-        <div class="field" style="margin:0">
-          <label for="brandsPageHero">Brands page hero image</label>
-          <input type="file" id="brandsPageHero" name="brandsPageHero" accept="image/png,image/jpeg,image/webp" />
-        </div>
-      </div>
+      <ImageUpload id="brandsPageHero" name="brandsPageHero" label="Brands page hero image" currentImage={site.brandsPageHero ? resolveImage(site.brandsPageHero) : undefined} />
     </div>
 
     <div class="admin-card">
@@ -75,15 +58,36 @@ const error = Astro.url.searchParams.get('error');
       </div>
       <div class="field">
         <label for="aboutHeroDesc">Hero Description</label>
-        <textarea id="aboutHeroDesc" name="aboutHeroDesc" placeholder="From a single store on Majeedhee Magu...">{site.aboutHeroDesc}</textarea>
+        <textarea id="aboutHeroDesc" name="aboutHeroDesc" class="rich-text" placeholder="From a single store on Majeedhee Magu...">{site.aboutHeroDesc}</textarea>
       </div>
       <div class="field">
         <label for="aboutJourneyQuote">Journey Quote</label>
-        <textarea id="aboutJourneyQuote" name="aboutJourneyQuote" placeholder="Four decades. Four directors. One unwavering commitment...">{site.aboutJourneyQuote}</textarea>
+        <textarea id="aboutJourneyQuote" name="aboutJourneyQuote" class="rich-text" placeholder="Four decades. Four directors. One unwavering commitment...">{site.aboutJourneyQuote}</textarea>
       </div>
       <div class="field">
         <label for="aboutJourneyDesc">Journey Description</label>
-        <textarea id="aboutJourneyDesc" name="aboutJourneyDesc" placeholder="What began as a humble store...">{site.aboutJourneyDesc}</textarea>
+        <textarea id="aboutJourneyDesc" name="aboutJourneyDesc" class="rich-text" placeholder="What began as a humble store...">{site.aboutJourneyDesc}</textarea>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h2>Global Contact Settings & Form Alerts</h2>
+      <div class="field">
+        <label for="contactEmail">Public Contact Email</label>
+        <input type="email" id="contactEmail" name="contactEmail" value={site.contactEmail} placeholder="sales@sosunfihaara.com" />
+      </div>
+      <div class="field">
+        <label for="contactPhone">Public Phone Number</label>
+        <input type="text" id="contactPhone" name="contactPhone" value={site.contactPhone} placeholder="+960 332 2000" />
+      </div>
+      <div class="field">
+        <label for="contactAddress">Public Address</label>
+        <input type="text" id="contactAddress" name="contactAddress" value={site.contactAddress} placeholder="Majeedhee Magu, Malé" />
+      </div>
+      <div class="field">
+        <label for="alertEmail">Form Submissions Alert Email</label>
+        <input type="email" id="alertEmail" name="alertEmail" value={site.alertEmail} placeholder="alerts@sosunfihaara.com (Requires Firebase Trigger Email Extension)" />
+        <p style="font-size:13px; color:var(--text-light); margin-top:4px;">When set, form submissions will be written to the <code>mail</code> collection for the Trigger Email extension to dispatch.</p>
       </div>
     </div>
 

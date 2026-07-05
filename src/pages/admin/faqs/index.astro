@@ -1,0 +1,44 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { adminListFAQs } from '../../../lib/admin-data';
+
+const faqs = await adminListFAQs();
+const success = Astro.url.searchParams.get('success');
+---
+
+<AdminLayout title="FAQs" active="faqs">
+  {success && <div class="admin-alert admin-alert--success">{success}</div>}
+
+  <div class="admin-toolbar">
+    <div style="flex:1"></div>
+    <a href="/admin/faqs/new" class="btn-admin">+ New FAQ</a>
+  </div>
+
+  <div class="admin-card" style="padding:0">
+    {faqs.length === 0 ? (
+      <p class="empty-state">No FAQs found.</p>
+    ) : (
+      <table class="admin-table">
+        <thead>
+          <tr><th>Order</th><th>Question</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          {faqs.map((f: any) => (
+            <tr>
+              <td>{f.order}</td>
+              <td>{f.question}</td>
+              <td>{f.active !== false ? <span class="pill pill--active">Active</span> : <span class="pill pill--inactive">Hidden</span>}</td>
+              <td style="white-space:nowrap; text-align:right">
+                <a href={`/admin/faqs/${f.id}`} class="btn-admin btn-admin--ghost btn-admin--sm">Edit</a>
+                <form method="post" action={`/api/admin/faqs/${f.id}/delete`} style="display:inline" onsubmit="return confirm('Delete this FAQ?')">
+                  <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+</AdminLayout>

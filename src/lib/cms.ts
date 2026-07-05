@@ -58,6 +58,49 @@ export interface Milestone {
   order: number;
 }
 
+export interface NewsItem {
+  id?: string;
+  title: string;
+  eyebrow?: string;
+  description: string;
+  emoji?: string;
+  image?: string;
+  backgroundColor?: string;
+  publishedAt: string;
+  active: boolean;
+}
+
+export interface Recipe {
+  id?: string;
+  title: string;
+  meta?: string;
+  pill?: string;
+  description: string;
+  image?: string;
+  prepTime?: string;
+  cookTime?: string;
+  featured: boolean;
+  active: boolean;
+}
+
+export interface Promotion {
+  id?: string;
+  title: string;
+  subtitle: string;
+  label: string;
+  background: string;
+  order: number;
+  active: boolean;
+}
+
+export interface FAQ {
+  id?: string;
+  question: string;
+  answer: string;
+  order: number;
+  active: boolean;
+}
+
 export type SiteContent = Record<string, string>;
 
 // ---------- Image URL helper ----------
@@ -203,6 +246,50 @@ export async function getMilestones(): Promise<Milestone[]> {
   return queryCollection<Milestone>(
     "Milestones",
     undefined,
+    { field: "order", direction: "asc" },
+    50
+  );
+}
+
+export async function getNews(): Promise<NewsItem[]> {
+  const raw = await queryCollection<NewsItem>(
+    "News",
+    [{ field: "active", op: "==", value: true }],
+    { field: "publishedAt", direction: "desc" },
+    50
+  );
+  return raw.map(n => ({
+    ...n,
+    image: n.image ? resolveImage(n.image) : undefined,
+  }));
+}
+
+export async function getRecipes(): Promise<Recipe[]> {
+  const raw = await queryCollection<Recipe>(
+    "Recipes",
+    [{ field: "active", op: "==", value: true }],
+    { field: "title", direction: "asc" },
+    50
+  );
+  return raw.map(r => ({
+    ...r,
+    image: r.image ? resolveImage(r.image) : undefined,
+  }));
+}
+
+export async function getPromotions(): Promise<Promotion[]> {
+  return queryCollection<Promotion>(
+    "Promotions",
+    [{ field: "active", op: "==", value: true }],
+    { field: "order", direction: "asc" },
+    10
+  );
+}
+
+export async function getFaqs(): Promise<FAQ[]> {
+  return queryCollection<FAQ>(
+    "FAQs",
+    [{ field: "active", op: "==", value: true }],
     { field: "order", direction: "asc" },
     50
   );

@@ -1,0 +1,9 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import FAQForm from '../../../components/admin/FAQForm.astro';
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+<AdminLayout title="New FAQ" active="faqs">
+  <FAQForm action="/api/admin/faqs/create" error={error} />
+</AdminLayout>

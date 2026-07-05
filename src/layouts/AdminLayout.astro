@@ -3,7 +3,7 @@ import '../styles/admin.css';
 
 interface Props {
   title: string;
-  active: 'dashboard' | 'products' | 'brands' | 'categories' | 'site-content' | 'messages' | 'milestones';
+  active: 'dashboard' | 'products' | 'brands' | 'categories' | 'site-content' | 'messages' | 'milestones' | 'news' | 'recipes' | 'promotions' | 'faqs';
 }
 
 const { title, active } = Astro.props;
@@ -15,6 +15,10 @@ const navItems: Array<{ key: Props['active']; href: string; label: string }> = [
   { key: 'brands', href: '/admin/brands', label: 'Brands' },
   { key: 'categories', href: '/admin/categories', label: 'Categories' },
   { key: 'milestones', href: '/admin/milestones', label: 'Milestones' },
+  { key: 'promotions', href: '/admin/promotions', label: 'Promotions' },
+  { key: 'news', href: '/admin/news', label: 'News' },
+  { key: 'recipes', href: '/admin/recipes', label: 'Recipes' },
+  { key: 'faqs', href: '/admin/faqs', label: 'FAQs' },
   { key: 'site-content', href: '/admin/site-content', label: 'Site Content' },
   { key: 'messages', href: '/admin/messages', label: 'Messages' },
 ];
@@ -27,6 +31,12 @@ const navItems: Array<{ key: Props['active']; href: string; label: string }> = [
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
   <title>{title} | Admin | Sosun Fihaara</title>
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
+  <style>
+    .quill-wrapper { background: #fff; margin-bottom: 24px; border-radius: 4px; }
+    .ql-toolbar { border-top-left-radius: 4px; border-top-right-radius: 4px; background: #fafafa; border-color: var(--admin-border) !important; }
+    .ql-container { border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; font-family: inherit !important; font-size: 14px !important; min-height: 150px; border-color: var(--admin-border) !important; }
+  </style>
 </head>
 <body class="admin-body">
   <div class="admin-shell">
@@ -122,6 +132,36 @@ const navItems: Array<{ key: Props['active']; href: string; label: string }> = [
       e.preventDefault();
       await fetch('/api/admin/session', { method: 'DELETE' }).catch(() => {});
       window.location.href = '/admin/login';
+    });
+  </script>
+  <script is:inline src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('textarea.rich-text').forEach((textarea) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'quill-wrapper';
+        textarea.parentNode.insertBefore(wrapper, textarea);
+        textarea.style.display = 'none';
+
+        const editorDiv = document.createElement('div');
+        wrapper.appendChild(editorDiv);
+        editorDiv.innerHTML = textarea.value;
+
+        const quill = new Quill(editorDiv, {
+          theme: 'snow',
+          modules: {
+            toolbar: [
+              ['bold', 'italic', 'underline'],
+              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+              ['link', 'clean']
+            ]
+          }
+        });
+
+        quill.on('text-change', () => {
+          textarea.value = quill.root.innerHTML;
+        });
+      });
     });
   </script>
 </body>

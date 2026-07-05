@@ -1,5 +1,6 @@
 ---
 import type { Product, Brand, Category } from '../../lib/cms';
+import ImageUpload from './ImageUpload.astro';
 
 interface Props {
   product?: Product;
@@ -18,14 +19,12 @@ const { product, brands, categories, action, error } = Astro.props;
 
   {product?.image && <input type="hidden" name="currentImage" value={product.image} />}
 
-  <div class="admin-current-image">
-    {product?.image && <img src={product.image} alt="" />}
-    <div class="field" style="margin:0">
-      <label for="image">{product ? 'Replace image' : 'Product image'}</label>
-      <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" />
-      <p class="hint">JPEG, PNG, WebP, GIF, or SVG. Max 5MB.</p>
-    </div>
-  </div>
+  <ImageUpload 
+    id="image" 
+    name="image" 
+    label={product ? 'Replace image (JPEG, PNG, WebP, SVG)' : 'Product image (JPEG, PNG, WebP, SVG)'} 
+    currentImage={product?.image} 
+  />
 
   <div class="form-row">
     <div class="field">
@@ -41,25 +40,25 @@ const { product, brands, categories, action, error } = Astro.props;
   <div class="form-row">
     <div class="field">
       <label for="brandName">Brand name *</label>
-      <input type="text" id="brandName" name="brandName" required list="brandOptions" value={product?.brandName} />
-      <datalist id="brandOptions">
-        {brands.map(b => <option value={b.name} />)}
-      </datalist>
+      <select id="brandName" name="brandName" required>
+        <option value="">Select a brand...</option>
+        {brands.map(b => <option value={b.name} data-slug={b.slug} selected={product?.brandName === b.name}>{b.name}</option>)}
+      </select>
     </div>
     <div class="field">
       <label for="brandSlug">Brand slug</label>
       <input type="text" id="brandSlug" name="brandSlug" value={product?.brandSlug} placeholder="e.g. pascual" />
-      <p class="hint">Must match the brand's slug so it links to the right /brands page.</p>
+      <p class="hint">Automatically populated when a brand is selected, but can be manually edited if needed. Must match the brand's slug.</p>
     </div>
   </div>
 
   <div class="form-row">
     <div class="field">
       <label for="category">Category *</label>
-      <input type="text" id="category" name="category" required list="categoryOptions" value={product?.category} />
-      <datalist id="categoryOptions">
-        {categories.map(c => <option value={c.name} />)}
-      </datalist>
+      <select id="category" name="category" required>
+        <option value="">Select a category...</option>
+        {categories.map(c => <option value={c.name} selected={product?.category === c.name}>{c.name}</option>)}
+      </select>
     </div>
     <div class="field">
       <label for="subcategory">Subcategory</label>
@@ -91,3 +90,17 @@ const { product, brands, categories, action, error } = Astro.props;
   <button type="submit" class="btn-admin">{product ? 'Save Changes' : 'Create Product'}</button>
   <a href="/admin/products" class="btn-admin btn-admin--ghost">Cancel</a>
 </form>
+
+<script>
+  const brandSelect = document.getElementById('brandName') as HTMLSelectElement;
+  const brandSlugInput = document.getElementById('brandSlug') as HTMLInputElement;
+
+  if (brandSelect && brandSlugInput) {
+    brandSelect.addEventListener('change', () => {
+      const selectedOption = brandSelect.options[brandSelect.selectedIndex];
+      if (selectedOption && selectedOption.dataset.slug) {
+        brandSlugInput.value = selectedOption.dataset.slug;
+      }
+    });
+  }
+</script>

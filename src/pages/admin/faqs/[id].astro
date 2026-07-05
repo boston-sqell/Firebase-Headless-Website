@@ -1,0 +1,17 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import FAQForm from '../../../components/admin/FAQForm.astro';
+import { adminGetFAQ } from '../../../lib/admin-data';
+
+const { id } = Astro.params;
+const faq = await adminGetFAQ(id!);
+
+if (!faq) {
+  return Astro.redirect('/admin/faqs?error=FAQ+not+found');
+}
+
+const error = Astro.url.searchParams.get('error') || undefined;
+---
+<AdminLayout title={`Edit FAQ`} active="faqs">
+  <FAQForm faq={faq} action={`/api/admin/faqs/${id}/update`} error={error} />
+</AdminLayout>

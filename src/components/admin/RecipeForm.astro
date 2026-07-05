@@ -1,0 +1,68 @@
+---
+import type { Recipe } from '../../lib/cms';
+import ImageUpload from './ImageUpload.astro';
+
+interface Props {
+  recipe?: Recipe;
+  action: string;
+  error?: string;
+}
+
+const { recipe, action, error } = Astro.props;
+---
+
+<form method="post" action={action} enctype="multipart/form-data" class="admin-form">
+  <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+  {error && <div class="admin-alert admin-alert--error">{error}</div>}
+
+  {recipe?.image && <input type="hidden" name="currentImage" value={recipe.image} />}
+
+  <div class="form-row">
+    <div class="field">
+      <label for="title">Recipe Title *</label>
+      <input type="text" id="title" name="title" required value={recipe?.title} />
+    </div>
+    <div class="field">
+      <label for="pill">Pill Tag</label>
+      <input type="text" id="pill" name="pill" value={recipe?.pill} placeholder="e.g. Main, Quick, Dessert" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="field">
+      <label for="meta">Brand Meta Tag</label>
+      <input type="text" id="meta" name="meta" value={recipe?.meta} placeholder="e.g. With Shan mix" />
+    </div>
+    <div class="field" style="display:flex;gap:16px;">
+      <div style="flex:1">
+        <label for="prepTime">Prep Time</label>
+        <input type="text" id="prepTime" name="prepTime" value={recipe?.prepTime} placeholder="e.g. 20" />
+      </div>
+      <div style="flex:1">
+        <label for="cookTime">Cook Time</label>
+        <input type="text" id="cookTime" name="cookTime" value={recipe?.cookTime} placeholder="e.g. 45" />
+      </div>
+    </div>
+  </div>
+
+  <ImageUpload id="image" name="image" label={recipe ? 'Replace Image' : 'Recipe Image'} currentImage={recipe?.image} />
+
+  <div class="field">
+    <label for="description">Instructions / Description</label>
+    <textarea id="description" name="description" class="rich-text" required>{recipe?.description}</textarea>
+  </div>
+
+  <div class="form-row" style="margin-bottom:24px;">
+    <div class="field checkbox-field" style="margin:0">
+      <input type="checkbox" id="featured" name="featured" checked={recipe?.featured} />
+      <label for="featured">Featured of the week</label>
+    </div>
+    <div class="field checkbox-field" style="margin:0">
+      <input type="checkbox" id="active" name="active" checked={recipe ? recipe.active : true} />
+      <label for="active">Active (Visible on site)</label>
+    </div>
+  </div>
+
+  <button type="submit" class="btn-admin">{recipe ? 'Save Changes' : 'Create Recipe'}</button>
+  <a href="/admin/recipes" class="btn-admin btn-admin--ghost">Cancel</a>
+</form>

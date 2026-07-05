@@ -1,0 +1,45 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { adminListPromotions } from '../../../lib/admin-data';
+
+const promotions = await adminListPromotions();
+const success = Astro.url.searchParams.get('success');
+---
+
+<AdminLayout title="Promotions" active="promotions">
+  {success && <div class="admin-alert admin-alert--success">{success}</div>}
+
+  <div class="admin-toolbar">
+    <div style="flex:1"></div>
+    <a href="/admin/promotions/new" class="btn-admin">+ New Promotion</a>
+  </div>
+
+  <div class="admin-card" style="padding:0">
+    {promotions.length === 0 ? (
+      <p class="empty-state">No promotions found.</p>
+    ) : (
+      <table class="admin-table">
+        <thead>
+          <tr><th>Order</th><th>Title</th><th>Label</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          {promotions.map((p: any) => (
+            <tr>
+              <td>{p.order}</td>
+              <td>{p.title}</td>
+              <td>{p.label}</td>
+              <td>{p.active !== false ? <span class="pill pill--active">Active</span> : <span class="pill pill--inactive">Hidden</span>}</td>
+              <td style="white-space:nowrap; text-align:right">
+                <a href={`/admin/promotions/${p.id}`} class="btn-admin btn-admin--ghost btn-admin--sm">Edit</a>
+                <form method="post" action={`/api/admin/promotions/${p.id}/delete`} style="display:inline" onsubmit="return confirm('Delete this promotion?')">
+                  <input type="hidden" name="csrf_token" value={Astro.locals.csrfToken} />
+                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+</AdminLayout>

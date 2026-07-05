@@ -1,0 +1,104 @@
+---
+interface Props {
+  id: string;
+  name: string;
+  currentImage?: string;
+  label?: string;
+}
+
+const { id, name, currentImage, label } = Astro.props;
+---
+
+<div class="admin-image-upload" id={`upload-zone-${id}`}>
+  <div class="upload-preview" id={`preview-${id}`} style={currentImage ? `background-image: url('${currentImage}')` : ''}>
+    {!currentImage && <span class="placeholder-text">Click or drag image here</span>}
+  </div>
+  <div class="field" style="margin:0; flex:1">
+    {label && <label for={id}>{label}</label>}
+    <input type="file" id={id} name={name} accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" class="file-input" />
+  </div>
+</div>
+
+<style>
+.admin-image-upload {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.upload-preview {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed var(--admin-border);
+  border-radius: 8px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--admin-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.upload-preview.drag-over {
+  border-color: var(--gold);
+  background-color: rgba(212, 175, 55, 0.1);
+}
+.file-input {
+  display: block;
+}
+</style>
+
+<script define:vars={{ id }}>
+  const input = document.getElementById(id);
+  const preview = document.getElementById(`preview-${id}`);
+  const zone = document.getElementById(`upload-zone-${id}`);
+
+  if (input && preview && zone) {
+    preview.addEventListener('click', () => input.click());
+
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      preview.classList.add('drag-over');
+    });
+
+    zone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      preview.classList.remove('drag-over');
+    });
+
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      preview.classList.remove('drag-over');
+      
+      if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
+        input.files = e.dataTransfer.files;
+        updatePreview(e.dataTransfer.files[0]);
+      }
+    });
+
+    input.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        updatePreview(e.target.files[0]);
+      }
+    });
+
+    function updatePreview(file) {
+      if (!file.type.startsWith('image/')) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.style.backgroundImage = `url('${e.target.result}')`;
+        const placeholder = preview.querySelector('.placeholder-text');
+        if (placeholder) placeholder.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+</script>
