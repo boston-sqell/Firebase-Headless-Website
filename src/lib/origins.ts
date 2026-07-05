@@ -24,6 +24,17 @@ function buildAllowedOrigins(): string[] {
   // Fallback: hardcoded production domains
   origins.push('https://sosunfihaara.com', 'https://www.sosunfihaara.com');
 
+  // Firebase default hosting domains
+  const projectId = import.meta.env.PUBLIC_FIREBASE_PROJECT_ID;
+  if (projectId) {
+    origins.push(`https://${projectId}.web.app`, `https://${projectId}.firebaseapp.com`);
+  }
+
+  // Local dev
+  if (import.meta.env.DEV) {
+    origins.push('http://localhost:4321', 'http://localhost:4322', 'http://127.0.0.1:4321', 'http://127.0.0.1:4322');
+  }
+
   // Firebase Hosting preview channel URL (optional, for staging)
   const firebasePreview = import.meta.env.FIREBASE_PREVIEW_URL;
   if (firebasePreview) origins.push(firebasePreview);
