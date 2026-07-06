@@ -21,7 +21,7 @@ const featuredProducts = products.slice(0, 9);
 const activeBrands = brands.filter((b: any) => b.active !== false);
 ---
 
-<HomeLayout title="HOME | Sosun Fihaara">
+<HomeLayout title="HOME | Sosun Fihaara" preloadImage={heroImage}>
 
 {cmsError && (
   <div style="background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:12px 24px;text-align:center;font-size:14px;position:relative;z-index:100;">
@@ -49,19 +49,19 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
       />
     )}
     <!-- gradient overlays -->
-    <div class="absolute inset-x-0 top-0 h-[45%] bg-gradient-to-b from-black via-black/60 to-transparent" aria-hidden="true"></div>
-    <div class="absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-t from-[#0d2c22]/90 via-[#0d2c22]/50 to-transparent" aria-hidden="true"></div>
+    <div class="absolute inset-x-0 top-0 h-[45%] bg-gradient-to-b from-black/90 via-black/70 to-transparent" aria-hidden="true"></div>
+    <div class="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-[#091d17]/95 via-[#091d17]/80 to-transparent" aria-hidden="true"></div>
     <!-- Hero content -->
     <div class="absolute bottom-6 left-[2.6vw] right-[8.3vw] pb-[2vw] hero-content-wrapper">
       <div class="hero-stagger-container">
         <p class="tagline-text text-[#c9a96e] mb-2 tracking-[4px] hero-reveal-text">{site.heroTagline || 'Est. 1980 · Maldives FMCG'}</p>
         
-        <h1 class="font-alumni text-white font-light leading-[.92] tracking-[-2px] mb-5 hero-title" style="font-size: clamp(64px, 11vw, 160px);">
-          <span class="block overflow-hidden"><span class="block hero-title-line">SOSUN</span></span>
+        <h1 class="font-alumni text-white font-light leading-[.85] tracking-[-3px] mb-6 hero-title" style="font-size: clamp(80px, 13vw, 200px);">
+          <span class="block overflow-hidden pb-2"><span class="block hero-title-line">SOSUN</span></span>
           <span class="block overflow-hidden"><span class="block hero-title-line">FIHAARA</span></span>
         </h1>
         
-        <p class="font-lato text-white/80 text-[15px] lg:text-[18px] font-light leading-[1.65] mb-6 max-w-xl hero-reveal-text">
+        <p class="font-lato text-white/90 text-[16px] lg:text-[20px] font-light leading-[1.6] mb-8 max-w-2xl hero-reveal-text">
           {site.heroSubtext || 'Four decades of trusted FMCG wholesale and retail distribution — delivering quality food and grocery brands across every atoll of the Maldives.'}
         </p>
         
@@ -497,6 +497,12 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
 
   // Handle initialization on page load and View Transitions
   document.addEventListener('astro:page-load', initAnimations);
+  
+  // Cleanup ScrollTriggers on navigation to prevent memory leaks and duplicate pins
+  document.addEventListener('astro:before-swap', () => {
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  });
+
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     initAnimations();
   } else {

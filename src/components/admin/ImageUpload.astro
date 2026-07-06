@@ -55,7 +55,7 @@ const { id, name, currentImage, label } = Astro.props;
 }
 </style>
 
-<script define:vars={{ id }}>
+<script is:inline define:vars={{ id }}>
   const input = document.getElementById(id);
   const preview = document.getElementById(`preview-${id}`);
   const zone = document.getElementById(`upload-zone-${id}`);

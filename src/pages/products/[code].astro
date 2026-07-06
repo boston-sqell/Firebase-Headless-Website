@@ -44,7 +44,7 @@ const productSchema = {
 ---
 
 <Layout title={`${product.name} | Sosun Fihaara`} description={description} image={product.image}>
-  <script type="application/ld+json" set:html={JSON.stringify(productSchema)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(productSchema)} />
   <main>
     <section class="section bg-cream" style="padding-top: 120px;">
       <div class="container">

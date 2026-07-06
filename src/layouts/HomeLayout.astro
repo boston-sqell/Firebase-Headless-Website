@@ -12,12 +12,14 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  preloadImage?: string;
 }
 
 const {
   title = "HOME | Sosun Fihaara",
   description = DEFAULT_DESCRIPTION,
   image = DEFAULT_OG_IMAGE,
+  preloadImage,
 } = Astro.props;
 
 // og:image must be an absolute URL per the Open Graph spec.
@@ -45,7 +47,8 @@ const imageUrl = new URL(image, Astro.site || SITE_URL).toString();
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
-    <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+    {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(organizationSchema)} />
     <ClientRouter />
   </head>
   <body>

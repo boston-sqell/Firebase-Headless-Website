@@ -50,7 +50,7 @@ const imageUrl = new URL(image, Astro.site || SITE_URL).toString();
 		<meta property="twitter:title" content={title} />
 		<meta property="twitter:description" content={description} />
 		<meta property="twitter:image" content={imageUrl} />
-		<script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+		<script type="application/ld+json" is:inline set:html={JSON.stringify(organizationSchema)} />
 		<ClientRouter />
 	</head>
 	<body>
