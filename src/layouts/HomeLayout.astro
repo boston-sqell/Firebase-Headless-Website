@@ -4,6 +4,9 @@ import '../styles/homepage.css';
 import '../styles/homepage-custom.css';
 
 import { DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, SITE_URL, organizationSchema } from '../lib/seo';
+import CustomCursor from '../components/CustomCursor.astro';
+import LenisSetup from '../components/LenisSetup.astro';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title?: string;
@@ -43,8 +46,11 @@ const imageUrl = new URL(image, Astro.site || SITE_URL).toString();
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
     <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+    <ClientRouter />
   </head>
   <body>
+    <CustomCursor />
+    <LenisSetup />
     <slot />
   </body>
 </html>

@@ -1,0 +1,32 @@
+---
+// LenisSetup.astro
+---
+
+<script>
+  import Lenis from 'lenis';
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Initialize Lenis
+  const lenis = new Lenis({
+    autoRaf: true,
+    lerp: 0.1, // Smoothness
+    wheelMultiplier: 1,
+  });
+
+  // Sync Lenis with GSAP ScrollTrigger
+  lenis.on('scroll', ScrollTrigger.update);
+
+  gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+  });
+
+  gsap.ticker.lagSmoothing(0);
+
+  // Handle Astro view transitions (re-initialize on swap)
+  document.addEventListener('astro:page-load', () => {
+    ScrollTrigger.refresh();
+  });
+</script>

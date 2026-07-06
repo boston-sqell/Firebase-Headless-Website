@@ -1,0 +1,68 @@
+---
+// MagneticButton.astro
+interface Props {
+  href?: string;
+  className?: string;
+  ariaLabel?: string;
+}
+
+const { href, className = "", ariaLabel } = Astro.props;
+const Element = href ? 'a' : 'button';
+---
+
+<Element href={href} aria-label={ariaLabel} class={`magnetic-btn cursor-hover relative inline-block ${className}`}>
+  <div class="magnetic-inner flex items-center justify-center w-full h-full">
+    <slot />
+  </div>
+</Element>
+
+<script>
+  import gsap from 'gsap';
+
+  function initMagneticButtons() {
+    const magneticBtns = document.querySelectorAll('.magnetic-btn');
+
+    magneticBtns.forEach((btn) => {
+      const inner = btn.querySelector('.magnetic-inner');
+      if (!inner) return;
+
+      const xTo = gsap.quickTo(inner, "x", {duration: 1, ease: "elastic.out(1, 0.3)"});
+      const yTo = gsap.quickTo(inner, "y", {duration: 1, ease: "elastic.out(1, 0.3)"});
+
+      btn.addEventListener("mousemove", (e: any) => {
+        const { clientX, clientY } = e;
+        const { height, width, left, top } = btn.getBoundingClientRect();
+        const x = clientX - (left + width / 2);
+        const y = clientY - (top + height / 2);
+        
+        // Move the inner element based on mouse position relative to center
+        xTo(x * 0.4);
+        yTo(y * 0.4);
+      });
+
+      btn.addEventListener("mouseleave", () => {
+        xTo(0);
+        yTo(0);
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initMagneticButtons);
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initMagneticButtons();
+  } else {
+    window.addEventListener('DOMContentLoaded', initMagneticButtons);
+  }
+</script>
+
+<style>
+  .magnetic-btn {
+    /* Base styles to ensure it behaves correctly */
+    display: inline-block;
+    padding: 2rem; /* creates a larger hit area for the magnetic effect */
+    margin: -2rem; /* offsets the padding to visually maintain layout */
+  }
+  .magnetic-inner {
+    pointer-events: none; /* Let the parent catch events */
+  }
+</style>

@@ -3,6 +3,7 @@ import HomeLayout from '../layouts/HomeLayout.astro';
 import { getCmsData, getPromotions, resolveImage } from '../lib/cms';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import MagneticButton from '../components/MagneticButton.astro';
 
 let cmsError = false;
 let cmsData: any = { products: [], brands: [], site: {} as any, promotions: [] };
@@ -49,16 +50,28 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
     )}
     <!-- gradient overlays -->
     <div class="absolute inset-x-0 top-0 h-[45%] bg-gradient-to-b from-black via-black/60 to-transparent" aria-hidden="true"></div>
-    <div class="absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-t from-black/90 via-black/50 to-transparent" aria-hidden="true"></div>
+    <div class="absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-t from-[#0d2c22]/90 via-[#0d2c22]/50 to-transparent" aria-hidden="true"></div>
     <!-- Hero content -->
-    <div class="absolute bottom-6 left-[2.6vw] right-[8.3vw] pb-[2vw]">
-      <div class="fade-up">
-        <p class="tagline-text text-[#c9a96e] mb-2 tracking-[4px]">{site.heroTagline || 'Est. 1980 · Maldives FMCG'}</p>
-        <h1 class="font-alumni text-white font-light leading-[.92] tracking-[-2px] mb-5" style="font-size: clamp(64px, 11vw, 160px);">SOSUN<br />FIHAARA</h1>
-        <p class="font-lato text-white/80 text-[15px] lg:text-[18px] font-light leading-[1.65] mb-6 max-w-xl">{site.heroSubtext || 'Four decades of trusted FMCG wholesale and retail distribution — delivering quality food and grocery brands across every atoll of the Maldives.'}</p>
-        <div class="flex flex-wrap gap-4 items-center">
-          <a href="/products" class="btn-explore">Explore Products</a>
-          <a href="/contact" class="font-lato text-white text-[14px] font-bold uppercase tracking-[2px] border-b-2 pb-0.5 no-underline transition-colors nav-contact" style="border-color: var(--gold-accent);">Contact Us</a>
+    <div class="absolute bottom-6 left-[2.6vw] right-[8.3vw] pb-[2vw] hero-content-wrapper">
+      <div class="hero-stagger-container">
+        <p class="tagline-text text-[#c9a96e] mb-2 tracking-[4px] hero-reveal-text">{site.heroTagline || 'Est. 1980 · Maldives FMCG'}</p>
+        
+        <h1 class="font-alumni text-white font-light leading-[.92] tracking-[-2px] mb-5 hero-title" style="font-size: clamp(64px, 11vw, 160px);">
+          <span class="block overflow-hidden"><span class="block hero-title-line">SOSUN</span></span>
+          <span class="block overflow-hidden"><span class="block hero-title-line">FIHAARA</span></span>
+        </h1>
+        
+        <p class="font-lato text-white/80 text-[15px] lg:text-[18px] font-light leading-[1.65] mb-6 max-w-xl hero-reveal-text">
+          {site.heroSubtext || 'Four decades of trusted FMCG wholesale and retail distribution — delivering quality food and grocery brands across every atoll of the Maldives.'}
+        </p>
+        
+        <div class="flex flex-wrap gap-4 items-center hero-reveal-text">
+          <MagneticButton href="/products" className="bg-[#c9a96e] text-[#0d2c22] font-lato text-[13px] font-bold uppercase tracking-[2px] px-8 py-3 rounded-full hover:bg-white transition-colors duration-300">
+            Explore Products
+          </MagneticButton>
+          <MagneticButton href="/contact" className="font-lato text-white text-[14px] font-bold uppercase tracking-[2px] border-b-2 pb-0.5 border-[#c9a96e] hover:text-[#c9a96e] transition-colors">
+            Contact Us
+          </MagneticButton>
         </div>
       </div>
     </div>
@@ -74,23 +87,28 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
 
 <!-- ===== PROMOTIONS ===== -->
 {promotions.length > 0 && (
-<section class="mb-20 lg:mb-24" aria-label="Exclusive promotions">
-  <div class="fade-up px-5 lg:px-[8.3vw] pb-10 lg:pb-12">
+<section id="promotions-section" class="mb-20 lg:mb-24 overflow-hidden relative" aria-label="Exclusive promotions">
+  <div class="fade-up px-5 lg:px-[8.3vw] pb-10 lg:pb-12 pt-[10vh]">
     <div class="text-center">
       <p class="tagline-text mb-1">Offers Worth Grabbing</p>
       <h2 class="main-title text-[42px] sm:text-[56px] lg:text-[88px] leading-[.9] tracking-[-2px] mb-2">EXCLUSIVE <span class="font-alumni">PROMOTIONS</span></h2>
       <h3 class="sub-title text-[24px] lg:text-[38px] font-light leading-[1.05] tracking-[-0.84px]">You Shouldn't Miss</h3>
     </div>
   </div>
-  <div class="fade-up px-5 sm:px-8 lg:px-[5.2vw]">
-    <div class="flex gap-4 overflow-hidden">
+  
+  <div class="promo-scroll-container h-screen flex items-center">
+    <div class="promo-track flex gap-8 px-[5.2vw] w-max">
       {promotions.map((p: any) => (
-        <div class="flex-shrink-0 w-full sm:w-[48%] lg:w-[31%] relative rounded-[20px] overflow-hidden group cursor-pointer" style={`min-height:340px; background: ${p.background};`}>
-          <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
-          <div class="absolute bottom-6 left-6 right-6">
-            {p.label && <span class="recipe-featured-tag px-2 py-1 text-[11px] tracking-[3px] mb-3 inline-block">{p.label}</span>}
-            <h3 class="font-alumni text-white text-[32px] leading-tight tracking-tight mb-1">{p.title}</h3>
-            {p.subtitle && <p class="font-lato text-white/80 text-sm">{p.subtitle}</p>}
+        <div class="tilt-card flex-shrink-0 w-[85vw] sm:w-[50vw] lg:w-[35vw] relative rounded-[20px] group cursor-pointer" style="perspective: 1000px; transform-style: preserve-3d;">
+          <div class="tilt-inner w-full h-full rounded-[20px] overflow-hidden shadow-2xl relative" style={`min-height:450px; background: ${p.background}; transition: transform 0.1s ease-out;`}>
+            <!-- Glassmorphism overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent z-10 pointer-events-none"></div>
+            
+            <div class="absolute bottom-8 left-8 right-8 z-20" style="transform: translateZ(50px);">
+              {p.label && <span class="recipe-featured-tag px-3 py-1.5 text-[12px] tracking-[3px] mb-4 inline-block shadow-md bg-white/20 backdrop-blur-md border border-white/30 text-white">{p.label}</span>}
+              <h3 class="font-alumni text-white text-[48px] leading-tight tracking-tight mb-2 drop-shadow-lg">{p.title}</h3>
+              {p.subtitle && <p class="font-lato text-white/90 text-[16px] drop-shadow-md max-w-[80%]">{p.subtitle}</p>}
+            </div>
           </div>
         </div>
       ))}
@@ -108,72 +126,65 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
         <h2 class="main-title text-[42px] sm:text-[56px] lg:text-[88px] leading-[.9] tracking-[-2px] mb-2">BEST SELLING <span class="font-alumni">PRODUCTS</span></h2>
       </div>
       <div class="fade-right">
-        <a href="/products" class="btn-explore">Explore Products</a>
+        <MagneticButton href="/products" className="btn-explore">Explore Products</MagneticButton>
       </div>
     </div>
     <div class="fade-up">
-      <div class="relative">
-        <div class="overflow-hidden">
-          <div class="flex ease-in-out" id="products-track" role="region" aria-label="Products" style="gap: 8px; transition: transform 0.5s ease;">
-            {featuredProducts.length > 0 ? featuredProducts.map((p: any) => (
-              <div class="flex-shrink-0" style="width: calc(33.3333% - 5.33333px);">
-                <article class="product-card relative flex flex-col items-center rounded-[20px] border border-[#d3d3d3] bg-[#fefdfb] h-full overflow-hidden">
-                  <div class="product-img-inner w-full overflow-hidden rounded-t-[20px]" style="height: clamp(160px, 18.85vw, 340px);">
-                    {p.image ? (
-                      <img src={resolveImage(p.image)} alt={p.name} class="w-full h-full object-cover transition-transform duration-500" loading="lazy" />
-                    ) : (
-                      <div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9);">
-                        <span class="font-alumni text-[24px] text-center px-4 leading-tight" style="color: var(--green);">{p.name.split(' ').slice(0,2).join(' ')}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div class="flex flex-col items-center flex-1 px-5 pt-4 pb-10 gap-2 text-center">
-                    {p.brandName && <p class="font-lato text-[11px] font-semibold uppercase tracking-widest" style="color: var(--gold-accent);">{p.brandName}</p>}
-                    <h3 class="font-lato font-bold text-[16px] lg:text-[20px] leading-tight" style="color: var(--green-house);">{p.name}</h3>
-                    <div class="mt-auto">
-                      <a href="/products" class="btn-underline" aria-label={`Explore more about ${p.name}`}>Explore More</a>
+      <div class="products-grid-container group/grid">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {featuredProducts.length > 0 ? featuredProducts.map((p: any, i: number) => (
+            <div class={`product-card-wrapper transition-all duration-500 hover:z-10 group/grid-hover:opacity-40 hover:!opacity-100 ${i % 2 === 1 ? 'lg:translate-y-12' : ''}`}>
+              <article class="product-card relative flex flex-col items-center rounded-[20px] bg-white h-full overflow-hidden shadow-sm hover:shadow-2xl transition-shadow duration-500 transform hover:-translate-y-2">
+                <div class="product-img-inner w-full overflow-hidden rounded-t-[20px] relative bg-gradient-to-br from-gray-50 to-gray-200" style="height: clamp(200px, 22vw, 380px);">
+                  <div class="absolute inset-0 bg-[#0d2c22]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
+                  {p.image ? (
+                    <img src={resolveImage(p.image)} alt={p.name} class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy" />
+                  ) : (
+                    <div class="w-full h-full flex items-center justify-center">
+                      <span class="font-alumni text-[24px] text-center px-4 leading-tight" style="color: var(--green);">{p.name.split(' ').slice(0,2).join(' ')}</span>
                     </div>
+                  )}
+                </div>
+                <div class="flex flex-col items-center flex-1 px-5 pt-6 pb-10 gap-3 text-center relative z-20">
+                  {p.brandName && <p class="font-lato text-[11px] font-semibold uppercase tracking-widest text-[#c9a96e]">{p.brandName}</p>}
+                  <h3 class="font-lato font-bold text-[18px] lg:text-[22px] leading-tight text-[#0d2c22]">{p.name}</h3>
+                  <div class="mt-auto pt-4">
+                    <a href="/products" class="btn-underline text-[#0d2c22] font-semibold" aria-label={`Explore more about ${p.name}`}>Explore More</a>
+                  </div>
+                </div>
+              </article>
+            </div>
+          )) : (
+            [
+              { title: "Featured Product", color: "#e8f5e9" },
+              { title: "Featured Product", color: "#fff3e0" },
+              { title: "Featured Product", color: "#e3f2fd" },
+            ].map((ph) => (
+              <div class="product-card-wrapper">
+                <article class="product-card relative flex flex-col items-center rounded-[20px] border border-[#d3d3d3] bg-[#fefdfb] h-full overflow-hidden">
+                  <div class="product-img-inner w-full flex items-center justify-center" style={`height: clamp(200px, 22vw, 380px); background: ${ph.color};`}>
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: var(--green); opacity: 0.4;" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                  </div>
+                  <div class="flex flex-col items-center flex-1 px-5 pt-4 pb-10 gap-4 text-center">
+                    <h3 class="font-lato font-bold text-gray-400 text-[16px]">Loading...</h3>
                   </div>
                 </article>
               </div>
-            )) : (
-              [
-                { title: "Featured Product", color: "#e8f5e9" },
-                { title: "Featured Product", color: "#fff3e0" },
-                { title: "Featured Product", color: "#e3f2fd" },
-              ].map((ph) => (
-                <div class="flex-shrink-0" style="width: calc(33.3333% - 5.33333px);">
-                  <article class="product-card relative flex flex-col items-center rounded-[20px] border border-[#d3d3d3] bg-[#fefdfb] h-full overflow-hidden">
-                    <div class="product-img-inner w-full rounded-t-[20px] flex items-center justify-center" style={`height: clamp(160px, 18.85vw, 340px); background: ${ph.color};`}>
-                      <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: var(--green); opacity: 0.4;" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-                    </div>
-                    <div class="flex flex-col items-center flex-1 px-5 pt-4 pb-10 gap-4 text-center">
-                      <h3 class="font-lato font-bold text-gray-400 text-[16px]">Loading...</h3>
-                    </div>
-                  </article>
-                </div>
-              ))
-            )}
-          </div>
+            ))
+          )}
         </div>
-        <button aria-label="Previous products" id="products-prev" class="slick-arrow absolute -left-5 lg:-left-14 top-1/3 items-center justify-center" style="display:none;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-        </button>
-        <button aria-label="Next products" id="products-next" class="slick-arrow absolute -right-5 lg:-right-14 top-1/3 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-        </button>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ===== ABOUT / STATS ===== -->
-<section class="relative flow-root pb-20 lg:pb-24" aria-label="About Sosun Fihaara">
+<section id="about-section" class="relative flow-root pb-20 lg:pb-24" aria-label="About Sosun Fihaara">
   <!-- Background panel -->
   <div class="absolute inset-x-0 top-0 overflow-hidden" style="height: clamp(440px, 75vw, 700px);">
     <div class="w-full h-full" style="background: linear-gradient(135deg, #1a2e1a 0%, #2d5a27 40%, #1e3a1e 100%);"></div>
     {site.partnerImage && (
-      <img src={resolveImage(site.partnerImage)} alt="" class="absolute inset-0 w-full h-full object-cover object-center opacity-40" loading="lazy" aria-hidden="true" onerror="this.style.display='none'" />
+      <img src={resolveImage(site.partnerImage)} alt="" class="parallax-bg absolute inset-0 w-full h-[120%] object-cover object-center opacity-40 -top-[10%]" loading="lazy" aria-hidden="true" onerror="this.style.display='none'" />
     )}
   </div>
   <div class="relative mx-4 sm:mx-8 lg:mx-[14.9vw] rounded-t-[25px] lg:rounded-t-[3.6vw] bg-[#fefdfb] px-6 lg:px-[5.2vw] pt-16 pb-16 lg:pt-20 lg:pb-20" style="margin-top: clamp(240px, 35vw, 360px);">
@@ -184,21 +195,23 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
       </h2>
       <p class="sub-title text-[18px] lg:text-[24px] font-light leading-[1.4] max-w-2xl mx-auto">{site.aboutSubtext || 'Sosun Fihaara has been the backbone of FMCG distribution in the Maldives since 1980 — supplying retailers, cafés and households across every atoll with trusted international brands.'}</p>
     </div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 justify-center mb-12">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 justify-center mb-12" id="stats-container">
       {[
-        { num: "40+", label: "Years of Distribution" },
-        { num: "25+", label: "International Brands" },
-        { num: "300+", label: "Products in Range" },
-        { num: "20", label: "Atolls Served" },
+        { num: 40, suffix: "+", label: "Years of Distribution" },
+        { num: 25, suffix: "+", label: "International Brands" },
+        { num: 300, suffix: "+", label: "Products in Range" },
+        { num: 20, suffix: "", label: "Atolls Served" },
       ].map((s) => (
         <div class="text-center border-b-2 pb-4" style="border-color: var(--gold-accent);">
-          <p class="font-alumni leading-none tracking-tight" style="color: var(--green-house); font-size: clamp(36px, 4vw, 56px);">{s.num}</p>
+          <p class="font-alumni leading-none tracking-tight flex justify-center items-baseline" style="color: var(--green-house); font-size: clamp(36px, 4vw, 56px);">
+            <span class="stat-num" data-target={s.num}>0</span><span>{s.suffix}</span>
+          </p>
           <p class="font-lato text-[11px] sm:text-[13px] font-semibold uppercase tracking-[2px] mt-2" style="color: var(--gold-accent);">{s.label}</p>
         </div>
       ))}
     </div>
     <div class="text-center">
-      <a href="/about" class="btn-explore">Our Story</a>
+      <MagneticButton href="/about" className="btn-explore">Our Story</MagneticButton>
     </div>
   </div>
   <!-- Green marquee ticker -->
@@ -221,42 +234,23 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
         <h3 class="sub-title text-[24px] lg:text-[38px] font-light leading-[1.05] tracking-[-0.84px]">Enabling Seamless Market Access</h3>
       </div>
       <div class="fade-right">
-        <a href="/brands" class="btn-explore">Explore Brands</a>
+        <MagneticButton href="/brands" className="btn-explore">Explore Brands</MagneticButton>
       </div>
     </div>
-    <div class="fade-up relative">
-      <div class="overflow-hidden">
-        <div class="flex ease-in-out" id="brands-track" style="gap: 8px; transition: transform 0.5s ease;">
-          {activeBrands.length > 0 ? activeBrands.map((b: any) => (
-            <a href={`/brands/${b.slug}`} class="brand-card relative flex-shrink-0 rounded-[16px] border border-[#d3d3d3] bg-white overflow-hidden cursor-pointer no-underline" style="width: calc(20% - 6.4px);" aria-label={`Explore ${b.name}`}>
-              <div class="flex items-center justify-center p-4 lg:p-[0.94vw]" style="height: clamp(90px, 9vw, 160px);">
-                {b.logo ? (
-                  <img src={resolveImage(b.logo)} alt={`${b.name} logo`} class="w-full object-contain" style="max-height: clamp(56px, 5.99vw, 110px);" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-                ) : null}
-                <div class={`w-full items-center justify-center font-alumni text-center text-[18px] font-bold${b.logo ? ' hidden' : ' flex'}`} style="color: var(--gold-accent);">{b.name}</div>
-              </div>
-              <div class="brand-detail rounded-[16px]">
-                <p class="font-lato font-bold text-sm uppercase tracking-wide mb-3" style="color: var(--green-house);">{b.name}</p>
-                <span class="btn-underline text-xs">Explore More</span>
-              </div>
-            </a>
-          )) : (
-            ['Brand A','Brand B','Brand C','Brand D','Brand E'].map((name) => (
-              <div class="brand-card relative flex-shrink-0 rounded-[16px] border border-[#d3d3d3] bg-white overflow-hidden" style="width: calc(20% - 6.4px);">
-                <div class="flex items-center justify-center p-4" style="height: 120px;">
-                  <span class="font-alumni text-[18px] font-bold" style="color: var(--gold-accent);">{name}</span>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-      <button aria-label="Previous brands" id="brands-prev" class="slick-arrow absolute -left-4 lg:-left-12 top-1/2 -translate-y-1/2 items-center justify-center" style="display:none;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-      </button>
-      <button aria-label="Next brands" id="brands-next" class="slick-arrow absolute -right-4 lg:-right-12 top-1/2 -translate-y-1/2 flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
+  </div>
+  
+  <div class="fade-up relative w-full overflow-hidden brands-marquee-container group" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
+    <div class="flex w-max brands-marquee-track">
+      {[...activeBrands, ...activeBrands, ...activeBrands, ...activeBrands].map((b: any) => (
+        <a href={`/brands/${b.slug}`} class="brand-card relative flex-shrink-0 rounded-[16px] border border-[#d3d3d3]/50 bg-white/50 backdrop-blur-sm overflow-hidden cursor-pointer no-underline mx-4 transition-all duration-300 hover:scale-105 hover:bg-white hover:shadow-xl hover:border-[#c9a96e]" style="width: 250px;" aria-label={`Explore ${b.name}`}>
+          <div class="flex items-center justify-center p-6 h-[140px]">
+            {b.logo ? (
+              <img src={resolveImage(b.logo)} alt={`${b.name} logo`} class="w-full h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500 opacity-70 group-hover:opacity-100" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+            ) : null}
+            <div class={`w-full items-center justify-center font-alumni text-center text-[24px] font-bold${b.logo ? ' hidden' : ' flex'}`} style="color: var(--gold-accent);">{b.name}</div>
+          </div>
+        </a>
+      ))}
     </div>
   </div>
 </section>
@@ -331,38 +325,183 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
 
 <!-- ===== SCRIPTS ===== -->
 <script>
-  // Scroll-reveal
-  const io = new IntersectionObserver(
-    (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
-    { threshold: 0.08 }
-  );
-  document.querySelectorAll('.fade-up, .fade-left, .fade-right').forEach(el => io.observe(el));
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+  gsap.registerPlugin(ScrollTrigger);
 
+  function initAnimations() {
+    // 1. Hero Reveal Animation
+    const heroTl = gsap.timeline({ defaults: { ease: "power4.out" } });
+    
+    // Initial state
+    gsap.set('.hero-title-line', { yPercent: 100 });
+    gsap.set('.hero-reveal-text', { autoAlpha: 0, y: 20 });
+    
+    heroTl.to('.hero-title-line', {
+      yPercent: 0,
+      duration: 1.2,
+      stagger: 0.15,
+      delay: 0.2
+    })
+    .to('.hero-reveal-text', {
+      autoAlpha: 1,
+      y: 0,
+      duration: 1,
+      stagger: 0.1
+    }, "-=0.8");
 
-  // Generic slider helper
-  function initSlider(trackId: string, prevId: string, nextId: string, cols: number) {
-    const track = document.getElementById(trackId) as HTMLElement | null;
-    const prev = document.getElementById(prevId) as HTMLElement | null;
-    const next = document.getElementById(nextId) as HTMLElement | null;
-    if (!track) return;
-    const total = track.children.length;
-    let cur = 0;
-    function render() {
-      const w = (track!.parentElement?.offsetWidth ?? 0);
-      const itemW = w / cols;
-      track!.style.transform = `translateX(${-cur * (itemW + 8)}px)`;
-      if (prev) prev.style.display = cur > 0 ? 'flex' : 'none';
-      if (next) next.style.display = cur < total - cols ? 'flex' : 'none';
+    // 2. Generic Scroll Reveal (replacing IO)
+    gsap.utils.toArray('.fade-up').forEach((el: any) => {
+      gsap.fromTo(el, 
+        { autoAlpha: 0, y: 40 },
+        { 
+          autoAlpha: 1, y: 0, duration: 1, ease: "power3.out",
+          scrollTrigger: { trigger: el, start: "top 85%" }
+        }
+      );
+    });
+
+    gsap.utils.toArray('.fade-left').forEach((el: any) => {
+      gsap.fromTo(el, 
+        { autoAlpha: 0, x: -40 },
+        { 
+          autoAlpha: 1, x: 0, duration: 1, ease: "power3.out",
+          scrollTrigger: { trigger: el, start: "top 85%" }
+        }
+      );
+    });
+
+    gsap.utils.toArray('.fade-right').forEach((el: any) => {
+      gsap.fromTo(el, 
+        { autoAlpha: 0, x: 40 },
+        { 
+          autoAlpha: 1, x: 0, duration: 1, ease: "power3.out",
+          scrollTrigger: { trigger: el, start: "top 85%" }
+        }
+      );
+    });
+
+    // 3. Pinned Horizontal Scroll for Promotions
+    const promoSection = document.querySelector('#promotions-section');
+    const promoTrack = document.querySelector('.promo-track');
+    
+    if (promoSection && promoTrack) {
+      const scrollAmount = promoTrack.scrollWidth - window.innerWidth;
+      
+      gsap.to(promoTrack, {
+        x: -scrollAmount,
+        ease: "none",
+        scrollTrigger: {
+          trigger: promoSection,
+          start: "top top",
+          end: `+=${scrollAmount}`,
+          pin: true,
+          scrub: 1,
+          invalidateOnRefresh: true,
+        }
+      });
     }
-    prev?.addEventListener('click', () => { cur = Math.max(0, cur - 1); render(); });
-    next?.addEventListener('click', () => { cur = Math.min(total - cols, cur + 1); render(); });
-    render();
-    window.addEventListener('resize', render, { passive: true });
+
+    // 4. 3D Tilt Cards Logic
+    const tiltCards = document.querySelectorAll('.tilt-card');
+    tiltCards.forEach(card => {
+      const inner = card.querySelector('.tilt-inner') as HTMLElement;
+      if (!inner) return;
+
+      card.addEventListener('mousemove', (e: any) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = ((y - centerY) / centerY) * -10;
+        const rotateY = ((x - centerX) / centerX) * 10;
+        
+        gsap.to(inner, {
+          rotateX,
+          rotateY,
+          duration: 0.5,
+          ease: "power2.out"
+        });
+      });
+
+      card.addEventListener('mouseleave', () => {
+        gsap.to(inner, {
+          rotateX: 0,
+          rotateY: 0,
+          duration: 0.8,
+          ease: "elastic.out(1, 0.3)"
+        });
+      });
+    });
+
+    // 5. Parallax Background & Stats Counter
+    const parallaxBg = document.querySelector('.parallax-bg');
+    if (parallaxBg) {
+      gsap.to(parallaxBg, {
+        yPercent: 20,
+        ease: "none",
+        scrollTrigger: {
+          trigger: '#about-section',
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true
+        }
+      });
+    }
+
+    const statsContainer = document.querySelector('#stats-container');
+    if (statsContainer) {
+      const nums = document.querySelectorAll('.stat-num');
+      ScrollTrigger.create({
+        trigger: statsContainer,
+        start: "top 80%",
+        once: true,
+        onEnter: () => {
+          nums.forEach(num => {
+            const target = parseFloat(num.getAttribute('data-target') || '0');
+            gsap.to(num, {
+              innerHTML: target,
+              duration: 2.5,
+              ease: "power2.out",
+              snap: { innerHTML: 1 },
+              onUpdate: function() {
+                num.innerHTML = Math.round(this.targets()[0].innerHTML).toString();
+              }
+            });
+          });
+        }
+      });
+    }
+
+    // 6. Infinite Brands Marquee
+    const brandsTrack = document.querySelector('.brands-marquee-track');
+    const brandsContainer = document.querySelector('.brands-marquee-container');
+    
+    if (brandsTrack && brandsContainer) {
+      // Create a seamless loop using GSAP horizontal modifier
+      const marqueeTween = gsap.to(brandsTrack, {
+        xPercent: -50, // scroll half the duplicated track
+        ease: "none",
+        duration: 30, // speed
+        repeat: -1
+      });
+      
+      // Pause on hover
+      brandsContainer.addEventListener('mouseenter', () => marqueeTween.pause());
+      brandsContainer.addEventListener('mouseleave', () => marqueeTween.play());
+    }
   }
 
-  initSlider('products-track', 'products-prev', 'products-next', window.innerWidth < 640 ? 1 : window.innerWidth < 1024 ? 2 : 3);
-  initSlider('brands-track', 'brands-prev', 'brands-next', window.innerWidth < 640 ? 2 : window.innerWidth < 1024 ? 3 : 5);
+  // Handle initialization on page load and View Transitions
+  document.addEventListener('astro:page-load', initAnimations);
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initAnimations();
+  } else {
+    window.addEventListener('DOMContentLoaded', initAnimations);
+  }
 </script>
 
 </HomeLayout>

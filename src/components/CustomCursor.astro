@@ -1,0 +1,72 @@
+---
+// CustomCursor.astro
+---
+<div class="custom-cursor hidden lg:flex"></div>
+
+<style>
+  .custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--gold-accent, #c9a96e);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease, mix-blend-mode 0.3s ease;
+    mix-blend-mode: difference;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .custom-cursor.hovering {
+    width: 60px;
+    height: 60px;
+    background-color: var(--gold-accent, #c9a96e);
+    border: none;
+    mix-blend-mode: normal;
+    opacity: 0.8;
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+
+  function initCursor() {
+    const cursor = document.querySelector('.custom-cursor');
+    if (!cursor) return;
+
+    // We use GSAP quickTo for highly performant cursor tracking
+    const xTo = gsap.quickTo(cursor, "x", {duration: 0.2, ease: "power3"});
+    const yTo = gsap.quickTo(cursor, "y", {duration: 0.2, ease: "power3"});
+
+    const onMouseMove = (e: MouseEvent) => {
+      xTo(e.clientX);
+      yTo(e.clientY);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+
+    // Hover effects on links/buttons
+    const interactiveElements = document.querySelectorAll('a, button, .cursor-hover');
+    interactiveElements.forEach((el) => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+    });
+
+    // Cleanup on unmount (useful for Astro View Transitions)
+    document.addEventListener('astro:before-swap', () => {
+      window.removeEventListener('mousemove', onMouseMove);
+    }, { once: true });
+  }
+
+  // Init on load and after view transitions
+  document.addEventListener('astro:page-load', initCursor);
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initCursor();
+  } else {
+    window.addEventListener('DOMContentLoaded', initCursor);
+  }
+</script>
