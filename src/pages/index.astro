@@ -119,7 +119,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
 
 <!-- ===== BEST SELLING PRODUCTS ===== -->
 <section id="products" class="overflow-hidden pb-20 lg:pb-24" aria-label="Best selling products">
-  <div class="px-5 sm:px-8 lg:px-[10.8vw]">
+  <div class="px-5 sm:px-8 lg:px-[14vw] xl:px-[16vw]">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between pb-8 lg:pb-12 gap-6">
       <div class="fade-left">
         <p class="tagline-text mb-1">Most Popular Products</p>
@@ -135,7 +135,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
           {featuredProducts.length > 0 ? featuredProducts.map((p: any, i: number) => (
             <div class={`product-card-wrapper transition-all duration-500 hover:z-10 group/grid-hover:opacity-40 hover:!opacity-100 ${i % 2 === 1 ? 'lg:translate-y-12' : ''}`}>
               <article class="product-card relative flex flex-col items-center rounded-[20px] bg-white h-full overflow-hidden shadow-sm hover:shadow-2xl transition-shadow duration-500 transform hover:-translate-y-2">
-                <div class="product-img-inner w-full overflow-hidden rounded-t-[20px] relative bg-gradient-to-br from-gray-50 to-gray-200" style="height: clamp(200px, 22vw, 380px);">
+                <div class="product-img-inner w-full overflow-hidden rounded-t-[20px] relative bg-gradient-to-br from-gray-50 to-gray-200" style="height: clamp(180px, 18vw, 300px);">
                   <div class="absolute inset-0 bg-[#0d2c22]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
                   {p.image ? (
                     <img src={resolveImage(p.image)} alt={p.name} class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy" />
@@ -162,7 +162,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
             ].map((ph) => (
               <div class="product-card-wrapper">
                 <article class="product-card relative flex flex-col items-center rounded-[20px] border border-[#d3d3d3] bg-[#fefdfb] h-full overflow-hidden">
-                  <div class="product-img-inner w-full flex items-center justify-center" style={`height: clamp(200px, 22vw, 380px); background: ${ph.color};`}>
+                  <div class="product-img-inner w-full flex items-center justify-center" style={`height: clamp(180px, 18vw, 300px); background: ${ph.color};`}>
                     <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: var(--green); opacity: 0.4;" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
                   </div>
                   <div class="flex flex-col items-center flex-1 px-5 pt-4 pb-10 gap-4 text-center">
