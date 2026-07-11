@@ -161,6 +161,17 @@
 
 .marquee-track { animation: marquee 40s linear infinite; }
 
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  .fade-up, .fade-left, .fade-right, .hero-reveal-text, .hero-title-line {
+    opacity: 1 !important; visibility: visible !important; transform: none !important; transition: none !important;
+  }
+  .scroll-indicator, .marquee-track { animation: none !important; }
+  .brands-marquee-track { transform: none !important; flex-wrap: wrap; width: 100%; justify-content: center; }
+  .promo-scroll-container { height: auto !important; }
+  .promo-track { transform: none !important; overflow-x: auto; width: 100%; padding-block: 2rem; }
+}
+
 /*
  * The rules below are Tailwind-generated utility variants (focus/hover/
  * group-hover states and sm/md/lg breakpoint variants) that lived in this
@@ -555,3 +566,32 @@
   --tw-border-opacity: 1;
   border-color: rgb(107 191 138 / var(--tw-border-opacity, 1));
 }
+
+/* Signature distribution story */
+.atoll-story {
+  position: relative; display: grid; grid-template-columns: minmax(0, .86fr) minmax(420px, 1.14fr);
+  min-height: 820px; overflow: hidden; padding: clamp(88px, 10vw, 160px) clamp(24px, 9vw, 150px);
+  background: #071c16; color: #f6f3e9; isolation: isolate;
+}
+.atoll-story::before { content:""; position:absolute; inset:0; z-index:-1; opacity:.36; background:radial-gradient(circle at 72% 45%, rgba(41,112,78,.46), transparent 35%), repeating-linear-gradient(115deg, transparent 0 88px, rgba(255,255,255,.025) 89px 90px); }
+.atoll-story__copy { align-self:center; max-width:590px; position:relative; z-index:2; }
+.atoll-story__index { margin-bottom:clamp(80px,12vh,150px); color:rgba(255,255,255,.4); font:600 10px/1.2 'Lato',sans-serif; letter-spacing:.2em; text-transform:uppercase; }
+.atoll-story h2 { margin:14px 0 30px; color:#fff; font:200 clamp(70px,8vw,132px)/.78 'Alumni Sans SC',sans-serif; letter-spacing:-.035em; }
+.atoll-story h2 span { color:#d9bc82; }
+.atoll-story__lede { max-width:520px; color:rgba(255,255,255,.66); font:300 clamp(16px,1.25vw,20px)/1.75 'Lato',sans-serif; }
+.atoll-story__link { display:inline-flex; gap:18px; align-items:center; margin-top:38px; padding-bottom:7px; border-bottom:1px solid #d9bc82; color:#fff; font:700 12px/1 'Lato',sans-serif; letter-spacing:.15em; text-transform:uppercase; }
+.atoll-story__link span { color:#d9bc82; transition:transform .35s ease; }.atoll-story__link:hover span { transform:translate(4px,-4px); }
+.atoll-map { position:relative; min-height:660px; display:grid; place-items:center; }
+.atoll-map svg { width:min(100%,520px); height:auto; overflow:visible; filter:drop-shadow(0 40px 80px rgba(0,0,0,.25)); }
+.atoll-map__glow { position:absolute; width:440px; aspect-ratio:1; border-radius:50%; background:rgba(45,133,88,.11); filter:blur(40px); }
+.atoll-route { fill:none; stroke:url(#routeGradient); stroke-width:1.25; stroke-dasharray:.025 .024; opacity:.55; }
+.atoll-node__pulse { fill:none; stroke:#6bbf8a; stroke-width:1; opacity:.35; transform-box:fill-box; transform-origin:center; animation:atollPulse 3s ease-out infinite; animation-delay:var(--delay); }
+.atoll-node__core { fill:#d9bc82; filter:url(#softGlow); }
+.atoll-map__label { fill:#fff; font:700 10px 'Lato',sans-serif; letter-spacing:.24em; }
+.atoll-map__metric { position:absolute; display:flex; flex-direction:column; gap:2px; padding:16px 20px; border:1px solid rgba(255,255,255,.12); border-radius:14px; background:rgba(255,255,255,.055); backdrop-filter:blur(14px); }
+.atoll-map__metric strong { color:#d9bc82; font:300 38px/1 'Alumni Sans SC',sans-serif; }.atoll-map__metric span { color:rgba(255,255,255,.52); font:600 9px 'Lato',sans-serif; letter-spacing:.14em; text-transform:uppercase; }
+.atoll-map__metric--top { top:13%; right:1%; }.atoll-map__metric--bottom { bottom:14%; left:0; }
+@keyframes atollPulse { 0%{transform:scale(.55);opacity:.7} 70%,100%{transform:scale(2.2);opacity:0} }
+@media (max-width:900px) { .atoll-story{grid-template-columns:1fr;min-height:auto;padding-bottom:60px}.atoll-story__index{margin-bottom:70px}.atoll-map{min-height:620px;margin-top:40px}.atoll-map__metric--top{right:0}.atoll-map__metric--bottom{left:0} }
+@media (max-width:520px) { .atoll-story{padding-inline:20px}.atoll-story h2{font-size:clamp(66px,22vw,94px)}.atoll-map{min-height:500px}.atoll-map__metric{padding:11px 13px}.atoll-map__metric strong{font-size:29px} }
+@media (prefers-reduced-motion: reduce) { .atoll-node__pulse { animation:none; opacity:.3; } }

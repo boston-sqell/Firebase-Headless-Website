@@ -62,7 +62,7 @@ const hasMore = products.length < totalProducts;
 
 
 <section class="page-hero" style="background:#0b3d2e">
-  <img id="products-hero-img" class="page-hero__img" src={site.productsPageHero || "/products-hero.jpg"} alt="Sosun Fihaara Products">
+  <img id="products-hero-img" class="page-hero__img" src={site.productsPageHero || "/products-hero.jpg"} alt="Sosun Fihaara Products" onerror="this.style.display='none'">
   <div class="container page-hero__inner">
     <h1>Products</h1>
     <p class="crumbs"><a href="/">Home</a> &nbsp;/&nbsp; <span>Products</span></p>

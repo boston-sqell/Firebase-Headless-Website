@@ -1,12 +1,13 @@
 ---
 import HomeLayout from '../layouts/HomeLayout.astro';
 import { getCmsData, getPromotions, resolveImage } from '../lib/cms';
+import type { Product, Brand, Promotion, SiteContent } from '../lib/cms';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import MagneticButton from '../components/MagneticButton.astro';
 
 let cmsError = false;
-let cmsData: any = { products: [], brands: [], site: {} as any, promotions: [] };
+let cmsData: { products: Product[]; brands: Brand[]; site: SiteContent; promotions: Promotion[] } = { products: [], brands: [], site: {}, promotions: [] };
 try {
   const [data, promotions] = await Promise.all([getCmsData(), getPromotions()]);
   cmsData = { ...data, promotions };
@@ -16,9 +17,9 @@ try {
 }
 const { products, brands, site, promotions } = cmsData;
 
-const heroImage: string = resolveImage(site.homeHeroImage) || '';
+const heroImage = site.homeHeroImage ? resolveImage(site.homeHeroImage) : '';
 const featuredProducts = products.slice(0, 9);
-const activeBrands = brands.filter((b: any) => b.active !== false);
+const activeBrands = brands.filter((b: Brand) => b.active !== false);
 ---
 
 <HomeLayout title="HOME | Sosun Fihaara" preloadImage={heroImage}>
@@ -85,6 +86,35 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
   </div>
 </section>
 
+<!-- ===== DISTRIBUTION SIGNATURE ===== -->
+<section class="atoll-story" aria-labelledby="atoll-title">
+  <div class="atoll-story__copy fade-left">
+    <p class="atoll-story__index">01 / Nationwide distribution</p>
+    <p class="tagline-text">From Malé to every horizon</p>
+    <h2 id="atoll-title">ACROSS<br><span>EVERY ATOLL</span></h2>
+    <p class="atoll-story__lede">A supply network shaped by the islands themselves — moving trusted essentials from our shelves to communities throughout the Maldives.</p>
+    <a href="/about" class="atoll-story__link" data-cursor="Explore">Discover our network <span aria-hidden="true">↗</span></a>
+  </div>
+  <div class="atoll-map fade-right" aria-hidden="true">
+    <div class="atoll-map__glow"></div>
+    <svg viewBox="0 0 540 760" role="img">
+      <defs>
+        <linearGradient id="routeGradient" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d9bc82"/><stop offset="1" stop-color="#6bbf8a"/></linearGradient>
+        <filter id="softGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <path class="atoll-route" pathLength="1" d="M284 38 C340 120 198 168 278 242 S344 340 243 410 S360 520 269 600 S220 680 286 730"/>
+      {[{x:286,y:50},{x:324,y:97},{x:244,y:145},{x:214,y:196},{x:287,y:244},{x:320,y:294},{x:270,y:342},{x:230,y:393},{x:260,y:443},{x:315,y:482},{x:337,y:527},{x:276,y:570},{x:242,y:616},{x:215,y:662},{x:281,y:718}].map((dot, i) => (
+        <g class="atoll-node" style={`--delay:${i * .08}s`}>
+          <circle class="atoll-node__pulse" cx={dot.x} cy={dot.y} r={i === 8 ? 13 : 8}/>
+          <circle class="atoll-node__core" cx={dot.x} cy={dot.y} r={i === 8 ? 5 : 3}/>
+        </g>
+      ))}
+      <text x="285" y="465" class="atoll-map__label">MALÉ</text>
+    </svg>
+    <div class="atoll-map__metric atoll-map__metric--top"><strong>20</strong><span>Atolls served</span></div>
+    <div class="atoll-map__metric atoll-map__metric--bottom"><strong>40+</strong><span>Years in motion</span></div>
+  </div>
+</section>
 <!-- ===== PROMOTIONS ===== -->
 {promotions.length > 0 && (
 <section id="promotions-section" class="mb-20 lg:mb-24 overflow-hidden relative" aria-label="Exclusive promotions">
@@ -98,8 +128,8 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
   
   <div class="promo-scroll-container h-screen flex items-center">
     <div class="promo-track flex gap-8 px-[5.2vw] w-max">
-      {promotions.map((p: any) => (
-        <div class="tilt-card flex-shrink-0 w-[85vw] sm:w-[50vw] lg:w-[35vw] relative rounded-[20px] group cursor-pointer" style="perspective: 1000px; transform-style: preserve-3d;">
+      {promotions.map((p: Promotion) => (
+        <div class="tilt-card flex-shrink-0 w-[85vw] sm:w-[50vw] lg:w-[35vw] relative rounded-[20px] group" style="perspective: 1000px; transform-style: preserve-3d;">
           <div class="tilt-inner w-full h-full rounded-[20px] overflow-hidden shadow-2xl relative" style={`min-height:450px; background: ${p.background}; transition: transform 0.1s ease-out;`}>
             <!-- Glassmorphism overlay -->
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent z-10 pointer-events-none"></div>
@@ -132,7 +162,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
     <div class="fade-up">
       <div class="products-grid-container group/grid">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredProducts.length > 0 ? featuredProducts.map((p: any, i: number) => (
+          {featuredProducts.length > 0 ? featuredProducts.map((p: Product, i: number) => (
             <div class={`product-card-wrapper transition-all duration-500 hover:z-10 group/grid-hover:opacity-40 hover:!opacity-100 ${i % 2 === 1 ? 'lg:translate-y-12' : ''}`}>
               <article class="product-card relative flex flex-col items-center rounded-[20px] bg-white h-full overflow-hidden shadow-sm hover:shadow-2xl transition-shadow duration-500 transform hover:-translate-y-2">
                 <div class="product-img-inner w-full overflow-hidden rounded-t-[20px] relative bg-gradient-to-br from-gray-50 to-gray-200" style="height: clamp(180px, 18vw, 300px);">
@@ -149,7 +179,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
                   {p.brandName && <p class="font-lato text-[11px] font-semibold uppercase tracking-widest text-[#c9a96e]">{p.brandName}</p>}
                   <h3 class="font-lato font-bold text-[18px] lg:text-[22px] leading-tight text-[#0d2c22]">{p.name}</h3>
                   <div class="mt-auto pt-4">
-                    <a href="/products" class="btn-underline text-[#0d2c22] font-semibold" aria-label={`Explore more about ${p.name}`}>Explore More</a>
+                    <a href={`/products/${p.code}`} data-cursor="View" class="btn-underline text-[#0d2c22] font-semibold" aria-label={`Explore ${p.name}`}>Explore More</a>
                   </div>
                 </div>
               </article>
@@ -241,7 +271,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
   
   <div class="fade-up relative w-full overflow-hidden brands-marquee-container group" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
     <div class="flex w-max brands-marquee-track">
-      {[...activeBrands, ...activeBrands, ...activeBrands, ...activeBrands].map((b: any) => (
+      {[...activeBrands, ...activeBrands, ...activeBrands, ...activeBrands].map((b: Brand) => (
         <a href={`/brands/${b.slug}`} class="brand-card relative flex-shrink-0 rounded-[16px] border border-[#d3d3d3]/50 bg-white/50 backdrop-blur-sm overflow-hidden cursor-pointer no-underline mx-4 transition-all duration-300 hover:scale-105 hover:bg-white hover:shadow-xl hover:border-[#c9a96e]" style="width: 250px;" aria-label={`Explore ${b.name}`}>
           <div class="flex items-center justify-center p-6 h-[140px]">
             {b.logo ? (
@@ -331,6 +361,15 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
   gsap.registerPlugin(ScrollTrigger);
 
   function initAnimations() {
+    if (document.documentElement.dataset.homeAnimations === 'ready') return;
+    document.documentElement.dataset.homeAnimations = 'ready';
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      gsap.set('.fade-up, .fade-left, .fade-right, .hero-reveal-text, .hero-title-line', { clearProps: 'all', autoAlpha: 1, x: 0, y: 0, yPercent: 0 });
+      document.querySelectorAll('.stat-num').forEach((num) => { num.textContent = num.getAttribute('data-target') || '0'; });
+      return;
+    }
+
     // 1. Hero Reveal Animation
     const heroTl = gsap.timeline({ defaults: { ease: "power4.out" } });
     
@@ -501,6 +540,7 @@ const activeBrands = brands.filter((b: any) => b.active !== false);
   // Cleanup ScrollTriggers on navigation to prevent memory leaks and duplicate pins
   document.addEventListener('astro:before-swap', () => {
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    delete document.documentElement.dataset.homeAnimations;
   });
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') {

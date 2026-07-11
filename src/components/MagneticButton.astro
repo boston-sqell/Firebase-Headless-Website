@@ -20,16 +20,18 @@ const Element = href ? 'a' : 'button';
   import gsap from 'gsap';
 
   function initMagneticButtons() {
-    const magneticBtns = document.querySelectorAll('.magnetic-btn');
+    if (!window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) return;
+    const magneticBtns = document.querySelectorAll<HTMLElement>('.magnetic-btn:not([data-magnetic-ready])');
 
     magneticBtns.forEach((btn) => {
+      btn.dataset.magneticReady = 'true';
       const inner = btn.querySelector('.magnetic-inner');
       if (!inner) return;
 
       const xTo = gsap.quickTo(inner, "x", {duration: 1, ease: "elastic.out(1, 0.3)"});
       const yTo = gsap.quickTo(inner, "y", {duration: 1, ease: "elastic.out(1, 0.3)"});
 
-      btn.addEventListener("mousemove", (e: any) => {
+      btn.addEventListener("mousemove", (e: MouseEvent) => {
         const { clientX, clientY } = e;
         const { height, width, left, top } = btn.getBoundingClientRect();
         const x = clientX - (left + width / 2);

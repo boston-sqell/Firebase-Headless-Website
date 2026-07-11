@@ -14,7 +14,7 @@ const others = recipes.filter(r => !r.featured || r.id !== featured?.id);
 <main>
 
 <section class="page-hero">
-  <img class="page-hero__img" src="/images/recipes/hero.jpg" alt="Home cook preparing a meal with fresh ingredients" loading="eager">
+  <img class="page-hero__img" src="/images/recipes/hero.jpg" alt="Home cook preparing a meal with fresh ingredients" loading="eager" onerror="this.style.display='none'">
   <div class="container page-hero__inner">
     <h1>Recipes</h1>
     <p class="crumbs"><a href="/">Home</a> &nbsp;/&nbsp; <span>Recipes</span></p>

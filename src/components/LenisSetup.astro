@@ -9,19 +9,23 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
-  // Initialize Lenis
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const precisePointer = window.matchMedia('(pointer: fine)').matches;
+
+  // Native scrolling is more predictable for touch and reduced-motion users.
   const lenis = new Lenis({
-    autoRaf: true,
-    lerp: 0.08, // Adjust for Awwwards-style weighty kinetic scroll
+    autoRaf: !reduceMotion && precisePointer,
+    lerp: 0.1,
     wheelMultiplier: 1,
+    smoothWheel: !reduceMotion && precisePointer,
   });
 
   // Sync Lenis with GSAP ScrollTrigger
   lenis.on('scroll', ScrollTrigger.update);
 
-  gsap.ticker.add((time) => {
-    lenis.raf(time * 1000);
-  });
+  if (!reduceMotion && precisePointer) {
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
+  }
 
   gsap.ticker.lagSmoothing(0);
 

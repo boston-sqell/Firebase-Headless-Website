@@ -4,7 +4,7 @@ import { getCmsData } from '../lib/cms';
 import type { Brand } from '../lib/cms';
 
 let cmsError = false;
-let cmsData: any = { products: [], brands: [], site: {} as any };
+let cmsData: Awaited<ReturnType<typeof getCmsData>> = { products: [], brands: [], site: {} };
 try {
   const _d = await getCmsData();
   cmsData = _d;
@@ -28,7 +28,7 @@ const sortedBrands = [...brands].sort((a: Brand, b: Brand) => a.name.localeCompa
 )}
 
 <section class="page-hero">
-  <img class="page-hero__img" src={site.brandsPageHero || "/brands-hero.jpg"} alt="A spread of branded grocery products in a kitchen" loading="eager">
+  <img class="page-hero__img" src={site.brandsPageHero || "/brands-hero.jpg"} alt="A spread of branded grocery products in a kitchen" loading="eager" onerror="this.style.display='none'">
   <div class="container page-hero__inner">
     <h1>Brands</h1>
     <p class="crumbs"><a href="/">Home</a> &nbsp;/&nbsp; <span>Brands</span></p>
