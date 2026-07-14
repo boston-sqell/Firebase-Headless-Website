@@ -30,6 +30,11 @@ try {
 }
 
 const { products, brands, recipes, news } = cmsData;
+console.log("[index] products count:", products.length);
+console.log("[index] brands count:", brands.length);
+console.log("[index] recipes count:", recipes.length);
+console.log("[index] news count:", news.length);
+console.log("[index] cmsError status:", cmsError);
 
 // Fallback background hero image if not in database
 const heroImage = '/images/hero_distribution.png';
