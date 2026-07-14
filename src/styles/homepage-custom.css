@@ -103,6 +103,25 @@
 
 .brand-card:hover::after { opacity: 1; }
 
+.brands-grid-container {
+  overflow-x: auto;
+  padding-block: 6px 18px;
+  scrollbar-width: thin;
+}
+
+.homepage-brands-grid {
+  display: grid;
+  grid-template-rows: repeat(4, minmax(120px, auto));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(180px, 1fr);
+  gap: 18px;
+  min-width: max-content;
+}
+
+@media (min-width: 1024px) {
+  .homepage-brands-grid { min-width: 100%; }
+}
+
 /* product card green underline */
 
 .product-card::after {
@@ -167,7 +186,6 @@
     opacity: 1 !important; visibility: visible !important; transform: none !important; transition: none !important;
   }
   .scroll-indicator, .marquee-track { animation: none !important; }
-  .brands-marquee-track { transform: none !important; flex-wrap: wrap; width: 100%; justify-content: center; }
   .promo-scroll-container { height: auto !important; }
   .promo-track { transform: none !important; overflow-x: auto; width: 100%; padding-block: 2rem; }
 }

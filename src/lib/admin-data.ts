@@ -321,6 +321,11 @@ export interface ContactSubmission {
   phone?: string;
   company?: string;
   message: string;
+  businessType?: string;
+  islandAtoll?: string;
+  productName?: string;
+  brandName?: string;
+  expectedVolume?: string;
   read: boolean;
   submittedAt?: FirebaseFirestore.Timestamp;
 }
@@ -331,6 +336,11 @@ export async function createContactSubmission(data: {
   phone?: string;
   company?: string;
   message: string;
+  businessType?: string;
+  islandAtoll?: string;
+  productName?: string;
+  brandName?: string;
+  expectedVolume?: string;
 }): Promise<string> {
   const ref = await getDb().collection("ContactSubmissions").add({
     ...data,

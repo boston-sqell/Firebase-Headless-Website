@@ -32,7 +32,18 @@ function formatDate(ts: unknown): string {
                 {m.phone && <><br /><span style="color:var(--admin-muted);font-size:12px">{m.phone}</span></>}
                 {m.company && <><br /><span style="color:var(--admin-muted);font-size:12px">{m.company}</span></>}
               </td>
-              <td style="max-width:360px;white-space:pre-wrap">{m.message}</td>
+              <td style="max-width:360px;white-space:pre-wrap">
+                {m.businessType && (
+                  <div style="margin-bottom:8px;padding:8px;background:rgba(0,102,59,0.05);border-radius:6px;font-size:13px;border-left:3px solid #00663B;color:#18231D">
+                    <p style="margin:0 0 4px;color:#00663B"><strong>B2B Quote Request:</strong></p>
+                    <p style="margin:0 0 2px"><strong>Type:</strong> {m.businessType}</p>
+                    <p style="margin:0 0 2px"><strong>Location:</strong> {m.islandAtoll}</p>
+                    <p style="margin:0 0 2px"><strong>Product:</strong> {m.productName} {m.brandName ? `(Brand: ${m.brandName})` : ''}</p>
+                    <p style="margin:0"><strong>Volume:</strong> {m.expectedVolume}</p>
+                  </div>
+                )}
+                <div>{m.message || <em style="color:var(--admin-muted)">No additional notes</em>}</div>
+              </td>
               <td style="white-space:nowrap">{formatDate(m.submittedAt)}</td>
               <td style="white-space:nowrap">
                 {!m.read && (

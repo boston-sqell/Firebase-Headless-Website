@@ -1,0 +1,175 @@
+---
+// [id].astro - Recipe Detail Page
+import Layout from '../../layouts/Layout.astro';
+import { getRecipe, getRecipes } from '../../lib/cms';
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect('/404');
+}
+
+const recipe = await getRecipe(id);
+
+if (!recipe) {
+  return Astro.redirect('/404');
+}
+
+// Fetch other recipes for recommendation
+const allRecipes = await getRecipes();
+const otherRecipes = allRecipes.filter(r => r.id !== id && r.active !== false).slice(0, 3);
+---
+
+<Layout
+  title={`${recipe.title} | Recipes | Sosun Fihaara`}
+  description={recipe.meta || `Cook ${recipe.title} with premium ingredients imported and distributed by Sosun Fihaara across the Maldives.`}
+  image={recipe.image}
+>
+  <main class="bg-[#F6F2E8] py-20 min-h-screen pt-28">
+    <div class="max-w-[1000px] mx-auto px-5">
+      <!-- Breadcrumbs -->
+      <div class="mb-6 font-body text-xs text-[#566159] uppercase tracking-wider">
+        <a href="/" class="hover:text-[#00663B] no-underline">Home</a> &nbsp;/&nbsp;
+        <a href="/recipes" class="hover:text-[#00663B] no-underline">Recipes</a> &nbsp;/&nbsp;
+        <span class="text-[#18231D]">{recipe.title}</span>
+      </div>
+
+      <div class="bg-white border border-[#D8D4C9] rounded-2xl overflow-hidden shadow-sm mb-12">
+        {recipe.image && (
+          <div class="aspect-[16/7] w-full bg-[#EAE6DC] overflow-hidden">
+            <img src={recipe.image} alt={recipe.title} class="w-full h-full object-cover" />
+          </div>
+        )}
+
+        <div class="p-8 lg:p-12">
+          <div class="flex flex-wrap items-center gap-3 mb-4">
+            {recipe.pill && (
+              <span class="text-xs font-bold uppercase tracking-wider bg-[#DDEBE2] text-[#00663B] px-3 py-1 rounded-full">
+                {recipe.pill}
+              </span>
+            )}
+            {recipe.meta && (
+              <span class="text-xs text-[#566159] font-body font-bold">
+                {recipe.meta}
+              </span>
+            )}
+          </div>
+
+          <h1 class="font-display font-bold text-[#18231D] leading-tight mb-6" style="font-size: var(--type-h2);">
+            {recipe.title}
+          </h1>
+
+          <!-- Preparation times -->
+          <div class="flex gap-8 border-y border-[#D8D4C9]/40 py-4 mb-8 text-[#18231D] font-body text-sm">
+            {recipe.prepTime && (
+              <div>
+                <span class="block text-xs uppercase tracking-wider text-[#566159] font-bold">Prep Time</span>
+                <span class="block font-display font-bold text-lg mt-0.5">{recipe.prepTime} Min</span>
+              </div>
+            )}
+            {recipe.cookTime && (
+              <div>
+                <span class="block text-xs uppercase tracking-wider text-[#566159] font-bold">Cook Time</span>
+                <span class="block font-display font-bold text-lg mt-0.5">{recipe.cookTime} Min</span>
+              </div>
+            )}
+            <div>
+              <span class="block text-xs uppercase tracking-wider text-[#566159] font-bold">Distributed Brands</span>
+              <span class="block font-display font-bold text-lg mt-0.5">Sosun Imports</span>
+            </div>
+          </div>
+
+          <!-- Description / Instructions -->
+          <div class="prose font-body text-base text-[#18231D] leading-relaxed max-w-none" set:html={recipe.description}></div>
+
+          <!-- B2B CTA band inside page -->
+          <div class="mt-12 pt-8 border-t border-[#D8D4C9]/40 flex flex-col md:flex-row items-center justify-between gap-6 bg-[#DDEBE2]/30 p-6 rounded-xl">
+            <div>
+              <h3 class="font-display font-bold text-lg text-[#083C2B] mb-1">Sourcing Ingredients?</h3>
+              <p class="font-body text-xs text-[#566159] leading-relaxed">
+                Get wholesale prices and nationwide island delivery for all recipe ingredients.
+              </p>
+            </div>
+            <div class="flex gap-3 w-full md:w-auto shrink-0 justify-center">
+              <a href="/request-quote" class="btn-primary">Request a Quote</a>
+              <a href="/products" class="btn-secondary">View Catalogue</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendation segment -->
+      {otherRecipes.length > 0 && (
+        <div>
+          <h2 class="font-display font-bold text-[#18231D] text-2xl mb-6">Other Recipes to Try</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {otherRecipes.map(r => (
+              <article class="bg-white border border-[#D8D4C9] rounded-xl overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow duration-300">
+                <div class="aspect-[4/3] bg-[#EAE6DC] overflow-hidden">
+                  {r.image && <img src={r.image} alt={r.title} class="w-full h-full object-cover" loading="lazy" />}
+                </div>
+                <div class="p-5 flex-grow flex flex-col justify-between">
+                  <div>
+                    <span class="text-xs text-[#566159] font-body block mb-2">Prep: {r.prepTime || '0'} Min</span>
+                    <h3 class="font-display font-bold text-base text-[#18231D] mb-4 leading-tight">{r.title}</h3>
+                  </div>
+                  <a href={`/recipes/${r.id}`} class="text-xs font-bold text-[#00663B] hover:text-[#083C2B] no-underline inline-flex items-center gap-1">
+                    Read recipe <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-green);
+    color: var(--color-surface) !important;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 10px;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.16s ease;
+  }
+  .btn-primary:hover {
+    background-color: var(--color-green-dark);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    color: var(--color-green) !important;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 10px;
+    border: 1px solid var(--color-green);
+    text-decoration: none;
+    transition: background-color 0.16s ease, color 0.16s ease;
+  }
+  .btn-secondary:hover {
+    background-color: var(--color-green);
+    color: var(--color-surface) !important;
+  }
+</style>

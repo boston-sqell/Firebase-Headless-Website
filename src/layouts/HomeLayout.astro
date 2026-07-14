@@ -4,7 +4,6 @@ import '../styles/homepage.css';
 import '../styles/homepage-custom.css';
 
 import { DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, SITE_URL, organizationSchema } from '../lib/seo';
-import CustomCursor from '../components/CustomCursor.astro';
 import LenisSetup from '../components/LenisSetup.astro';
 import { ClientRouter } from 'astro:transitions';
 
@@ -33,9 +32,10 @@ const imageUrl = new URL(image, Astro.site || SITE_URL).toString();
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alumni+Sans+SC:wght@100;200;300;400;500;600;700;800;900&family=Lato:wght@300;400;600;700;900&display=swap" />
+    <link rel="preload" href="/fonts/Sora-600-2.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/Sora-700-2.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/Manrope-400-6.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/Manrope-700-6.woff2" as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site || SITE_URL).toString()} />
@@ -52,7 +52,6 @@ const imageUrl = new URL(image, Astro.site || SITE_URL).toString();
     <ClientRouter />
   </head>
   <body>
-    <CustomCursor />
     <LenisSetup />
     <slot />
   </body>

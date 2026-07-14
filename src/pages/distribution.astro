@@ -1,0 +1,163 @@
+---
+// distribution.astro - B2B Distribution Overview Page
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Nationwide FMCG Distribution Network | Sosun Fihaara"
+  description="Learn about Sosun Fihaara's nationwide FMCG logistics and supply line serving Baa, Kaafu, Seenu, and all Maldivian atolls."
+>
+  <main class="bg-[#F6F2E8] py-20 min-h-screen pt-28">
+    <div class="max-w-[1320px] mx-auto px-5 lg:px-10">
+      <div class="text-center mb-16">
+        <span class="text-xs uppercase tracking-wider text-[#C5A578] font-bold font-body">Logistics Infrastructure</span>
+        <h1 class="font-display font-bold text-[#18231D] mt-2 mb-3" style="font-size: var(--type-h2);">Our Distribution Network</h1>
+        <p class="font-body text-[#566159] text-sm max-w-xl mx-auto">
+          We operate a highly optimized archipelagic distribution network, bridging global FMCG brands with local businesses across every inhabited Maldivian atoll.
+        </p>
+      </div>
+
+      <!-- Split content -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+        <div>
+          <h2 class="font-display font-bold text-[#18231D] text-2xl mb-4"> archipelagic Logistics</h2>
+          <p class="font-body text-base text-[#566159] leading-relaxed mb-6">
+            Connecting global brands to distant islands requires more than standard warehousing. Sosun Fihaara has designed a multi-layered transportation and storage model over four decades.
+          </p>
+          <div class="flex flex-col gap-4 font-body text-sm text-[#18231D]">
+            <div class="bg-white border border-[#D8D4C9] p-4 rounded-xl">
+              <strong>Malé Distribution Hub</strong>
+              <p class="text-xs text-[#566159] mt-1">Our primary dry and cold storage facilities are strategically positioned in the capital area to receive international cargo shipments.</p>
+            </div>
+            <div class="bg-white border border-[#D8D4C9] p-4 rounded-xl">
+              <strong>Atoll Sea Routes</strong>
+              <p class="text-xs text-[#566159] mt-1">We utilize daily sea freight routes, container ships, and localized ferry agreements to move bulk and retail stock to all 20 atolls.</p>
+            </div>
+            <div class="bg-white border border-[#D8D4C9] p-4 rounded-xl">
+              <strong>Cold Chain Integrity</strong>
+              <p class="text-xs text-[#566159] mt-1">From arrival to delivery, chilled and frozen imports (like Pascual dairy) are kept in temperature-monitored cold storage containers.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SVG Map Container -->
+        <div class="relative flex justify-center py-6 bg-white rounded-2xl border border-[#D8D4C9]">
+          <svg viewBox="0 0 540 760" class="w-full max-w-[400px] h-auto">
+            <defs>
+              <linearGradient id="routeGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop stop-color="#C5A578"/>
+                <stop offset="1" stop-color="#00663B"/>
+              </linearGradient>
+            </defs>
+            <path class="atoll-route" pathLength="1" d="M284 38 C340 120 198 168 278 242 S344 340 243 410 S360 520 269 600 S220 680 286 730" fill="none" stroke="url(#routeGradient)" stroke-width="2.5" stroke-linecap="round" />
+            {[{x:286,y:50},{x:324,y:97},{x:244,y:145},{x:214,y:196},{x:287,y:244},{x:320,y:294},{x:270,y:342},{x:230,y:393},{x:260,y:443},{x:315,y:482},{x:337,y:527},{x:276,y:570},{x:242,y:616},{x:215,y:662},{x:281,y:718}].map((dot, i) => (
+              <g>
+                <circle cx={dot.x} cy={dot.y} r={i === 8 ? 8 : 4} fill={i === 8 ? "#C5A578" : "#00663B"} />
+              </g>
+            ))}
+            <text x="285" y="465" font-family="var(--font-display)" font-size="12" font-weight="bold" fill="#083C2B" letter-spacing="2" text-anchor="middle">MALÉ HUB</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- B2B gateways -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="bg-white border border-[#D8D4C9] p-8 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
+          <div>
+            <h3 class="font-display font-bold text-xl text-[#18231D] mb-3">Retail Supply</h3>
+            <p class="font-body text-sm text-[#566159] leading-relaxed mb-6">
+              Wholesale FMCG supply for grocery stores, supermarkets, and local merchants. We keep your shelves filled with trusted global brands.
+            </p>
+          </div>
+          <a href="/distribution/retail-supply" class="text-sm font-bold text-[#00663B] hover:text-[#083C2B] no-underline inline-flex items-center gap-1 font-body">
+            Explore Retail Supply &rarr;
+          </a>
+        </div>
+
+        <div class="bg-white border border-[#D8D4C9] p-8 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
+          <div>
+            <h3 class="font-display font-bold text-xl text-[#18231D] mb-3">Hospitality & Food Service</h3>
+            <p class="font-body text-sm text-[#566159] leading-relaxed mb-6">
+              Specialized culinary, beverage, and dairy supply lines tailored to the high standards of Maldivian island resorts, cafes, and kitchens.
+            </p>
+          </div>
+          <a href="/distribution/hospitality-food-service" class="text-sm font-bold text-[#00663B] hover:text-[#083C2B] no-underline inline-flex items-center gap-1 font-body">
+            Explore Hospitality &rarr;
+          </a>
+        </div>
+
+        <div class="bg-white border border-[#D8D4C9] p-8 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
+          <div>
+            <h3 class="font-display font-bold text-xl text-[#18231D] mb-3">Brand Partnerships</h3>
+            <p class="font-body text-sm text-[#566159] leading-relaxed mb-6">
+              We act as the exclusive importer, distributor, and brand builder for international FMCG companies looking to enter the Maldives market.
+            </p>
+          </div>
+          <a href="/distribution/brand-partnerships" class="text-sm font-bold text-[#00663B] hover:text-[#083C2B] no-underline inline-flex items-center gap-1 font-body">
+            Explore Partnerships &rarr;
+          </a>
+        </div>
+      </div>
+
+      <!-- Conversion band -->
+      <div class="bg-[#083C2B] text-white rounded-3xl p-10 text-center max-w-4xl mx-auto">
+        <h2 class="font-display font-bold text-white text-2xl lg:text-3xl mb-4">Ready to partner with us?</h2>
+        <p class="font-body text-[#DDEBE2]/90 text-sm max-w-xl mx-auto mb-8">
+          Fill in our B2B wholesale form to request pricing, terms, or schedule a call with our Sales and Distribution team.
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="/request-quote" class="btn-primary">Request a Quote</a>
+          <a href="/contact" class="btn-secondary">Contact Us</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-sand);
+    color: var(--color-green-dark) !important;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    height: 48px;
+    padding: 0 24px;
+    border-radius: 12px;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.16s ease;
+  }
+  .btn-primary:hover {
+    background-color: var(--color-surface);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    color: var(--color-surface) !important;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    height: 48px;
+    padding: 0 24px;
+    border-radius: 12px;
+    border: 1px solid var(--color-sand);
+    text-decoration: none;
+    transition: background-color 0.16s ease, color 0.16s ease;
+  }
+  .btn-secondary:hover {
+    background-color: var(--color-sand);
+    color: var(--color-green-dark) !important;
+  }
+</style>

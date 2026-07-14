@@ -1,0 +1,200 @@
+---
+// request-quote.astro - Dedicated B2B Quote Form Page
+import Layout from '../layouts/Layout.astro';
+import { getBrands } from '../lib/cms';
+
+const brands = await getBrands();
+const sortedBrands = brands.map(b => b.name).sort();
+const isSuccess = Astro.url.searchParams.get('success') === 'true';
+---
+
+<Layout
+  title="Request a Wholesale Quote | Sosun Fihaara"
+  description="Request a B2B wholesale or supply quote from Sosun Fihaara. We deliver dry, fresh, and cold chain FMCG brands nationwide across Maldivian islands."
+>
+  <main class="bg-[#F6F2E8] py-20 min-h-screen pt-28">
+    <div class="max-w-[720px] mx-auto px-5">
+      <div class="text-center mb-8">
+        <span class="text-xs uppercase tracking-wider text-[#C5A578] font-bold font-body">B2B Procurement</span>
+        <h1 class="font-display font-bold text-[#18231D] mt-2 mb-3" style="font-size: var(--type-h2);">Request a Wholesale Quote</h1>
+        <p class="font-body text-[#566159] text-sm">
+          Please fill in the procurement details below. Our trade desk will review your requirements and respond within one business day.
+        </p>
+      </div>
+
+      <div class="bg-white border border-[#D8D4C9] rounded-2xl p-8 shadow-sm">
+        {isSuccess ? (
+          <div class="text-center py-10 font-body">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-6"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <h2 class="font-display font-bold text-2xl text-[#18231D] mb-2">Quote Request Submitted</h2>
+            <p class="text-[#566159] text-sm max-w-sm mx-auto mb-6">
+              Thank you. Your wholesale enquiry has been received. Our sales team will get back to you with terms and pricing details shortly.
+            </p>
+            <a href="/request-quote" class="btn-primary-inline">Submit another request</a>
+          </div>
+        ) : (
+          <form class="flex flex-col gap-6" action="/api/contact" method="post">
+            <!-- Honeypot -->
+            <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+              <label for="website">Leave this field empty</label>
+              <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <!-- Custom Quote Fields hidden flag -->
+            <input type="hidden" name="form_type" value="quote" />
+
+            <!-- Business Type -->
+            <div class="flex flex-col gap-2">
+              <label for="businessType" class="text-sm font-bold text-[#18231D] font-body">Business Type <span class="text-[#A12B2B]">*</span></label>
+              <select id="businessType" name="businessType" required class="form-input">
+                <option value="" disabled selected>Select your business type</option>
+                <option value="Retailer / Shop">Retailer / Local Shop</option>
+                <option value="Hospitality / Resort">Resort / Hotel</option>
+                <option value="Restaurant / Cafe">Restaurant / Café / Kitchen</option>
+                <option value="Brand Principal">Global Brand Principal</option>
+                <option value="Institutional Buyer">Institutional / Government Buyer</option>
+                <option value="Consumer">Consumer / Household</option>
+                <option value="Other">Other Business</option>
+              </select>
+            </div>
+
+            <!-- Island & Atoll -->
+            <div class="flex flex-col gap-2">
+              <label for="islandAtoll" class="text-sm font-bold text-[#18231D] font-body">Delivery Location (Island & Atoll) <span class="text-[#A12B2B]">*</span></label>
+              <input type="text" id="islandAtoll" name="islandAtoll" required placeholder="e.g. Hulhumalé, Kaafu Atoll or Seaside Resort, Baa Atoll" class="form-input" />
+            </div>
+
+            <!-- Product & Brand of Interest -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-2">
+                <label for="productName" class="text-sm font-bold text-[#18231D] font-body">Product of Interest <span class="text-[#A12B2B]">*</span></label>
+                <input type="text" id="productName" name="productName" required placeholder="e.g. Pascual Milk, Gullon Biscuits, Sugar" class="form-input" />
+              </div>
+              <div class="flex flex-col gap-2">
+                <label for="brandName" class="text-sm font-bold text-[#18231D] font-body">Brand of Interest</label>
+                <select id="brandName" name="brandName" class="form-input">
+                  <option value="">Select a brand (optional)</option>
+                  {sortedBrands.map((b: string) => <option value={b}>{b}</option>)}
+                  <option value="Other">Other brand / Not listed</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Expected Volume -->
+            <div class="flex flex-col gap-2">
+              <label for="expectedVolume" class="text-sm font-bold text-[#18231D] font-body">Expected Order Volume <span class="text-[#A12B2B]">*</span></label>
+              <input type="text" id="expectedVolume" name="expectedVolume" required placeholder="e.g. 50 cases monthly, 2 pallets one-time, or mixed container" class="form-input" />
+            </div>
+
+            <hr class="border-[#D8D4C9]/40 my-2" />
+
+            <!-- Contact details -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-2">
+                <label for="name" class="text-sm font-bold text-[#18231D] font-body">Full Name <span class="text-[#A12B2B]">*</span></label>
+                <input type="text" id="name" name="name" required placeholder="Your full name" autocomplete="name" class="form-input" />
+              </div>
+              <div class="flex flex-col gap-2">
+                <label for="company" class="text-sm font-bold text-[#18231D] font-body">Business / Shop Name <span class="text-[#A12B2B]">*</span></label>
+                <input type="text" id="company" name="company" required placeholder="Your shop or resort name" autocomplete="organization" class="form-input" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-2">
+                <label for="email" class="text-sm font-bold text-[#18231D] font-body">Work Email Address <span class="text-[#A12B2B]">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="name@business.com" autocomplete="email" class="form-input" />
+              </div>
+              <div class="flex flex-col gap-2">
+                <label for="phone" class="text-sm font-bold text-[#18231D] font-body">Mobile / Phone Number <span class="text-[#A12B2B]">*</span></label>
+                <input type="tel" id="phone" name="phone" required placeholder="+960 000-0000" autocomplete="tel" class="form-input" />
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="flex flex-col gap-2">
+              <label for="message" class="text-sm font-bold text-[#18231D] font-body">Additional Notes or Special Requirements</label>
+              <textarea id="message" name="message" placeholder="Provide any other details like preferred shipping routes, split delivery schedules, or other specific items..." class="form-input min-h-[100px]"></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit mt-2">
+              Submit Quote Request
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .form-input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--color-line);
+    background-color: #FFFFFF;
+    color: var(--color-ink);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .form-input:focus {
+    border-color: var(--color-green);
+    box-shadow: 0 0 0 3px var(--color-green-soft);
+  }
+  select.form-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23566159' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 20px;
+    padding-right: 40px;
+  }
+
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: var(--color-green);
+    color: var(--color-surface) !important;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    height: 48px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.16s ease, transform 0.16s ease;
+  }
+  .btn-submit:hover {
+    background-color: var(--color-green-dark);
+    transform: translateY(-2px);
+  }
+
+  .btn-primary-inline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-green);
+    color: var(--color-surface) !important;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background-color 0.16s ease;
+  }
+  .btn-primary-inline:hover {
+    background-color: var(--color-green-dark);
+  }
+</style>

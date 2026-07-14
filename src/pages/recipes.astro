@@ -47,6 +47,9 @@ const others = recipes.filter(r => !r.featured || r.id !== featured?.id);
           <li><strong>{featured.prepTime || '0'}</strong><span>Min Prep</span></li>
           <li><strong>{featured.cookTime || '0'}</strong><span>Min Cook</span></li>
         </ul>
+        <div style="margin-top: 20px;">
+          <a href={`/recipes/${featured.id}`} class="btn btn--gold">View Details</a>
+        </div>
       </div>
     </div>
   </div>
@@ -62,22 +65,27 @@ const others = recipes.filter(r => !r.featured || r.id !== featured?.id);
     </div>
     <div class="grid grid-3">
       {others.map(r => (
-        <article class="card">
-          <div class="card__media">
-            {r.image && <img src={r.image} alt={r.title} loading="lazy">}
-          </div>
-          <div class="card__body">
-            <div class="meta" style="margin-bottom:10px">
-              {r.pill && <span class="pill">{r.pill}</span>}
-              {r.pill && r.meta && <span class="dot"></span>}
-              {r.meta && <span>{r.meta}</span>}
+        <article class="card flex flex-col justify-between">
+          <div>
+            <div class="card__media">
+              {r.image && <img src={r.image} alt={r.title} loading="lazy">}
             </div>
-            <h3>{r.title}</h3>
-            <div class="recipe-desc" set:html={r.description} />
-            <ul class="recipe-facts mt-3">
-              <li><strong>{r.prepTime || '0'}</strong><span>Prep</span></li>
-              <li><strong>{r.cookTime || '0'}</strong><span>Cook</span></li>
-            </ul>
+            <div class="card__body">
+              <div class="meta" style="margin-bottom:10px">
+                {r.pill && <span class="pill">{r.pill}</span>}
+                {r.pill && r.meta && <span class="dot"></span>}
+                {r.meta && <span>{r.meta}</span>}
+              </div>
+              <h3><a href={`/recipes/${r.id}`} class="text-inherit hover:text-[#00663B] transition-colors">{r.title}</a></h3>
+              <div class="recipe-desc" set:html={r.description} />
+              <ul class="recipe-facts mt-3">
+                <li><strong>{r.prepTime || '0'}</strong><span>Prep</span></li>
+                <li><strong>{r.cookTime || '0'}</strong><span>Cook</span></li>
+              </ul>
+            </div>
+          </div>
+          <div style="padding:0 24px 24px;">
+            <a href={`/recipes/${r.id}`} class="textlink">Read Recipe &rarr;</a>
           </div>
         </article>
       ))}

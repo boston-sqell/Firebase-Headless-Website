@@ -9,3 +9,5 @@ See `README.md` for full setup, architecture, and deployment instructions. Key t
 - **No client-side Firestore/Storage access anywhere.** `firestore.rules` and `storage.rules` deny all client access by design. If a feature seems to need client-side Firestore, prefer adding a server-side API route instead.
 - **Admin accounts** are provisioned only via `scripts/create-admin.mjs` -- there's no sign-up flow, and it should stay that way.
 - Run `npm run check` (Astro + TypeScript check) before considering a change done.
+
+## Imported Claude Cowork project instructions

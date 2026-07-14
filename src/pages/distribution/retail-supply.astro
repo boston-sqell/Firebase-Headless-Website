@@ -1,0 +1,111 @@
+---
+// retail-supply.astro - Retail Supply B2B Detail Page
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="Wholesale Retail Supply | Sosun Fihaara"
+  description="Bulk FMCG distribution and wholesale supply lines for retail shops, grocers, and supermarkets across the Maldives islands."
+>
+  <main class="bg-[#F6F2E8] py-20 min-h-screen pt-28">
+    <div class="max-w-[1000px] mx-auto px-5">
+      <!-- Breadcrumbs -->
+      <div class="mb-6 font-body text-xs text-[#566159] uppercase tracking-wider">
+        <a href="/" class="hover:text-[#00663B] no-underline">Home</a> &nbsp;/&nbsp;
+        <a href="/distribution" class="hover:text-[#00663B] no-underline">Distribution</a> &nbsp;/&nbsp;
+        <span class="text-[#18231D]">Retail Supply</span>
+      </div>
+
+      <div class="bg-white border border-[#D8D4C9] rounded-2xl overflow-hidden shadow-sm mb-12">
+        <div class="aspect-[16/6] w-full bg-[#EAE6DC] overflow-hidden">
+          <img src="/images/retail_supply.png" alt="Clean modern retail store shelves stocked with confectionery and grocery items" class="w-full h-full object-cover" />
+        </div>
+
+        <div class="p-8 lg:p-12">
+          <span class="text-xs font-bold uppercase tracking-wider bg-[#DDEBE2] text-[#00663B] px-3 py-1 rounded-full">
+            B2B Services
+          </span>
+
+          <h1 class="font-display font-bold text-[#18231D] leading-tight mt-4 mb-6" style="font-size: var(--type-h2);">
+            Retail Supply &amp; Wholesale
+          </h1>
+
+          <div class="prose font-body text-base text-[#18231D] leading-relaxed max-w-none mb-8">
+            <p class="mb-4">
+              Sosun Fihaara supplies local groceries, supermarkets, and convenience stores across the Maldives. We understand that shelf-stock consistency, packaging integrity, and reliable delivery schedules are essential to your business.
+            </p>
+            <h3 class="font-display font-bold text-lg text-[#18231D] mt-6 mb-3">What We Offer Retailers</h3>
+            <ul class="list-disc pl-5 mb-6 flex flex-col gap-2">
+              <li><strong>Bulk Case Pricing:</strong> Highly competitive wholesale terms tailored to your average monthly volumes.</li>
+              <li><strong>Broad Brand Selection:</strong> Direct access to globally trusted names in baby care, confectionery, canned goods, and dairy products.</li>
+              <li><strong>Reliable Island Shipping:</strong> Scheduled ocean freight dispatch to all inhabited islands, coordinated directly with your local boat captain.</li>
+              <li><strong>Flexible Order Sheets:</strong> Order dry goods and temperature-controlled items in single-case quantities or mixed pallets.</li>
+            </ul>
+          </div>
+
+          <!-- B2B CTA band inside page -->
+          <div class="pt-8 border-t border-[#D8D4C9]/40 flex flex-col md:flex-row items-center justify-between gap-6 bg-[#DDEBE2]/30 p-6 rounded-xl">
+            <div>
+              <h3 class="font-display font-bold text-lg text-[#083C2B] mb-1">Become a Retail Partner</h3>
+              <p class="font-body text-xs text-[#566159] leading-relaxed">
+                Connect with our wholesale sales team to open a commercial account.
+              </p>
+            </div>
+            <div class="flex gap-3 w-full md:w-auto shrink-0 justify-center">
+              <a href="/request-quote" class="btn-primary">Request wholesale quote</a>
+              <a href="/products" class="btn-secondary">Explore Products</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-green);
+    color: var(--color-surface) !important;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 10px;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.16s ease;
+  }
+  .btn-primary:hover {
+    background-color: var(--color-green-dark);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    color: var(--color-green) !important;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 10px;
+    border: 1px solid var(--color-green);
+    text-decoration: none;
+    transition: background-color 0.16s ease, color 0.16s ease;
+  }
+  .btn-secondary:hover {
+    background-color: var(--color-green);
+    color: var(--color-surface) !important;
+  }
+</style>

@@ -305,3 +305,15 @@ export async function getCmsData() {
   return { products, brands, site };
 }
 
+export async function getRecipe(id: string): Promise<Recipe | null> {
+  const db = getDb();
+  const doc = await db.collection("Recipes").doc(id).get();
+  if (!doc.exists) return null;
+  const data = doc.data() as Recipe;
+  return {
+    id: doc.id,
+    ...data,
+    image: data.image ? resolveImage(data.image) : undefined
+  };
+}
+

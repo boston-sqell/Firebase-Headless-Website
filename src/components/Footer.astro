@@ -1,263 +1,91 @@
 ---
+// Footer.astro
 const year = new Date().getFullYear();
-const nav = [
-  ['Home', '/'],
-  ['About Us', '/about'],
-  ['Products', '/products'],
-  ['Brands', '/brands'],
-  ['News', '/news'],
-  ['Recipes', '/recipes'],
-  ['Contact', '/contact'],
-];
 ---
 
-<footer class="sf-footer" aria-label="Site footer">
-  <div class="sf-footer__wrap">
-    <!-- Logo tab -->
-    <div class="sf-footer__tab">
-      <a href="/" aria-label="Back to top" class="sf-footer__tab-inner">
-        <img src="/logo.png" alt="Sosun Fihaara" class="sf-footer__logo-img" />
-        <span class="sf-footer__tab-sub">Est. 1980 · Malé, Maldives</span>
-      </a>
-    </div>
+<footer class="bg-[#083C2B] text-white pt-16 pb-8 border-t border-[#D8D4C9]/10" aria-label="Site footer">
+  <div class="max-w-[1320px] mx-auto px-5 lg:px-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
+      <!-- Col 1: Company summary -->
+      <div class="lg:col-span-2">
+        <a href="/" class="flex items-center gap-2 mb-4 text-white no-underline">
+          <img src="/logo.png" alt="Sosun Fihaara" class="h-8 w-auto object-contain filter brightness-0 invert" style="height: 32px !important;" />
+          <span class="font-display font-bold text-lg tracking-tight text-white">SOSUN FIHAARA</span>
+        </a>
+        <p class="text-[#DDEBE2]/75 text-sm font-body max-w-sm leading-relaxed mb-6">
+          Connecting global essentials to every Maldivian island. Partnering with trusted international brands to deliver quality retail, wholesale, and hospitality supply since 1980.
+        </p>
+        <p class="text-xs text-[#DDEBE2]/40 font-body">
+          Established 1980 · Malé, Maldives
+        </p>
+      </div>
 
-    <!-- Body -->
-    <div class="sf-footer__body">
-      <!-- Left: contact -->
-      <div class="sf-footer__col sf-footer__col--contact">
-        <address class="sf-footer__address">
-          <div class="sf-footer__contact-item">
-            <p class="sf-footer__contact-label">Address</p>
-            <p class="sf-footer__contact-value">Sosun Fihaara, Moosa Ibrahim Didi Goalhi,<br />Malé, Maldives</p>
-          </div>
-          <div class="sf-footer__contact-item">
-            <p class="sf-footer__contact-label">Email</p>
-            <a href="mailto:info@sosunfihaara.com" class="sf-footer__contact-value sf-footer__link">info@sosunfihaara.com</a>
-          </div>
-          <div class="sf-footer__contact-item">
-            <p class="sf-footer__contact-label">Phone</p>
-            <a href="tel:+9603313020" class="sf-footer__contact-value sf-footer__link">+960 331 3020</a>
-          </div>
+      <!-- Col 2: Products and brands -->
+      <div>
+        <h3 class="text-xs uppercase tracking-wider text-[#C5A578] font-bold font-body mb-4">Products & Brands</h3>
+        <ul class="flex flex-col gap-2 font-body text-sm">
+          <li><a href="/products" class="text-[#DDEBE2]/75 hover:text-white transition-colors no-underline">All Products</a></li>
+          <li><a href="/products?cat=Confectionery" class="text-[#DDEBE2]/75 hover:text-white transition-colors no-underline">Confectionery</a></li>
+          <li><a href="/products?cat=Beverages" class="text-[#DDEBE2]/75 hover:text-white transition-colors no-underline">Beverages</a></li>
+          <li><a href="/products?cat=Pantry" class="text-[#DDEBE2]/75 hover:text-white transition-colors no-underline">Pantry Staples</a></li>
+          <li><a href="/brands" class="text-[#DDEBE2]/75 hover:text-white transition-colors no-underline">Brand Partners</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Business solutions -->
+      <div>
+        <h3 class="text-xs uppercase tracking-wider text-[#C5A578] font-bold font-body mb-4">Business Solutions</h3>
+        <ul class="flex flex-col gap-2 font-body text-sm">
+          <li><a href="/distribution/retail-supply" class="text-[#DDEBE2]/75 hover:text-white transition-colors no-underline">Retail Supply</a></li>
+          <li><a href="/distribution/hospitality-food-service" class="text-[#DDEBE2]/75 hover:text-white transition-colors no-underline">Hospitality & Food Service</a></li>
+          <li><a href="/distribution/brand-partnerships" class="text-[#DDEBE2]/75 hover:text-white transition-colors no-underline">Brand Partnerships</a></li>
+          <li><a href="/request-quote" class="text-[#C5A578] hover:text-white transition-colors font-bold no-underline">Request a B2B Quote</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Contact details & Hours -->
+      <div>
+        <h3 class="text-xs uppercase tracking-wider text-[#C5A578] font-bold font-body mb-4">Contact & Hours</h3>
+        <address class="not-italic flex flex-col gap-3 font-body text-sm text-[#DDEBE2]/75">
+          <p>
+            <span class="block text-xs text-[#DDEBE2]/40 uppercase font-bold mb-0.5">Address</span>
+            Sosun Fihaara, Moosa Ibrahim Didi Goalhi,<br />Malé, Maldives
+          </p>
+          <p>
+            <span class="block text-xs text-[#DDEBE2]/40 uppercase font-bold mb-0.5">Phone</span>
+            <a href="tel:+9603313020" class="text-[#C5A578] font-bold hover:text-white transition-colors no-underline text-base">+960 331 3020</a>
+          </p>
+          <p>
+            <span class="block text-xs text-[#DDEBE2]/40 uppercase font-bold mb-0.5">Email</span>
+            <a href="mailto:info@sosunfihaara.com" class="text-white hover:text-[#C5A578] transition-colors no-underline">info@sosunfihaara.com</a>
+          </p>
+          <p>
+            <span class="block text-xs text-[#DDEBE2]/40 uppercase font-bold mb-0.5">Operating Hours</span>
+            Mon – Sat · 9:00 AM – 6:00 PM
+          </p>
         </address>
-
-        <div class="sf-footer__socials">
-          <p class="sf-footer__contact-label">Follow Us</p>
-          <div class="sf-footer__social-row">
-            <a href="https://web.facebook.com/SosunFihaara" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="sf-footer__social-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-            </a>
-            <a href="https://www.instagram.com/sosun.fihaara/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="sf-footer__social-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="2" width="20" height="20" rx="5"/>
-                <circle cx="12" cy="12" r="4"/>
-                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-              </svg>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right: nav + CTA -->
-      <div class="sf-footer__col sf-footer__col--nav">
-        <nav aria-label="Footer navigation">
-          <ul class="sf-footer__nav">
-            {nav.map(([label, href]) => (
-              <li><a href={href} class="sf-footer__nav-link">{label}</a></li>
-            ))}
-          </ul>
-        </nav>
-        <div class="sf-footer__cta-wrap">
-          <a href="/contact" class="sf-footer__cta">Get in Touch</a>
-        </div>
       </div>
     </div>
 
-    <!-- Bottom bar -->
-    <div class="sf-footer__bottom">
-      <p>© {year} Sosun Fihaara. All rights reserved.</p>
-      <p>Maldives · FMCG Wholesale &amp; Retail Distribution</p>
+    <!-- Bottom bar with Social links, legal and copyright -->
+    <div class="pt-8 border-t border-[#DDEBE2]/10 flex flex-col md:flex-row items-center justify-between gap-4 font-body text-xs text-[#DDEBE2]/40">
+      <div class="flex flex-wrap gap-6 items-center">
+        <p>© {year} Sosun Fihaara. All rights reserved.</p>
+        <span class="hidden md:inline">·</span>
+        <a href="/privacy" class="hover:text-white transition-colors no-underline">Privacy Policy</a>
+        <a href="/terms" class="hover:text-white transition-colors no-underline">Terms of Service</a>
+        <a href="/accessibility" class="hover:text-white transition-colors no-underline">Accessibility Statement</a>
+      </div>
+      
+      <!-- Social links -->
+      <div class="flex items-center gap-4">
+        <a href="https://web.facebook.com/SosunFihaara" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="text-[#DDEBE2]/60 hover:text-white transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/sosun.fihaara/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="text-[#DDEBE2]/60 hover:text-white transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </a>
+      </div>
     </div>
   </div>
 </footer>
-
-<style>
-  .sf-footer {
-    padding: 0 clamp(16px, 3vw, 40px);
-    background: var(--cream, #fefdfb);
-  }
-
-  .sf-footer__wrap {
-    position: relative;
-    background: #0d2c22;
-    border-radius: 40px 40px 0 0;
-    padding: 80px clamp(28px, 5vw, 72px) 32px;
-  }
-
-  /* ---- Logo tab ---- */
-  .sf-footer__tab {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  .sf-footer__tab-inner {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #0d2c22;
-    border-radius: 0 0 20px 20px;
-    padding: 12px 24px;
-    text-decoration: none;
-  }
-  .sf-footer__logo-img {
-    height: 44px;
-    width: auto;
-    display: block;
-    object-fit: contain;
-    filter: brightness(0) invert(1);
-    flex-shrink: 0;
-  }
-  .sf-footer__tab-sub {
-    display: block;
-    font-family: 'Lato', system-ui, sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #6bbf8a;
-    white-space: nowrap;
-  }
-
-  /* ---- Body ---- */
-  .sf-footer__body {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(32px, 5vw, 80px);
-    margin-bottom: 48px;
-  }
-
-  /* ---- Contact col ---- */
-  .sf-footer__address {
-    font-style: normal;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-bottom: 28px;
-  }
-  .sf-footer__contact-label {
-    font-family: 'Lato', system-ui, sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.45);
-    margin-bottom: 4px;
-  }
-  .sf-footer__contact-value {
-    font-family: 'Lato', system-ui, sans-serif;
-    font-size: 16px;
-    color: rgba(255,255,255,0.85);
-    line-height: 1.4;
-  }
-  .sf-footer__link {
-    text-decoration: none;
-    transition: color .2s;
-  }
-  .sf-footer__link:hover { color: #6bbf8a; }
-
-  /* Socials */
-  .sf-footer__socials { margin-top: 4px; }
-  .sf-footer__social-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-  }
-  .sf-footer__social-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(255,255,255,0.70);
-    text-decoration: none;
-    transition: border-color .2s, color .2s;
-  }
-  .sf-footer__social-btn:hover {
-    border-color: #6bbf8a;
-    color: #6bbf8a;
-  }
-
-  /* ---- Nav col ---- */
-  .sf-footer__col--nav {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .sf-footer__nav {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px 24px;
-  }
-  .sf-footer__nav-link {
-    font-family: 'Lato', system-ui, sans-serif;
-    font-size: 15px;
-    color: rgba(255,255,255,0.65);
-    text-decoration: none;
-    transition: color .2s;
-    display: block;
-    padding: 4px 0;
-  }
-  .sf-footer__nav-link:hover { color: #fff; }
-
-  .sf-footer__cta-wrap { margin-top: 32px; }
-  .sf-footer__cta {
-    display: inline-flex;
-    align-items: center;
-    padding: 14px 32px;
-    border: 2px solid var(--green);
-    color: #fff;
-    font-family: 'Lato', system-ui, sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    text-decoration: none;
-    border-radius: 6px;
-    transition: background .2s, color .2s;
-  }
-  .sf-footer__cta:hover {
-    background: var(--green);
-    color: #fff;
-  }
-
-  /* ---- Bottom bar ---- */
-  .sf-footer__bottom {
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding-top: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-    font-family: 'Lato', system-ui, sans-serif;
-    font-size: 12px;
-    color: rgba(255,255,255,0.35);
-  }
-
-  /* ---- Responsive ---- */
-  @media (max-width: 700px) {
-    .sf-footer__body {
-      grid-template-columns: 1fr;
-    }
-    .sf-footer__tab-sub { display: none; }
-    .sf-footer__bottom {
-      flex-direction: column;
-      text-align: center;
-    }
-  }
-</style>

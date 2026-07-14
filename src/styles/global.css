@@ -492,46 +492,88 @@
    ============================================================ */
 
 :root {
-  /* ---- Brand colors ---- */
-  --green:        #007a45;   /* primary brand green */
-  --green-deep:   #00582f;   /* hover / pressed */
-  --green-house:  #0d2c22;   /* dark bands + footer */
-  --green-soft:   #e7f1ea;   /* tinted surfaces */
-  --gold:         #a8d5ba;   /* secondary brand light green */
-  --gold-soft:    #e2f0e7;
-  --gold-accent:  #917151;   /* consistent brown/gold accent */
+  /* ---- Brand colors (Redesign Design System) ---- */
+  --color-canvas:        #F6F2E8;
+  --color-surface:       #FFFFFF;
+  --color-surface-muted: #EAE6DC;
+  --color-ink:           #18231D;
+  --color-ink-muted:     #566159;
+  --color-green:         #00663B;
+  --color-green-dark:    #083C2B;
+  --color-green-soft:    #DDEBE2;
+  --color-sand:          #C5A578;
+  --color-sand-dark:     #76583A;
+  --color-line:          #D8D4C9;
+  --color-error:         #A12B2B;
+  --color-success:       #17663C;
 
-  /* ---- Neutrals ---- */
-  --cream:        #f5f3ec;   /* warm page canvas (never pure white) */
-  --ceramic:      #ebe8e0;   /* alt surface */
-  --white:        #ffffff;   /* cards */
-  --ink:          #16211b;   /* primary text */
-  --muted:        #5d6b62;   /* secondary text */
-  --line:         #e2ddd3;   /* hairlines */
-  --on-dark:      #eef3ee;   /* text on dark bands */
-  --on-dark-mut:  #9fb2a6;
+  /* ---- Legacy variable mappings for backward compatibility ---- */
+  --green:        var(--color-green);
+  --green-deep:   var(--color-green-dark);
+  --green-house:  var(--color-green-dark);
+  --green-soft:   var(--color-green-soft);
+  --gold:         var(--color-green-soft);
+  --gold-soft:    var(--color-green-soft);
+  --gold-accent:  var(--color-sand);
+  --cream:        var(--color-canvas);
+  --ceramic:      var(--color-surface-muted);
+  --white:        var(--color-surface);
+  --ink:          var(--color-ink);
+  --muted:        var(--color-ink-muted);
+  --line:         var(--color-line);
+  --on-dark:      #FFFFFF;
+  --on-dark-mut:  var(--color-surface-muted);
 
-  /* ---- Type ---- */
-  --font-display: 'Sora', system-ui, sans-serif;
-  --font-serif:   'Cormorant Garamond', Georgia, serif;
-  --font-body:    'Manrope', system-ui, sans-serif;
+  /* ---- Spacing tokens ---- */
+  --space-4:   4px;
+  --space-8:   8px;
+  --space-12:  12px;
+  --space-16:  16px;
+  --space-24:  24px;
+  --space-32:  32px;
+  --space-48:  48px;
+  --space-64:  64px;
+  --space-88:  88px;
+  --space-120: 120px;
+  --space-160: 160px;
 
-  /* ---- Spacing ---- */
-  --s-1: 4px;  --s-2: 8px;  --s-3: 16px;  --s-4: 24px;
-  --s-5: 40px; --s-6: 64px; --s-7: 96px;  --s-8: 128px;
+  /* ---- Legacy spacing mappings ---- */
+  --s-1: var(--space-4);
+  --s-2: var(--space-8);
+  --s-3: var(--space-16);
+  --s-4: var(--space-24);
+  --s-5: var(--space-48);
+  --s-6: var(--space-88);
+  --s-7: var(--space-120);
+  --s-8: var(--space-160);
 
   /* ---- Radius ---- */
   --r-sm:   6px;
   --r:      14px;
-  --r-lg:   26px;
+  --r-lg:   20px;
   --r-pill: 999px;
 
+  /* ---- Type Scale ---- */
+  --font-display: 'Sora', system-ui, sans-serif;
+  --font-serif:   'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Manrope', system-ui, sans-serif;
+
+  --type-display-xl: clamp(64px, 9vw, 144px);
+  --type-h1:         clamp(48px, 6.5vw, 104px);
+  --type-h2:         clamp(38px, 4.5vw, 72px);
+  --type-h3:         clamp(24px, 2.2vw, 36px);
+  --type-body-large: 20px;
+  --type-body:       17px;
+  --type-small:      14px;
+  --type-label:      12px;
+
   /* ---- Misc ---- */
-  --container: 1200px;
+  --container: 1320px;
   --shadow-sm: 0 1px 2px rgba(13,44,34,.06), 0 4px 14px rgba(13,44,34,.05);
   --shadow:    0 2px 6px rgba(13,44,34,.08), 0 18px 40px rgba(13,44,34,.10);
   --ease:      .25s cubic-bezier(.4,0,.2,1);
 }
+
 
 /* ============================================================
    RESET
@@ -556,7 +598,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.08; font-weight: 700; letter-spacing: -0.02em; }
 
 :focus-visible {
-  outline: 3px solid var(--gold);
+  outline: 3px solid var(--color-green);
   outline-offset: 3px;
   border-radius: var(--r-sm);
 }
