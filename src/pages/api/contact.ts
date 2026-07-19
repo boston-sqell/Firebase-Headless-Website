@@ -2,10 +2,7 @@ import type { APIRoute } from 'astro';
 import { isAllowedOrigin } from '../../lib/origins';
 import { createContactSubmission, adminGetSiteContent, getDb } from '../../lib/admin-data';
 import { isAllowed, getClientKey } from '../../lib/rate-limit';
-
-function validateEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
+import { validateContactSubmission, type ContactFormType } from '../../lib/contact-form';
 
 function sanitizeString(value: FormDataEntryValue | null, maxLength: number): string {
   if (!value || typeof value !== 'string') return '';
@@ -53,27 +50,26 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   const productName  = sanitizeString(formData.get('productName'), 200);
   const brandName    = sanitizeString(formData.get('brandName'), 200);
   const expectedVolume = sanitizeString(formData.get('expectedVolume'), 200);
-  const formType     = sanitizeString(formData.get('form_type'), 20) || 'contact';
+  const formType: ContactFormType = sanitizeString(formData.get('form_type'), 20) === 'quote' ? 'quote' : 'contact';
+  const fieldErrors = validateContactSubmission({
+    formType,
+    name,
+    email,
+    phone,
+    company,
+    message,
+    businessType,
+    islandAtoll,
+    productName,
+    brandName,
+    expectedVolume,
+  });
 
-  const errors: string[] = [];
-  if (!name)                          errors.push('Name is required.');
-  if (!email)                         errors.push('Email is required.');
-  if (email && !validateEmail(email)) errors.push('Email address is not valid.');
-  if (!phone)                         errors.push('Phone is required.');
-
-  if (formType === 'quote') {
-    if (!businessType)                errors.push('Business type is required.');
-    if (!islandAtoll)                 errors.push('Delivery location is required.');
-    if (!productName)                 errors.push('Product of interest is required.');
-    if (!expectedVolume)              errors.push('Expected order volume is required.');
-    if (!company)                     errors.push('Business / Shop Name is required.');
-  } else {
-    if (!message)                     errors.push('Message is required.');
-    if (message && message.length < 10) errors.push('Message must be at least 10 characters.');
-  }
-
-  if (errors.length > 0) {
-    return new Response(JSON.stringify({ error: errors.join(' ') }), {
+  if (Object.keys(fieldErrors).length > 0) {
+    return new Response(JSON.stringify({
+      error: "We couldn't submit your request. Check the highlighted fields and try again.",
+      fieldErrors,
+    }), {
       status: 422,
       headers: { 'Content-Type': 'application/json' }
     });

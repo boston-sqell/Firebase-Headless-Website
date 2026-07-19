@@ -28,10 +28,10 @@ export interface ValidationIssue {
 // "pascual" or "sun-fresh", but not "Sun Fresh", "sun--fresh", or "-sun".
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
-// A plain non-negative number with up to 2 decimal places, e.g. "125" or
-// "125.50". No currency symbols, commas, or ranges -- the UI already
-// prefixes "MVR" and handles the "leave blank for 'Request price'" case.
-const PRICE_PATTERN = /^\d{1,9}(\.\d{1,2})?$/;
+// A non-negative number with up to 2 decimal places, optionally using valid
+// thousands separators. Existing catalogue values include both "125.50" and
+// "1,231.49", so the admin must accept either form without accepting symbols.
+const PRICE_PATTERN = /^(?:\d{1,9}|\d{1,3}(?:,\d{3}){1,2})(?:\.\d{1,2})?$/;
 
 export function validateRequired(value: string, field: string, label: string): ValidationIssue[] {
   return value ? [] : [{ field, message: `${label} is required.` }];
@@ -54,7 +54,7 @@ export function validatePrice(value: string, field: string, label: string): Vali
   if (!value) return [];
   return PRICE_PATTERN.test(value)
     ? []
-    : [{ field, message: `${label} must be a plain number like 125 or 125.50 (no currency symbols or letters).` }];
+    : [{ field, message: `${label} must be a number like 125, 125.50, or 1,250.50 (no currency symbols or letters).` }];
 }
 
 export function validateOrder(value: number, field: string, label: string): ValidationIssue[] {

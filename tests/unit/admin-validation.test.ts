@@ -48,6 +48,8 @@ describe('validatePrice', () => {
     expect(validatePrice('125', 'price', 'Price')).toHaveLength(0);
     expect(validatePrice('125.5', 'price', 'Price')).toHaveLength(0);
     expect(validatePrice('125.50', 'price', 'Price')).toHaveLength(0);
+    expect(validatePrice('1,231.49', 'price', 'Price')).toHaveLength(0);
+    expect(validatePrice('3,420', 'price', 'Price')).toHaveLength(0);
   });
   it('is a no-op for an empty value ("Request price" case)', () => {
     expect(validatePrice('', 'price', 'Price')).toHaveLength(0);
@@ -57,6 +59,7 @@ describe('validatePrice', () => {
     expect(validatePrice('free', 'price', 'Price')).toHaveLength(1);
     expect(validatePrice('125.500', 'price', 'Price')).toHaveLength(1);
     expect(validatePrice('-5', 'price', 'Price')).toHaveLength(1);
+    expect(validatePrice('12,34', 'price', 'Price')).toHaveLength(1);
   });
 });
 

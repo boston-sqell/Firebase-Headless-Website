@@ -1,6 +1,7 @@
 ---
 import type { Product, Brand, Category } from '../../lib/cms';
 import ImageUpload from './ImageUpload.astro';
+import { getEffectivePriceBasis } from '../../lib/product-pricing';
 
 interface Props {
   product?: Product;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const { product, brands, categories, action, error } = Astro.props;
+const priceBasis = product ? getEffectivePriceBasis(product) : 'case';
 ---
 
 <form method="post" action={action} enctype="multipart/form-data" class="admin-form">
@@ -69,12 +71,24 @@ const { product, brands, categories, action, error } = Astro.props;
   <div class="form-row">
     <div class="field">
       <label for="price">Price (MVR)</label>
-      <input type="text" id="price" name="price" value={product?.price} placeholder="Leave blank for 'Request price'" />
+      <input type="text" id="price" name="price" inputmode="decimal" value={product?.price} placeholder="Leave blank for current price on request" />
+      <p class="hint">Enter the amount only. A blank price is shown publicly as “Current price on request”.</p>
     </div>
     <div class="field">
       <label for="packSize">Pack size</label>
       <input type="text" id="packSize" name="packSize" value={product?.packSize} placeholder="e.g. 500g" />
     </div>
+  </div>
+
+  <div class="field">
+    <label for="priceBasis">Price basis *</label>
+    <select id="priceBasis" name="priceBasis" required aria-describedby="priceBasisHint">
+      <option value="case" selected={priceBasis === 'case'}>Per case</option>
+      <option value="pack" selected={priceBasis === 'pack'}>Per pack</option>
+      <option value="unit" selected={priceBasis === 'unit'}>Per unit</option>
+      <option value="indicative" selected={priceBasis === 'indicative'}>Indicative price (basis varies)</option>
+    </select>
+    <p class="hint" id="priceBasisHint">Choose what the MVR amount buys. Existing multipack catalogue records default to per-case pricing.</p>
   </div>
 
   <div class="field">

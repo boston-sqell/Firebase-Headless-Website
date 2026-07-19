@@ -4,8 +4,6 @@ import '../styles/homepage.css';
 import '../styles/homepage-custom.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import LenisSetup from '../components/LenisSetup.astro';
-import { ClientRouter } from 'astro:transitions';
 import { DEFAULT_TITLE, DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, SITE_URL, organizationSchema } from '../lib/seo';
 
 interface Props {
@@ -35,10 +33,8 @@ const imageUrl = new URL(image, Astro.site || SITE_URL).toString();
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/png" href="/logo.png" />
 		<meta name="generator" content={Astro.generator} />
-		<link rel="preload" href="/fonts/Sora-600-2.woff2" as="font" type="font/woff2" crossorigin />
 		<link rel="preload" href="/fonts/Sora-700-2.woff2" as="font" type="font/woff2" crossorigin />
 		<link rel="preload" href="/fonts/Manrope-400-6.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="preload" href="/fonts/Manrope-700-6.woff2" as="font" type="font/woff2" crossorigin />
 		<title>{title}</title>
 		<meta name="description" content={description} />
 		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site || "https://sosunfihaara.com").toString()} />
@@ -51,12 +47,11 @@ const imageUrl = new URL(image, Astro.site || SITE_URL).toString();
 		<meta property="twitter:description" content={description} />
 		<meta property="twitter:image" content={imageUrl} />
 		<script type="application/ld+json" is:inline set:html={JSON.stringify(organizationSchema)} />
-		<ClientRouter />
 	</head>
 	<body>
-		<LenisSetup />
+		<a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[999] focus:text-white focus:px-4 focus:py-2 focus:rounded font-body font-bold" style="background-color: var(--color-green);">Skip to main content</a>
 		{!noNav && <Nav />}
-		<slot />
+		<div id="main-content" tabindex="-1"><slot /></div>
 		{!noFooter && <Footer />}
 	</body>
 </html>

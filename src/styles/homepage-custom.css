@@ -15,11 +15,11 @@
  * source compiled at build time.
  */
 
-/* Alumni Sans SC for headings */
+/* Sora for headings */
 
-.font-alumni { font-family: 'Alumni Sans SC', sans-serif; }
+.font-alumni { font-family: 'Sora', sans-serif; }
 
-.font-lato   { font-family: 'Lato', sans-serif; }
+.font-lato   { font-family: 'Manrope', sans-serif; }
 
 /* ─── Scroll animations ─────────────────── */
 
@@ -139,7 +139,7 @@
 .btn-explore {
   display: inline-block;
   background: var(--green); color: #fff;
-  font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 700;
+  font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 700;
   letter-spacing: 2px; text-transform: uppercase;
   padding: 14px 32px; border-radius: 6px; border: none; cursor: pointer;
   transition: background .2s, transform .2s;
@@ -149,7 +149,7 @@
 
 .btn-underline {
   background: none; border: none; cursor: pointer;
-  font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 700;
+  font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 700;
   color: #1e2424; letter-spacing: 1px; text-transform: uppercase;
   text-decoration: underline; text-underline-offset: 6px;
   text-decoration-color: var(--green); text-decoration-thickness: 2px;
@@ -160,15 +160,15 @@
 
 /* ─── Section heading style ─────────────── */
 
-.tagline-text  { font-family: 'Lato', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: -0.39px; text-transform: uppercase; color: #6bbf8a; }
+.tagline-text  { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: -0.39px; text-transform: uppercase; color: #6bbf8a; }
 
-.main-title    { font-family: 'Alumni Sans SC', sans-serif; font-weight: 200; color: #1e2424; line-height: .97; }
+.main-title    { font-family: 'Sora', sans-serif; font-weight: 200; color: #1e2424; line-height: .97; }
 
-.sub-title     { font-family: 'Lato', sans-serif; font-weight: 300; color: #1e2424; }
+.sub-title     { font-family: 'Manrope', sans-serif; font-weight: 300; color: #1e2424; }
 
 /* ─── Featured recipe tag ───────────────── */
 
-.recipe-featured-tag { background: var(--green); color: #fff; font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+.recipe-featured-tag { background: var(--green); color: #fff; font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
 
 /* ─── Scrollbar ─────────────────────────── */
 
@@ -593,11 +593,11 @@
 }
 .atoll-story::before { content:""; position:absolute; inset:0; z-index:-1; opacity:.36; background:radial-gradient(circle at 72% 45%, rgba(41,112,78,.46), transparent 35%), repeating-linear-gradient(115deg, transparent 0 88px, rgba(255,255,255,.025) 89px 90px); }
 .atoll-story__copy { align-self:center; max-width:590px; position:relative; z-index:2; }
-.atoll-story__index { margin-bottom:clamp(80px,12vh,150px); color:rgba(255,255,255,.4); font:600 10px/1.2 'Lato',sans-serif; letter-spacing:.2em; text-transform:uppercase; }
-.atoll-story h2 { margin:14px 0 30px; color:#fff; font:200 clamp(70px,8vw,132px)/.78 'Alumni Sans SC',sans-serif; letter-spacing:-.035em; }
+.atoll-story__index { margin-bottom:clamp(80px,12vh,150px); color:rgba(255,255,255,.4); font:600 10px/1.2 'Manrope',sans-serif; letter-spacing:.2em; text-transform:uppercase; }
+.atoll-story h2 { margin:14px 0 30px; color:#fff; font:200 clamp(70px,8vw,132px)/.78 'Sora',sans-serif; letter-spacing:-.035em; }
 .atoll-story h2 span { color:#d9bc82; }
-.atoll-story__lede { max-width:520px; color:rgba(255,255,255,.66); font:300 clamp(16px,1.25vw,20px)/1.75 'Lato',sans-serif; }
-.atoll-story__link { display:inline-flex; gap:18px; align-items:center; margin-top:38px; padding-bottom:7px; border-bottom:1px solid #d9bc82; color:#fff; font:700 12px/1 'Lato',sans-serif; letter-spacing:.15em; text-transform:uppercase; }
+.atoll-story__lede { max-width:520px; color:rgba(255,255,255,.66); font:300 clamp(16px,1.25vw,20px)/1.75 'Manrope',sans-serif; }
+.atoll-story__link { display:inline-flex; gap:18px; align-items:center; margin-top:38px; padding-bottom:7px; border-bottom:1px solid #d9bc82; color:#fff; font:700 12px/1 'Manrope',sans-serif; letter-spacing:.15em; text-transform:uppercase; }
 .atoll-story__link span { color:#d9bc82; transition:transform .35s ease; }.atoll-story__link:hover span { transform:translate(4px,-4px); }
 .atoll-map { position:relative; min-height:660px; display:grid; place-items:center; }
 .atoll-map svg { width:min(100%,520px); height:auto; overflow:visible; filter:drop-shadow(0 40px 80px rgba(0,0,0,.25)); }
@@ -605,9 +605,9 @@
 .atoll-route { fill:none; stroke:url(#routeGradient); stroke-width:1.25; stroke-dasharray:.025 .024; opacity:.55; }
 .atoll-node__pulse { fill:none; stroke:#6bbf8a; stroke-width:1; opacity:.35; transform-box:fill-box; transform-origin:center; animation:atollPulse 3s ease-out infinite; animation-delay:var(--delay); }
 .atoll-node__core { fill:#d9bc82; filter:url(#softGlow); }
-.atoll-map__label { fill:#fff; font:700 10px 'Lato',sans-serif; letter-spacing:.24em; }
+.atoll-map__label { fill:#fff; font:700 10px 'Manrope',sans-serif; letter-spacing:.24em; }
 .atoll-map__metric { position:absolute; display:flex; flex-direction:column; gap:2px; padding:16px 20px; border:1px solid rgba(255,255,255,.12); border-radius:14px; background:rgba(255,255,255,.055); backdrop-filter:blur(14px); }
-.atoll-map__metric strong { color:#d9bc82; font:300 38px/1 'Alumni Sans SC',sans-serif; }.atoll-map__metric span { color:rgba(255,255,255,.52); font:600 9px 'Lato',sans-serif; letter-spacing:.14em; text-transform:uppercase; }
+.atoll-map__metric strong { color:#d9bc82; font:300 38px/1 'Sora',sans-serif; }.atoll-map__metric span { color:rgba(255,255,255,.52); font:600 9px 'Manrope',sans-serif; letter-spacing:.14em; text-transform:uppercase; }
 .atoll-map__metric--top { top:13%; right:1%; }.atoll-map__metric--bottom { bottom:14%; left:0; }
 @keyframes atollPulse { 0%{transform:scale(.55);opacity:.7} 70%,100%{transform:scale(2.2);opacity:0} }
 @media (max-width:900px) { .atoll-story{grid-template-columns:1fr;min-height:auto;padding-bottom:60px}.atoll-story__index{margin-bottom:70px}.atoll-map{min-height:620px;margin-top:40px}.atoll-map__metric--top{right:0}.atoll-map__metric--bottom{left:0} }

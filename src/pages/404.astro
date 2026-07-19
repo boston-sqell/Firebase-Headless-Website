@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Page Not Found | Sosun Fihaara"
+  description="The requested Sosun Fihaara page could not be found. Browse products, request a wholesale quote, or contact our trade desk."
+>
+  <main class="bg-[#F6F2E8] min-h-screen pt-32 pb-20 px-5 flex items-center">
+    <div class="max-w-2xl mx-auto text-center">
+      <p class="text-xs uppercase tracking-[0.18em] text-[#76583A] font-bold font-body mb-3">Error 404</p>
+      <h1 class="font-display font-bold text-[#18231D] text-5xl md:text-7xl mb-5">Page not found</h1>
+      <p class="font-body text-[#566159] text-base md:text-lg leading-relaxed max-w-xl mx-auto mb-8">
+        The page may have moved or the address may be incorrect. Continue to our product catalogue or contact the trade desk for help.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center items-stretch sm:items-center">
+        <a href="/products" class="btn btn--primary btn--lg justify-center">Browse Products</a>
+        <a href="/request-quote" class="btn btn--ghost btn--lg justify-center">Request a Wholesale Quote</a>
+      </div>
+      <p class="font-body text-sm text-[#566159] mt-8">
+        Need assistance? <a href="tel:+9603313020" class="font-bold text-[#00663B] underline underline-offset-4">Call +960 331 3020</a>
+      </p>
+    </div>
+  </main>
+</Layout>

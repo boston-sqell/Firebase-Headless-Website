@@ -1,7 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { getProducts, getBrands, getSiteContent, getCategories } from '../lib/cms';
-import type { Product, Brand, Category } from '../lib/cms';
+import type { Product, Brand } from '../lib/cms';
+import { buildCatalogCategories, normalizeCatalogValue, productMatchesSearch } from '../lib/catalog';
+import { getProductPackText, getProductPriceText } from '../lib/product-pricing';
 
 const [allProducts, brands, site, categories] = await Promise.all([
   getProducts(),
@@ -11,29 +13,29 @@ const [allProducts, brands, site, categories] = await Promise.all([
 ]);
 
 const sortedBrands = brands.map((b: Brand) => b.name).sort();
+const catalogCategories = buildCatalogCategories(allProducts, categories);
+const categoryNames = new Map(catalogCategories.map(category => [category.key, category.name]));
 
-const subcatMap = new Map<string, Set<string>>();
-for (const p of allProducts) {
-  if (p.category && p.subcategory) {
-    if (!subcatMap.has(p.category)) {
-      subcatMap.set(p.category, new Set());
-    }
-    subcatMap.get(p.category)!.add(p.subcategory);
-  }
-}
-
+const queryFilter = (Astro.url.searchParams.get('q') || '').trim().slice(0, 100);
 const brandFilter = Astro.url.searchParams.get('brand') || '';
 const catFilter = Astro.url.searchParams.get('cat') || '';
 const subFilter = Astro.url.searchParams.get('sub') || '';
 const sortFilter = Astro.url.searchParams.get('sort') || '';
 const pageStr = Astro.url.searchParams.get('page') || '1';
-const page = parseInt(pageStr, 10) || 1;
+const page = Math.max(1, parseInt(pageStr, 10) || 1);
 const pageSize = 24;
+const requestedCategoryKey = normalizeCatalogValue(catFilter);
+const activeCategory = catalogCategories.find(category => category.key === requestedCategoryKey);
+const categoryFilterKey = activeCategory?.key || '';
+const requestedSubcategoryKey = normalizeCatalogValue(subFilter);
+const activeSubcategory = activeCategory?.subcategories.find(subcategory => subcategory.key === requestedSubcategoryKey);
+const subcategoryFilterKey = activeSubcategory?.key || '';
 
-let filteredProducts = allProducts.filter((p: Product) => {
-  if (brandFilter && p.brandName !== brandFilter) return false;
-  if (catFilter && p.category !== catFilter) return false;
-  if (subFilter && p.subcategory !== subFilter) return false;
+let filteredProducts = allProducts.filter((product: Product) => {
+  if (queryFilter && !productMatchesSearch(product, queryFilter)) return false;
+  if (brandFilter && product.brandName !== brandFilter) return false;
+  if (categoryFilterKey && normalizeCatalogValue(product.category) !== categoryFilterKey) return false;
+  if (subcategoryFilterKey && normalizeCatalogValue(product.subcategory) !== subcategoryFilterKey) return false;
   return true;
 });
 
@@ -52,6 +54,37 @@ if (sortFilter === 'Name (A-Z)') {
 const totalProducts = filteredProducts.length;
 const products = filteredProducts.slice(0, page * pageSize);
 const hasMore = products.length < totalProducts;
+const loadMoreCount = Math.min(pageSize, totalProducts - products.length);
+const hasActiveFilters = Boolean(queryFilter || brandFilter || categoryFilterKey || subcategoryFilterKey || sortFilter);
+
+type CatalogState = {
+  q: string;
+  brand: string;
+  cat: string;
+  sub: string;
+  sort: string;
+  page: string;
+};
+
+const catalogState: CatalogState = {
+  q: queryFilter,
+  brand: brandFilter,
+  cat: activeCategory?.name || catFilter,
+  sub: activeSubcategory?.name || '',
+  sort: sortFilter,
+  page: String(page),
+};
+
+function catalogUrl(overrides: Partial<CatalogState> = {}): string {
+  const next = { ...catalogState, ...overrides };
+  const params = new URLSearchParams();
+  for (const key of ['q', 'brand', 'cat', 'sub', 'sort', 'page'] as const) {
+    const value = next[key];
+    if (value && !(key === 'page' && value === '1')) params.set(key, value);
+  }
+  const query = params.toString();
+  return `/products${query ? `?${query}` : ''}#product-range`;
+}
 ---
 
 <Layout
@@ -83,12 +116,33 @@ const hasMore = products.length < totalProducts;
   <div class="container">
 
     <div class="cat-toolbar">
+      <form class="cat-search" method="get" action="/products" role="search">
+        <label for="productSearch">Search catalogue</label>
+        <div class="cat-search__control">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+          <input
+            id="productSearch"
+            type="search"
+            name="q"
+            value={queryFilter}
+            maxlength="100"
+            placeholder="Search products, brands, or item codes"
+            autocomplete="off"
+          />
+          <button type="submit">Search</button>
+        </div>
+        {brandFilter && <input type="hidden" name="brand" value={brandFilter} />}
+        {activeCategory && <input type="hidden" name="cat" value={activeCategory.name} />}
+        {activeSubcategory && <input type="hidden" name="sub" value={activeSubcategory.name} />}
+        {sortFilter && <input type="hidden" name="sort" value={sortFilter} />}
+      </form>
+
       <div class="cat-filters">
         <div class="cat-filter">
           <label for="brandFilter">Filter by brand</label>
           <select id="brandFilter" name="brand" aria-label="Filter by brand">
             <option value="">All Brands</option>
-            {sortedBrands.map((b: string) => <option value={b} selected={brandFilter === b}>{b}</option>)}
+            {sortedBrands.map((brand: string) => <option value={brand} selected={brandFilter === brand}>{brand}</option>)}
           </select>
         </div>
         <div class="cat-filter">
@@ -101,62 +155,98 @@ const hasMore = products.length < totalProducts;
           </select>
         </div>
       </div>
-      <p class="cat-results"><span id="resultCount">Showing <strong>{Math.min(products.length, totalProducts)}</strong> of {totalProducts} products</span> &nbsp;<a href="/products#product-range" class="clear" id="clearFilters">Clear filters</a></p>
+
+      <p class="cat-results" aria-live="polite">
+        <span id="resultCount">
+          Showing <strong>{Math.min(products.length, totalProducts)}</strong> of {totalProducts} products
+          {queryFilter && <> for <strong>“{queryFilter}”</strong></>}
+        </span>
+        {hasActiveFilters && <> &nbsp;<a href="/products#product-range" class="clear" id="clearFilters">Clear all</a></>}
+      </p>
     </div>
 
+    {hasActiveFilters && (
+      <div class="active-filters" aria-label="Active catalogue filters">
+        <span>Active filters:</span>
+        {queryFilter && <a href={catalogUrl({ q: '', page: '1' })}>Search: {queryFilter}<span aria-hidden="true">×</span></a>}
+        {brandFilter && <a href={catalogUrl({ brand: '', page: '1' })}>Brand: {brandFilter}<span aria-hidden="true">×</span></a>}
+        {activeCategory && <a href={catalogUrl({ cat: '', sub: '', page: '1' })}>Category: {activeCategory.name}<span aria-hidden="true">×</span></a>}
+        {activeSubcategory && <a href={catalogUrl({ sub: '', page: '1' })}>Subcategory: {activeSubcategory.name}<span aria-hidden="true">×</span></a>}
+        {sortFilter && <a href={catalogUrl({ sort: '', page: '1' })}>Sort: {sortFilter}<span aria-hidden="true">×</span></a>}
+      </div>
+    )}
     <div class="catalog">
-      <aside class="cat-aside" aria-label="Product categories">
-        <h3>Categories</h3>
-        <nav class="cat-list">
-          <a href="#product-range" class="cat-link is-active" id="allProducts" data-cat="" data-sub=""><span style="display:flex;align-items:center;gap:10px;">All Products</span> <span class="plus" aria-hidden="true">+</span></a>
-          {categories.map((c: Category) => (
-            <details class="cat-acc">
-              <summary><span style="display:flex;align-items:center;gap:10px;">{c.name}</span> <span class="plus" aria-hidden="true">+</span></summary>
-              <div class="cat-sub">
-                <a class="cat-link" href="#product-range" data-cat={c.name} data-sub="" style="font-weight:600;color:var(--green)">All {c.name}</a>
-                {Array.from(subcatMap.get(c.name) || []).sort().map(sub => (
-                  <a class="cat-link" href="#product-range" data-cat={c.name} data-sub={sub}>{sub}</a>
-                ))}
-              </div>
-            </details>
-          ))}
-        </nav>
-      </aside>
-
-      <div>
+      <div class="catalog-results">
         <div class="cat-grid" id="catGrid">
           {products.map((p: Product) => (
             <article class="pcard pcard--brand" data-brand={p.brandName} data-cat={p.category} data-sub={p.subcategory} data-price={p.price ? p.price.replace(/,/g, '') : '0'} data-name={p.name}>
               <div class="pcard__img">
                 <img src={p.image} alt={p.name} loading="lazy">
               </div>
-              <span class="pcard__cat">{p.brandName} &middot; {p.category}</span>
+              <span class="pcard__cat">{p.brandName} &middot; {categoryNames.get(normalizeCatalogValue(p.category)) || p.category}</span>
               <h3>{p.name}</h3>
               <div style="flex:1 0 auto;margin-bottom:14px">
-                {p.packSize && <p style="color:var(--muted);font-size:12px;margin:0 0 8px">Pack: {p.packSize}</p>}
-                {p.price ?
-                  <p style="font-family:var(--font-display);font-weight:800;color:var(--green);font-size:17px;margin:0">MVR {p.price}</p>
-                  : <p style="font-family:var(--font-display);font-weight:700;color:var(--muted);font-size:13px;margin:0">Request price</p>
-                }
+                {getProductPackText(p) && <p style="color:var(--muted);font-size:12px;margin:0 0 8px">{getProductPackText(p)}</p>}
+                <p style="font-family:var(--font-display);font-weight:800;color:var(--green);font-size:17px;margin:0">{getProductPriceText(p)}</p>
               </div>
-              <a href={`/products/${p.code}`} class="textlink">Explore More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              <a href={`/products/${p.code}`} class="textlink">View product <span class="sr-only">{p.name}</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
             </article>
           ))}
         </div>
         {products.length === 0 && (
-          <p class="lead" style="grid-column:1/-1;text-align:center;padding:40px 0">
-            No products match these filters. <a class="textlink" href="/contact">Ask us &rarr;</a>
-          </p>
+          <div class="catalog-empty" role="status">
+            <h3>{queryFilter ? `No products match “${queryFilter}”.` : 'No products match these filters.'}</h3>
+            <p>Try another search, remove a filter, or ask our trade desk to source a product for you.</p>
+            <div>
+              <a class="btn btn--ghost" href="/products#product-range">Clear filters</a>
+              <a class="btn btn--primary" href="/request-quote">Request sourcing help</a>
+            </div>
+          </div>
         )}
         <div class="center" style="margin-top:40px">
           {hasMore && (
-            <a href={`/products?page=${page + 1}&brand=${encodeURIComponent(brandFilter)}&cat=${encodeURIComponent(catFilter)}&sub=${encodeURIComponent(subFilter)}&sort=${encodeURIComponent(sortFilter)}#product-range`} id="loadMore" class="btn btn--ghost btn--lg">
+            <a href={catalogUrl({ page: String(page + 1) })} id="loadMore" class="btn btn--ghost btn--lg">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
-              Load More
+              Show {loadMoreCount} more products
             </a>
           )}
         </div>
       </div>
+      <aside class="cat-aside" aria-label="Product categories">
+        <h3>Categories</h3>
+        <nav class="cat-list">
+          <a href={catalogUrl({ cat: '', sub: '', page: '1' })} class:list={['cat-link', { 'is-active': !categoryFilterKey }]} id="allProducts">
+            <span style="display:flex;align-items:center;gap:10px;">All Products</span>
+            <span class="category-count">{allProducts.length}</span>
+          </a>
+          {catalogCategories.map(category => (
+            <details class="cat-acc" open={activeCategory?.key === category.key}>
+              <summary>
+                <span style="display:flex;align-items:center;gap:10px;">{category.name}</span>
+                <span class="category-meta"><span class="category-count">{category.productCount}</span><span class="plus" aria-hidden="true">+</span></span>
+              </summary>
+              <div class="cat-sub">
+                <a
+                  class:list={['cat-link', { 'is-active': activeCategory?.key === category.key && !subcategoryFilterKey }]}
+                  href={catalogUrl({ cat: category.name, sub: '', page: '1' })}
+                  style="font-weight:600;color:var(--green)"
+                >
+                  All {category.name}
+                </a>
+                {category.subcategories.map(subcategory => (
+                  <a
+                    class:list={['cat-link', { 'is-active': activeCategory?.key === category.key && activeSubcategory?.key === subcategory.key }]}
+                    href={catalogUrl({ cat: category.name, sub: subcategory.name, page: '1' })}
+                  >
+                    <span>{subcategory.name}</span>
+                    <span class="category-count">{subcategory.productCount}</span>
+                  </a>
+                ))}
+              </div>
+            </details>
+          ))}
+        </nav>
+      </aside>
     </div>
   </div>
   <script>
@@ -180,12 +270,6 @@ const hasMore = products.length < totalProducts;
       updateUrl({ sort: target.value, page: '1' });
     });
 
-    document.querySelectorAll<HTMLElement>('.cat-link').forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        updateUrl({ cat: link.dataset.cat || '', sub: link.dataset.sub || '', page: '1' });
-      });
-    });
   </script>
 </section>
 
@@ -220,9 +304,194 @@ const hasMore = products.length < totalProducts;
   <div class="container"><div class="cta-band">
     <h2>Need a tailored wholesale quote?</h2>
     <p>Send us your product list and order volumes -- our trade team will get back to you fast.</p>
-    <div class="btns"><a href="/contact" class="btn btn--gold btn--lg">Get a Quote</a><a href="/brands" class="btn btn--on-dark btn--lg">View Brands</a></div>
+    <div class="btns"><a href="/request-quote" class="btn btn--gold btn--lg">Request a Wholesale Quote</a><a href="/brands" class="btn btn--on-dark btn--lg">View Brands</a></div>
   </div></div>
 </section>
 
 </main>
+
+<style>
+  .cat-toolbar {
+    align-items: flex-end;
+  }
+  .catalog-results {
+    min-width: 0;
+  }
+  @media (min-width: 1000px) {
+    .cat-aside {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .catalog-results {
+      grid-column: 2;
+      grid-row: 1;
+    }
+  }
+  .cat-search {
+    display: grid;
+    flex: 1 1 420px;
+    gap: 6px;
+    min-width: 0;
+  }
+  .cat-search > label {
+    color: var(--muted);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .cat-search__control {
+    position: relative;
+    display: flex;
+    min-width: 0;
+  }
+  .cat-search__control > svg {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 14px;
+    width: 19px;
+    height: 19px;
+    color: var(--green);
+    pointer-events: none;
+    transform: translateY(-50%);
+  }
+  .cat-search__control input {
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    padding: 0 14px 0 43px;
+    border: 1.5px solid var(--line);
+    border-right: 0;
+    border-radius: var(--r-sm) 0 0 var(--r-sm);
+    background: var(--white);
+    color: var(--ink);
+    font-size: 15px;
+  }
+  .cat-search__control input:focus {
+    position: relative;
+    z-index: 1;
+    outline: 3px solid rgba(0, 122, 69, .15);
+    border-color: var(--green);
+  }
+  .cat-search__control button {
+    min-width: 96px;
+    height: 46px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    background: var(--green);
+    color: #fff;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .cat-search__control button:hover {
+    background: var(--green-dark);
+  }
+  .cat-results {
+    flex: 1 0 100%;
+    text-align: left;
+  }
+  .active-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: -12px 0 24px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .active-filters > span {
+    font-weight: 700;
+  }
+  .active-filters a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 6px 10px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--white);
+    color: var(--green);
+    font-weight: 600;
+  }
+  .active-filters a:hover {
+    border-color: var(--green);
+    background: var(--green-soft);
+  }
+  .active-filters a span {
+    font-size: 18px;
+    line-height: 1;
+  }
+  .category-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .category-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 25px;
+    height: 24px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: var(--green-soft);
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .cat-list > a.is-active .category-count {
+    background: rgba(255, 255, 255, .2);
+    color: #fff;
+  }
+  .cat-sub a {
+    justify-content: space-between;
+  }
+  .cat-sub a.is-active {
+    background: var(--green-soft);
+    color: var(--green);
+    font-weight: 700;
+  }
+  .catalog-empty {
+    padding: 48px 24px;
+    border: 1px dashed var(--line);
+    border-radius: var(--r);
+    background: rgba(255, 255, 255, .55);
+    text-align: center;
+  }
+  .catalog-empty h3 {
+    margin-bottom: 8px;
+    font-size: clamp(20px, 3vw, 26px);
+  }
+  .catalog-empty p {
+    max-width: 560px;
+    margin: 0 auto 22px;
+    color: var(--muted);
+  }
+  .catalog-empty > div {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  @media (max-width: 759px) {
+    .cat-search,
+    .cat-filters,
+    .cat-filter {
+      width: 100%;
+    }
+    .cat-filter select {
+      width: 100%;
+    }
+    .cat-search__control button {
+      min-width: 88px;
+      padding-inline: 14px;
+    }
+  }
+</style>
 </Layout>

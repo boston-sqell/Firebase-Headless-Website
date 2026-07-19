@@ -1,28 +1,45 @@
 ---
 // request-quote.astro - Dedicated B2B Quote Form Page
 import Layout from '../layouts/Layout.astro';
+import ContactFormFeedback from '../components/ContactFormFeedback.astro';
 import { getBrands } from '../lib/cms';
 
 const brands = await getBrands();
 const sortedBrands = brands.map(b => b.name).sort();
 const isSuccess = Astro.url.searchParams.get('success') === 'true';
+const requestedProduct = Astro.url.searchParams.get('product') || '';
+const requestedCode = Astro.url.searchParams.get('code') || '';
+const requestedBrand = Astro.url.searchParams.get('brand') || '';
+const productFieldValue = requestedProduct
+  ? `${requestedProduct}${requestedCode ? ` (Code ${requestedCode})` : ''}`
+  : '';
 ---
 
 <Layout
   title="Request a Wholesale Quote | Sosun Fihaara"
   description="Request a B2B wholesale or supply quote from Sosun Fihaara. We deliver dry, fresh, and cold chain FMCG brands nationwide across Maldivian islands."
 >
-  <main class="bg-[#F6F2E8] py-20 min-h-screen pt-28">
-    <div class="max-w-[720px] mx-auto px-5">
-      <div class="text-center mb-8">
+  <main class="quote-page">
+    <div class="quote-shell">
+      <div class="quote-intro">
         <span class="text-xs uppercase tracking-wider text-[#C5A578] font-bold font-body">B2B Procurement</span>
         <h1 class="font-display font-bold text-[#18231D] mt-2 mb-3" style="font-size: var(--type-h2);">Request a Wholesale Quote</h1>
-        <p class="font-body text-[#566159] text-sm">
-          Please fill in the procurement details below. Our trade desk will review your requirements and respond within one business day.
+        <p class="quote-intro__lead">
+          Tell us what you need and where it needs to go. Our trade desk will review availability, volume, and delivery requirements.
         </p>
+        <ol class="quote-steps" aria-label="What happens after you submit">
+          <li><span aria-hidden="true">1</span><div><strong>Share your requirement</strong><small>Products, volume, and delivery island</small></div></li>
+          <li><span aria-hidden="true">2</span><div><strong>We confirm the details</strong><small>Stock, pricing basis, and trade terms</small></div></li>
+          <li><span aria-hidden="true">3</span><div><strong>Receive your quote</strong><small>We respond within one business day</small></div></li>
+        </ol>
+        <div class="quote-assurance">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 4.5 6v5.5c0 4.7 3.2 8 7.5 9.5 4.3-1.5 7.5-4.8 7.5-9.5V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg>
+          <p><strong>Nationwide trade support</strong><br />Dry, chilled, and frozen distribution across all 20 atolls.</p>
+        </div>
+        <p class="quote-contact">Prefer to speak with sales?<br /><a href="tel:+9603313020">+960 331 3020</a></p>
       </div>
 
-      <div class="bg-white border border-[#D8D4C9] rounded-2xl p-8 shadow-sm">
+      <div class="quote-card">
         {isSuccess ? (
           <div class="text-center py-10 font-body">
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto mb-6"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
@@ -33,7 +50,8 @@ const isSuccess = Astro.url.searchParams.get('success') === 'true';
             <a href="/request-quote" class="btn-primary-inline">Submit another request</a>
           </div>
         ) : (
-          <form class="flex flex-col gap-6" action="/api/contact" method="post">
+          <form class="quote-form" action="/api/contact" method="post" data-contact-form data-pending-label="Submitting quote request...">
+            <ContactFormFeedback phone="+960 331 3020" />
             <!-- Honeypot -->
             <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
               <label for="website">Leave this field empty</label>
@@ -42,6 +60,11 @@ const isSuccess = Astro.url.searchParams.get('success') === 'true';
 
             <!-- Custom Quote Fields hidden flag -->
             <input type="hidden" name="form_type" value="quote" />
+
+            <div class="form-section-heading">
+              <span>01</span>
+              <div><h2>Procurement details</h2><p>Tell us what you need and where it should be delivered.</p></div>
+            </div>
 
             <!-- Business Type -->
             <div class="flex flex-col gap-2">
@@ -61,20 +84,20 @@ const isSuccess = Astro.url.searchParams.get('success') === 'true';
             <!-- Island & Atoll -->
             <div class="flex flex-col gap-2">
               <label for="islandAtoll" class="text-sm font-bold text-[#18231D] font-body">Delivery Location (Island & Atoll) <span class="text-[#A12B2B]">*</span></label>
-              <input type="text" id="islandAtoll" name="islandAtoll" required placeholder="e.g. Hulhumalé, Kaafu Atoll or Seaside Resort, Baa Atoll" class="form-input" />
+              <input type="text" id="islandAtoll" name="islandAtoll" required maxlength="100" placeholder="e.g. Hulhumalé, Kaafu Atoll or Seaside Resort, Baa Atoll" class="form-input" />
             </div>
 
             <!-- Product & Brand of Interest -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="flex flex-col gap-2">
                 <label for="productName" class="text-sm font-bold text-[#18231D] font-body">Product of Interest <span class="text-[#A12B2B]">*</span></label>
-                <input type="text" id="productName" name="productName" required placeholder="e.g. Pascual Milk, Gullon Biscuits, Sugar" class="form-input" />
+                <input type="text" id="productName" name="productName" required maxlength="200" value={productFieldValue} placeholder="e.g. Pascual Milk, Gullon Biscuits, Sugar" class="form-input" />
               </div>
               <div class="flex flex-col gap-2">
                 <label for="brandName" class="text-sm font-bold text-[#18231D] font-body">Brand of Interest</label>
                 <select id="brandName" name="brandName" class="form-input">
                   <option value="">Select a brand (optional)</option>
-                  {sortedBrands.map((b: string) => <option value={b}>{b}</option>)}
+                  {sortedBrands.map((b: string) => <option value={b} selected={requestedBrand === b}>{b}</option>)}
                   <option value="Other">Other brand / Not listed</option>
                 </select>
               </div>
@@ -83,41 +106,45 @@ const isSuccess = Astro.url.searchParams.get('success') === 'true';
             <!-- Expected Volume -->
             <div class="flex flex-col gap-2">
               <label for="expectedVolume" class="text-sm font-bold text-[#18231D] font-body">Expected Order Volume <span class="text-[#A12B2B]">*</span></label>
-              <input type="text" id="expectedVolume" name="expectedVolume" required placeholder="e.g. 50 cases monthly, 2 pallets one-time, or mixed container" class="form-input" />
+              <input type="text" id="expectedVolume" name="expectedVolume" required maxlength="200" placeholder="e.g. 50 cases monthly, 2 pallets one-time, or mixed container" class="form-input" />
             </div>
 
-            <hr class="border-[#D8D4C9]/40 my-2" />
+            <div class="form-section-heading form-section-heading--contact">
+              <span>02</span>
+              <div><h2>Your contact details</h2><p>We’ll use these details only to respond to this enquiry.</p></div>
+            </div>
 
             <!-- Contact details -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="flex flex-col gap-2">
                 <label for="name" class="text-sm font-bold text-[#18231D] font-body">Full Name <span class="text-[#A12B2B]">*</span></label>
-                <input type="text" id="name" name="name" required placeholder="Your full name" autocomplete="name" class="form-input" />
+                <input type="text" id="name" name="name" required maxlength="100" placeholder="Your full name" autocomplete="name" class="form-input" />
               </div>
               <div class="flex flex-col gap-2">
                 <label for="company" class="text-sm font-bold text-[#18231D] font-body">Business / Shop Name <span class="text-[#A12B2B]">*</span></label>
-                <input type="text" id="company" name="company" required placeholder="Your shop or resort name" autocomplete="organization" class="form-input" />
+                <input type="text" id="company" name="company" required maxlength="150" placeholder="Your shop or resort name" autocomplete="organization" class="form-input" />
               </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="flex flex-col gap-2">
                 <label for="email" class="text-sm font-bold text-[#18231D] font-body">Work Email Address <span class="text-[#A12B2B]">*</span></label>
-                <input type="email" id="email" name="email" required placeholder="name@business.com" autocomplete="email" class="form-input" />
+                <input type="email" id="email" name="email" required maxlength="254" placeholder="name@business.com" autocomplete="email" class="form-input" />
               </div>
               <div class="flex flex-col gap-2">
                 <label for="phone" class="text-sm font-bold text-[#18231D] font-body">Mobile / Phone Number <span class="text-[#A12B2B]">*</span></label>
-                <input type="tel" id="phone" name="phone" required placeholder="+960 000-0000" autocomplete="tel" class="form-input" />
+                <input type="tel" id="phone" name="phone" required maxlength="30" placeholder="+960 000-0000" autocomplete="tel" class="form-input" />
               </div>
             </div>
 
             <!-- Notes -->
             <div class="flex flex-col gap-2">
               <label for="message" class="text-sm font-bold text-[#18231D] font-body">Additional Notes or Special Requirements</label>
-              <textarea id="message" name="message" placeholder="Provide any other details like preferred shipping routes, split delivery schedules, or other specific items..." class="form-input min-h-[100px]"></textarea>
+              <textarea id="message" name="message" maxlength="2000" placeholder="Provide any other details like preferred shipping routes, split delivery schedules, or other specific items..." class="form-input min-h-[100px]"></textarea>
             </div>
 
-            <button type="submit" class="btn-submit mt-2">
+            <p class="quote-submit-note">Submitting this form does not commit you to an order.</p>
+            <button type="submit" class="btn-submit">
               Submit Quote Request
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
             </button>
@@ -129,6 +156,151 @@ const isSuccess = Astro.url.searchParams.get('success') === 'true';
 </Layout>
 
 <style>
+  .quote-page {
+    min-height: 100vh;
+    padding: clamp(104px, 10vw, 132px) 24px clamp(64px, 8vw, 104px);
+    background:
+      radial-gradient(circle at 8% 8%, rgba(197, 165, 120, .16), transparent 28rem),
+      var(--color-cream);
+  }
+  .quote-shell {
+    width: min(100%, 1180px);
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: minmax(310px, .78fr) minmax(560px, 1.22fr);
+    gap: clamp(28px, 4vw, 56px);
+    align-items: start;
+  }
+  .quote-intro {
+    position: sticky;
+    top: 104px;
+    overflow: hidden;
+    padding: clamp(32px, 4vw, 52px);
+    border-radius: 24px;
+    color: #fff;
+    background: linear-gradient(145deg, #083c2b, #005a37);
+    box-shadow: 0 22px 54px rgba(8, 60, 43, .16);
+  }
+  .quote-intro::after {
+    content: '';
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    right: -110px;
+    bottom: -120px;
+    border: 1px solid rgba(197, 165, 120, .3);
+    border-radius: 50%;
+    box-shadow: 0 0 0 34px rgba(197, 165, 120, .06), 0 0 0 68px rgba(197, 165, 120, .04);
+    pointer-events: none;
+  }
+  .quote-intro > span {
+    display: block;
+    color: var(--color-gold) !important;
+    font: 800 11px/1.2 var(--font-body);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .quote-intro h1 {
+    max-width: 9ch;
+    margin: 14px 0 18px !important;
+    color: #fff;
+    font-size: clamp(42px, 4vw, 62px) !important;
+    line-height: .96;
+  }
+  .quote-intro__lead {
+    max-width: 39ch;
+    margin: 0;
+    color: rgba(255, 255, 255, .76);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  .quote-steps {
+    display: grid;
+    gap: 18px;
+    margin: 34px 0;
+    padding: 0;
+    list-style: none;
+  }
+  .quote-steps li {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 13px;
+    align-items: start;
+  }
+  .quote-steps li > span {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid rgba(197, 165, 120, .56);
+    border-radius: 50%;
+    color: var(--color-gold);
+    font: 800 12px var(--font-body);
+  }
+  .quote-steps strong,
+  .quote-steps small { display: block; }
+  .quote-steps strong { color: #fff; font: 700 14px/1.35 var(--font-body); }
+  .quote-steps small { margin-top: 3px; color: rgba(255, 255, 255, .58); font: 400 12px/1.45 var(--font-body); }
+  .quote-assurance {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 12px;
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .06);
+  }
+  .quote-assurance svg { width: 28px; color: var(--color-gold); }
+  .quote-assurance p { margin: 0; color: rgba(255, 255, 255, .66); font-size: 12px; line-height: 1.5; }
+  .quote-assurance strong { color: #fff; font-size: 13px; }
+  .quote-contact { position: relative; z-index: 1; margin: 24px 0 0; color: rgba(255, 255, 255, .58); font-size: 12px; line-height: 1.55; }
+  .quote-contact a { color: #fff; font-size: 16px; font-weight: 800; text-decoration-color: var(--color-gold); text-underline-offset: 4px; }
+  .quote-card {
+    min-width: 0;
+    padding: clamp(24px, 3vw, 38px);
+    border: 1px solid var(--color-line);
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 18px 52px rgba(24, 35, 29, .08);
+  }
+  .quote-form { display: flex; flex-direction: column; gap: 24px; }
+  .form-section-heading {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding-bottom: 2px;
+  }
+  .form-section-heading--contact { margin-top: 6px; padding-top: 28px; border-top: 1px solid var(--color-line); }
+  .form-section-heading > span {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-green-soft);
+    color: var(--color-green);
+    font: 800 11px var(--font-body);
+  }
+  .form-section-heading h2 { margin: 0; color: var(--color-ink); font-size: 22px; line-height: 1.05; }
+  .form-section-heading p { margin: 5px 0 0; color: var(--color-muted); font-size: 12px; line-height: 1.45; }
+  .quote-submit-note { margin: -6px 0 -8px; color: var(--color-muted); font-size: 11.5px; text-align: right; }
+  @media (max-width: 959px) {
+    .quote-shell { grid-template-columns: 1fr; max-width: 720px; }
+    .quote-intro { position: relative; top: auto; }
+    .quote-intro h1 { max-width: 12ch; }
+  }
+  @media (max-width: 639px) {
+    .quote-page { padding: 92px 14px 56px; }
+    .quote-intro { padding: 26px 24px; border-radius: 18px; }
+    .quote-intro h1 { font-size: 38px !important; }
+    .quote-steps { gap: 13px; margin: 24px 0 20px; }
+    .quote-steps small,
+    .quote-assurance { display: none; }
+    .quote-contact { margin-top: 16px; }
+    .quote-card { padding: 22px 18px; border-radius: 18px; }
+    .quote-submit-note { text-align: left; }
+  }
   .form-input {
     width: 100%;
     font-family: var(--font-body);

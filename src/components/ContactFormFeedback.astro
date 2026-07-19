@@ -1,0 +1,94 @@
+---
+interface Props {
+  phone: string;
+}
+
+const { phone } = Astro.props;
+const phoneHref = phone.replace(/[^+\d]/g, '');
+---
+
+<div
+  class="form-error-summary"
+  data-form-errors
+  role="alert"
+  tabindex="-1"
+  hidden
+>
+  <h2>We couldn't submit your request</h2>
+  <p data-error-detail>
+    Your information is still here. Check the highlighted fields and try again.
+  </p>
+  <ul data-error-list></ul>
+  <p>If the problem continues, call <a href={`tel:${phoneHref}`}>{phone}</a>.</p>
+</div>
+
+<script>
+  import '../scripts/enhance-contact-form';
+</script>
+
+<style is:global>
+  .form-error-summary {
+    border: 2px solid #a12b2b;
+    border-radius: 12px;
+    background: #fff4f2;
+    color: #611b1b;
+    padding: 18px 20px;
+    font-family: var(--font-body);
+  }
+  .form-error-summary:focus {
+    outline: 3px solid rgba(161, 43, 43, 0.25);
+    outline-offset: 3px;
+  }
+  .form-error-summary h2 {
+    color: #611b1b;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .form-error-summary p,
+  .form-error-summary li {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .form-error-summary ul {
+    list-style: disc;
+    margin: 10px 0 10px 20px;
+  }
+  .form-error-summary a {
+    color: #00663b;
+    font-weight: 700;
+    text-decoration: underline;
+  }
+  .field-error {
+    color: #8b1f1f;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-top: -2px;
+  }
+  .form-input[aria-invalid="true"] {
+    border-color: #a12b2b;
+    box-shadow: 0 0 0 1px #a12b2b;
+  }
+  .btn-submit:disabled {
+    cursor: wait;
+    opacity: 0.75;
+    transform: none;
+  }
+  .submit-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 999px;
+    animation: submit-spin 0.7s linear infinite;
+  }
+  @keyframes submit-spin {
+    to { transform: rotate(360deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .submit-spinner { animation: none; }
+  }
+</style>

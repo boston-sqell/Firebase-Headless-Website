@@ -1,10 +1,12 @@
 ---
 // contact.astro - Reframe contact page to simple general inquiry
 import Layout from '../layouts/Layout.astro';
+import ContactFormFeedback from '../components/ContactFormFeedback.astro';
 import { getCmsData } from '../lib/cms';
 
 const { site } = await getCmsData();
 const isSuccess = Astro.url.searchParams.get('success') === 'true';
+const supportPhone = site.contactPhone || '+960 331 3020';
 ---
 
 <Layout
@@ -105,7 +107,8 @@ const isSuccess = Astro.url.searchParams.get('success') === 'true';
               <h2 class="font-display font-bold text-xl text-[#18231D] mb-2">Send a Message</h2>
               <p class="font-body text-xs text-[#566159] mb-6">Fill in the details below and we will respond within one business day.</p>
               
-              <form class="flex flex-col gap-5" action="/api/contact" method="post">
+              <form class="flex flex-col gap-5" action="/api/contact" method="post" data-contact-form data-pending-label="Sending message...">
+                <ContactFormFeedback phone={supportPhone} />
                 <!-- Honeypot -->
                 <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
                   <label for="website">Leave this field empty</label>
@@ -116,28 +119,28 @@ const isSuccess = Astro.url.searchParams.get('success') === 'true';
 
                 <div class="flex flex-col gap-2">
                   <label for="name" class="text-sm font-bold text-[#18231D] font-body">Full Name <span class="text-[#A12B2B]">*</span></label>
-                  <input type="text" id="name" name="name" required placeholder="Your name" autocomplete="name" class="form-input" />
+                  <input type="text" id="name" name="name" required maxlength="100" placeholder="Your name" autocomplete="name" class="form-input" />
                 </div>
 
                 <div class="flex flex-col gap-2">
                   <label for="company" class="text-sm font-bold text-[#18231D] font-body">Company / Shop Name</label>
-                  <input type="text" id="company" name="company" placeholder="Business name (optional)" autocomplete="organization" class="form-input" />
+                  <input type="text" id="company" name="company" maxlength="150" placeholder="Business name (optional)" autocomplete="organization" class="form-input" />
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div class="flex flex-col gap-2">
                     <label for="email" class="text-sm font-bold text-[#18231D] font-body">Email Address <span class="text-[#A12B2B]">*</span></label>
-                    <input type="email" id="email" name="email" required placeholder="you@example.com" autocomplete="email" class="form-input" />
+                    <input type="email" id="email" name="email" required maxlength="254" placeholder="you@example.com" autocomplete="email" class="form-input" />
                   </div>
                   <div class="flex flex-col gap-2">
                     <label for="phone" class="text-sm font-bold text-[#18231D] font-body">Phone Number <span class="text-[#A12B2B]">*</span></label>
-                    <input type="tel" id="phone" name="phone" required placeholder="+960 000-0000" autocomplete="tel" class="form-input" />
+                    <input type="tel" id="phone" name="phone" required maxlength="30" placeholder="+960 000-0000" autocomplete="tel" class="form-input" />
                   </div>
                 </div>
 
                 <div class="flex flex-col gap-2">
                   <label for="message" class="text-sm font-bold text-[#18231D] font-body">Message <span class="text-[#A12B2B]">*</span></label>
-                  <textarea id="message" name="message" required placeholder="Type your message here..." class="form-input min-h-[140px]"></textarea>
+                  <textarea id="message" name="message" required minlength="10" maxlength="2000" placeholder="Type your message here..." class="form-input min-h-[140px]"></textarea>
                 </div>
 
                 <button type="submit" class="btn-submit">

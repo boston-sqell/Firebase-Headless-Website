@@ -1,6 +1,7 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import { adminListProducts, adminListBrands, adminListCategories } from '../../../lib/admin-data';
+import { getPriceBasisLabel, getProductPriceText } from '../../../lib/product-pricing';
 
 const [products, brands, categories] = await Promise.all([
   adminListProducts(),
@@ -118,7 +119,7 @@ function sortUrl(field: string) {
               <td>{p.brandName}</td>
               <td>{p.category}{p.subcategory ? ` / ${p.subcategory}` : ''}</td>
               <td>{p.code}</td>
-              <td>{p.price ? `MVR ${p.price}` : '-'}</td>
+              <td>{getProductPriceText(p)}{p.price && <small style="display:block;color:var(--admin-muted)">{getPriceBasisLabel(p)}</small>}</td>
               <td>{p.active !== false ? <span class="pill pill--active">Active</span> : <span class="pill pill--inactive">Hidden</span>}</td>
               <td style="white-space:nowrap">
                 <a href={`/admin/products/${p.id}`} class="btn-admin btn-admin--ghost btn-admin--sm">Edit</a>

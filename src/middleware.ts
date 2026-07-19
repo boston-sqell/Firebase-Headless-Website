@@ -8,15 +8,13 @@ import { isAllowedOrigin } from './lib/origins';
 // admin panel.
 // connect-src / script-src include Firebase Auth's identity endpoints, used
 // by the admin login page's client-side sign-in call.
-// style-src / font-src include Google Fonts, used by Layout.astro /
-// homepage.css.
 const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'",
   "object-src 'none'",
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https://firebasestorage.googleapis.com https://storage.googleapis.com",
-  "font-src 'self' https://fonts.gstatic.com",
+  "font-src 'self'",
   "connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
@@ -97,6 +95,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   const response = await next();
+
+  // Sharp 0.35 reports AVIF output as HEIF, which makes Astro emit image/heif.
+  // Normalize the endpoint response so it matches the picture source type and
+  // remains usable with X-Content-Type-Options: nosniff.
+  if (pathname === '/_image' && context.url.searchParams.get('f') === 'avif') {
+    response.headers.set('Content-Type', 'image/avif');
+  }
 
   response.headers.set('Content-Security-Policy', CSP);
   response.headers.set('X-Content-Type-Options', 'nosniff');

@@ -1,15 +1,17 @@
 ---
 // Nav.astro - Reorganized B2B Navigation Header
 const pathname = Astro.url.pathname;
+const darkHeroPaths = new Set(['/', '/products', '/brands', '/about', '/news', '/recipes']);
+const overDarkAtTop = darkHeroPaths.has(pathname);
 ---
-<header id="header" class="fixed top-0 left-0 w-full z-50 transition-all duration-300 transparent border-b border-transparent">
+<header id="header" class:list={["fixed top-0 left-0 w-full z-50 transition-all duration-300 transparent border-b border-transparent", { "over-dark": overDarkAtTop }]}>
   <!-- Desktop header layout -->
   <div class="hidden lg:flex items-center justify-between h-20 px-[5.2vw] max-w-[1320px] mx-auto w-full">
     <!-- Logo Left -->
     <div class="flex items-center">
       <a href="/" class="flex items-center gap-2" aria-label="Sosun Fihaara – go to homepage">
-        <img src="/logo.png" alt="Sosun Fihaara" class="h-10 w-auto object-contain" style="height: 40px !important; width: auto !important;" />
-        <span class="text-[#18231D] font-display font-bold text-lg tracking-tight">SOSUN FIHAARA</span>
+        <img src="/logo.png" alt="Sosun Fihaara" class="site-logo h-10 w-auto object-contain" style="height: 40px !important; width: auto !important;" />
+        <span class="brand-name text-[#18231D] font-display font-bold text-lg tracking-tight">SOSUN FIHAARA</span>
       </a>
     </div>
 
@@ -29,13 +31,13 @@ const pathname = Astro.url.pathname;
           <a href="/about" class="nav-link" aria-current={pathname.startsWith('/about') ? 'page' : undefined}>About</a>
         </li>
         <li class="relative group insights-dropdown">
-          <button class="nav-link flex items-center gap-1 cursor-pointer bg-transparent border-0 font-body py-2 text-left" aria-expanded="false">
+          <button id="insights-menu-btn" class="nav-link flex items-center gap-1 cursor-pointer bg-transparent border-0 font-body py-2 text-left" aria-expanded="false" aria-controls="insights-menu">
             Insights
             <svg class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </button>
-          <ul class="absolute left-0 top-full hidden group-hover:block bg-[#FFFFFF] border border-[#D8D4C9] rounded-lg shadow-lg py-2 min-w-[160px] z-50">
+          <ul id="insights-menu" class="absolute left-0 top-full hidden group-hover:block bg-[#FFFFFF] border border-[#D8D4C9] rounded-lg shadow-lg py-2 min-w-[160px] z-50">
             <li>
               <a href="/news" class="block px-4 py-2 text-sm text-[#18231D] hover:bg-[#DDEBE2] hover:text-[#00663B] font-body transition-colors">News</a>
             </li>
@@ -63,12 +65,12 @@ const pathname = Astro.url.pathname;
   <!-- Mobile header layout -->
   <div class="flex lg:hidden items-center justify-between px-5 h-[72px] w-full">
     <a href="/" aria-label="Sosun Fihaara homepage" class="flex items-center gap-2">
-      <img src="/logo.png" alt="Sosun Fihaara" class="h-9 w-auto object-contain" style="height: 36px !important; width: auto !important;" />
-      <span class="text-[#18231D] font-display font-bold text-base tracking-tight">SOSUN FIHAARA</span>
+      <img src="/logo.png" alt="Sosun Fihaara" class="site-logo h-9 w-auto object-contain" style="height: 36px !important; width: auto !important;" />
+      <span class="brand-name text-[#18231D] font-display font-bold text-base tracking-tight">SOSUN FIHAARA</span>
     </a>
     <div class="flex items-center gap-3">
       <a href="/request-quote" class="text-xs font-bold uppercase tracking-wider bg-[#00663B] text-white px-3 py-2 rounded-lg no-underline hover:bg-[#083C2B] transition-colors">Enquire</a>
-      <button id="mobile-menu-btn" aria-label="Open menu" aria-expanded="false" class="text-[#18231D] p-1 bg-transparent border-0 cursor-pointer">
+      <button id="mobile-menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu" class="text-[#18231D] p-2.5 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-transparent border-0 cursor-pointer">
         <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -80,10 +82,10 @@ const pathname = Astro.url.pathname;
 </header>
 
 <!-- Mobile Menu Drawer -->
-<div id="mobile-menu" class="fixed inset-0 z-[60] bg-[#F6F2E8] hidden flex-col px-6 pt-6 pb-10 overflow-y-auto">
+<div id="mobile-menu" role="dialog" aria-modal="true" aria-label="Main menu" aria-hidden="true" class="fixed inset-0 z-[60] bg-[#F6F2E8] hidden flex-col px-6 pt-6 pb-10 overflow-y-auto">
   <div class="flex items-center justify-between mb-8">
     <span class="text-[#18231D] font-display font-bold text-xl tracking-tight">SOSUN FIHAARA</span>
-    <button id="mobile-menu-close" aria-label="Close menu" class="text-[#18231D] p-1 bg-transparent border-0 cursor-pointer">
+    <button id="mobile-menu-close" aria-label="Close menu" class="text-[#18231D] p-2.5 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-transparent border-0 cursor-pointer">
       <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -140,6 +142,25 @@ const pathname = Astro.url.pathname;
     background-color: var(--color-canvas);
     border-bottom-color: var(--color-line);
     box-shadow: 0 4px 20px rgba(24, 35, 29, 0.04);
+  }
+
+  .site-logo {
+    filter: brightness(0) saturate(100%);
+  }
+  #header.over-dark.transparent .site-logo {
+    filter: none;
+  }
+  #header.over-dark.transparent .nav-link,
+  #header.over-dark.transparent .brand-name,
+  #header.over-dark.transparent .tel-link span,
+  #header.over-dark.transparent #mobile-menu-btn {
+    color: #FFFFFF !important;
+  }
+  #header.over-dark.transparent .nav-link[aria-current="page"] {
+    color: var(--color-sand) !important;
+  }
+  #header.over-dark.transparent .nav-link[aria-current="page"]::after {
+    background-color: var(--color-sand);
   }
 
   .nav-link {
@@ -201,7 +222,10 @@ const pathname = Astro.url.pathname;
     transform: translateY(8px);
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
   }
-  .insights-dropdown:hover ul {
+  .insights-dropdown:hover ul,
+  .insights-dropdown:focus-within ul,
+  .insights-dropdown.is-open ul {
+    display: block;
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -211,6 +235,8 @@ const pathname = Astro.url.pathname;
 <script>
   function initHeader() {
     const header = document.getElementById('header');
+    if (!header || header.dataset.initialized === 'true') return;
+    header.dataset.initialized = 'true';
     
     function handleScroll() {
       if (window.scrollY > 20) {
@@ -238,32 +264,81 @@ const pathname = Astro.url.pathname;
       lastY = y;
     }, { passive: true });
 
+    const insightsItem = document.querySelector<HTMLElement>('.insights-dropdown');
+    const insightsBtn = document.getElementById('insights-menu-btn');
     const menu = document.getElementById('mobile-menu');
     const openBtn = document.getElementById('mobile-menu-btn');
     const closeBtn = document.getElementById('mobile-menu-close');
 
+    function setInsightsOpen(open: boolean) {
+      insightsItem?.classList.toggle('is-open', open);
+      insightsBtn?.setAttribute('aria-expanded', String(open));
+    }
+
+    insightsBtn?.addEventListener('focus', () => setInsightsOpen(true));
+    insightsBtn?.addEventListener('click', () => setInsightsOpen(true));
+    insightsItem?.addEventListener('focusout', (event) => {
+      if (!insightsItem.contains(event.relatedTarget as Node | null)) setInsightsOpen(false);
+    });
+    document.addEventListener('pointerdown', (event) => {
+      if (!insightsItem?.contains(event.target as Node)) setInsightsOpen(false);
+    });
+
+    function setBackgroundInert(inert: boolean) {
+      for (const child of Array.from(document.body.children)) {
+        if (child instanceof HTMLElement && child !== menu) child.inert = inert;
+      }
+    }
+
     function openMenu() {
       menu?.classList.remove('hidden');
       menu?.classList.add('flex');
+      menu?.setAttribute('aria-hidden', 'false');
       openBtn?.setAttribute('aria-expanded', 'true');
       document.body.style.overflow = 'hidden';
+      setBackgroundInert(true);
       closeBtn?.focus();
     }
 
     function closeMenu() {
       menu?.classList.add('hidden');
       menu?.classList.remove('flex');
+      menu?.setAttribute('aria-hidden', 'true');
       openBtn?.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
+      setBackgroundInert(false);
       openBtn?.focus();
     }
 
     openBtn?.addEventListener('click', openMenu);
     closeBtn?.addEventListener('click', closeMenu);
 
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && menu && !menu.classList.contains('hidden')) {
-        closeMenu();
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        if (menu && !menu.classList.contains('hidden')) {
+          closeMenu();
+          return;
+        }
+        if (insightsBtn?.getAttribute('aria-expanded') === 'true') {
+          setInsightsOpen(false);
+          insightsBtn.focus();
+        }
+        return;
+      }
+
+      if (event.key !== 'Tab' || !menu || menu.classList.contains('hidden')) return;
+      const focusable = Array.from(menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'))
+        .filter((element) => !element.hasAttribute('hidden'));
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) return;
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
       }
     });
 

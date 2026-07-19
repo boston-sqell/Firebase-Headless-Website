@@ -1,6 +1,8 @@
 ---
 // hospitality-food-service.astro - Hospitality & Food Service B2B Detail Page
 import Layout from '../../layouts/Layout.astro';
+import { Picture } from 'astro:assets';
+import hospitalitySupplyImage from '../../assets/home/hospitality_supply.png';
 ---
 
 <Layout
@@ -18,7 +20,7 @@ import Layout from '../../layouts/Layout.astro';
 
       <div class="bg-white border border-[#D8D4C9] rounded-2xl overflow-hidden shadow-sm mb-12">
         <div class="aspect-[16/6] w-full bg-[#EAE6DC] overflow-hidden">
-          <img src="/images/hospitality_supply.png" alt="Resort culinary team plating fine dining meals in professional kitchen" class="w-full h-full object-cover" />
+          <Picture src={hospitalitySupplyImage} formats={['avif', 'webp']} widths={[480, 768, 1024]} sizes="(min-width: 1000px) 1000px, 100vw" alt="Resort culinary team plating fine dining meals in professional kitchen" class="w-full h-full object-cover" />
         </div>
 
         <div class="p-8 lg:p-12">

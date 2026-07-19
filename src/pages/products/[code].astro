@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { getCmsData } from '../../lib/cms';
 import type { Product } from '../../lib/cms';
+import { getProductPackText, getProductPriceText } from '../../lib/product-pricing';
 
 const { code } = Astro.params;
 const { products } = await getCmsData();
@@ -22,6 +23,12 @@ if (!product) {
 }
 
 const description = `${product.name} by ${product.brandName} -- ${product.category}${product.packSize ? `, ${product.packSize}` : ''}. Available wholesale and retail from Sosun Fihaara in the Maldives.`;
+
+const quoteParams = new URLSearchParams({
+  product: product.name,
+  brand: product.brandName,
+  code: String(product.code),
+});
 
 const productSchema = {
   "@context": "https://schema.org",
@@ -58,12 +65,13 @@ const productSchema = {
 
             <div style="margin-bottom: 24px;">
               <p style="font-family: var(--font-display); font-weight: 800; color: var(--green); font-size: 24px; margin: 0;">
-                {product.price ? `MVR ${product.price}` : 'Request price'}
+                {getProductPriceText(product)}
               </p>
-              {product.packSize && <p style="color: var(--muted); margin-top: 5px;">Pack size: {product.packSize}</p>}
+              {getProductPackText(product) && <p style="color: var(--muted); margin-top: 5px;">{getProductPackText(product)}</p>}
+              <p style="color: var(--muted); font-size: 13px; margin-top: 8px;">Catalogue pricing is subject to stock, volume, and trade-term confirmation.</p>
             </div>
 
-            <a href="/contact" class="btn btn--gold">Get a Wholesale Quote</a>
+            <a href={`/request-quote?${quoteParams.toString()}`} class="btn btn--gold">Request a Quote for This Product</a>
           </div>
         </div>
       </div>

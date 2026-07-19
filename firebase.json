@@ -29,7 +29,7 @@
         ]
       },
       {
-        "source": "**/*.@(jpg|jpeg|png|gif|webp|svg|ico)",
+        "source": "**/*.@(jpg|jpeg|png|gif|webp|avif|svg|ico)",
         "headers": [
           { "key": "Cache-Control", "value": "public, max-age=86400" }
         ]

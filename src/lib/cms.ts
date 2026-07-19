@@ -15,6 +15,8 @@ import { getDb } from "./firebase-admin";
 
 // ---------- Types ----------
 
+export type PriceBasis = "case" | "pack" | "unit" | "indicative";
+
 export interface Product {
   id?: string;
   name: string;
@@ -23,6 +25,7 @@ export interface Product {
   code: string;
   subcategory?: string;
   price?: string;
+  priceBasis?: PriceBasis;
   packSize?: string;
   brandSlug: string;
   keywords?: string;
@@ -196,6 +199,7 @@ export async function getProducts(): Promise<Product[]> {
     code:        p.code,
     subcategory: p.subcategory,
     price:       p.price,
+    priceBasis:  p.priceBasis,
     packSize:    p.packSize,
     brandSlug:   p.brandSlug,
     keywords:    p.keywords,

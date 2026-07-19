@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { adminUpdateProduct } from '../../../../../lib/admin-data';
 import { validateRequired, validateMaxLength, validateSlug, validatePrice, formatIssues } from '../../../../../lib/admin-validation';
 import { uploadImageIfPresent, UploadError } from '../../../../../lib/admin-upload';
+import { isPriceBasis } from '../../../../../lib/product-pricing';
 
 function str(v: FormDataEntryValue | null): string {
   return typeof v === 'string' ? v.trim() : '';
@@ -18,6 +19,7 @@ export const POST: APIRoute = async ({ params, request, redirect }) => {
   const subcategory = str(formData.get('subcategory'));
   const code = str(formData.get('code'));
   const price = str(formData.get('price'));
+  const priceBasisValue = str(formData.get('priceBasis'));
   const packSize = str(formData.get('packSize'));
   const keywords = str(formData.get('keywords'));
   const active = formData.get('active') === 'on';
@@ -35,6 +37,7 @@ export const POST: APIRoute = async ({ params, request, redirect }) => {
     ...validateMaxLength(keywords, 'keywords', 'Search keywords', 500),
     ...validateSlug(brandSlug, 'brandSlug', 'Brand slug'),
     ...validatePrice(price, 'price', 'Price'),
+    ...(!isPriceBasis(priceBasisValue) ? [{ field: 'priceBasis', message: 'Price basis must be per case, pack, unit, or indicative.' }] : []),
   ];
   if (issues.length > 0) {
     return redirect(`/admin/products/${id}?error=` + encodeURIComponent(formatIssues(issues)));
@@ -50,7 +53,7 @@ export const POST: APIRoute = async ({ params, request, redirect }) => {
   }
 
   await adminUpdateProduct(id, {
-    name, brandName, brandSlug, category, subcategory, code, price, packSize, keywords, active, image,
+    name, brandName, brandSlug, category, subcategory, code, price, priceBasis: priceBasisValue as 'case' | 'pack' | 'unit' | 'indicative', packSize, keywords, active, image,
   });
 
   return redirect('/admin/products?success=' + encodeURIComponent('Product updated.'));

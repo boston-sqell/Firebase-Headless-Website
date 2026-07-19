@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { getCmsData } from '../../lib/cms';
 import type { Product, Brand } from '../../lib/cms';
+import { getProductPackText, getProductPriceText } from '../../lib/product-pricing';
 
 const { slug } = Astro.params;
 const { brands, products: allProducts } = await getCmsData();
@@ -39,11 +40,8 @@ const description = brand.description || `Explore all ${brand.name} products, au
               <span class="pcard__cat">{p.brandName} &middot; {p.category}</span>
               <h3>{p.name}</h3>
               <div style="flex:1 0 auto;margin-bottom:14px">
-                {p.packSize && <p style="color:var(--muted);font-size:12px;margin:0 0 8px">Pack: {p.packSize}</p>}
-                {p.price ?
-                  <p style="font-family:var(--font-display);font-weight:800;color:var(--green);font-size:17px;margin:0">MVR {p.price}</p>
-                  : <p style="font-family:var(--font-display);font-weight:700;color:var(--muted);font-size:13px;margin:0">Request price</p>
-                }
+                {getProductPackText(p) && <p style="color:var(--muted);font-size:12px;margin:0 0 8px">{getProductPackText(p)}</p>}
+                <p style="font-family:var(--font-display);font-weight:800;color:var(--green);font-size:17px;margin:0">{getProductPriceText(p)}</p>
               </div>
               <a href={`/products/${p.code}`} class="textlink">Explore More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
             </article>
